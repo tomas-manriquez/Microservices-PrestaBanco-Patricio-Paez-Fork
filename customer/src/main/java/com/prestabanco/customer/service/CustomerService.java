@@ -18,7 +18,7 @@ public class CustomerService {
 
     public Customer findById(int id) { return customerRepository.findById(id).get(); }
 
-    public Customer save(Customer executive) { return customerRepository.save(executive); }
+    public Customer save(Customer customer) { return customerRepository.save(customer); }
 
     public boolean deleteById(int id) throws Exception {
         try{

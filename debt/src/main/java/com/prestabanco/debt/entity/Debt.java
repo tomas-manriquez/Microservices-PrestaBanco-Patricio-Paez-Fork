@@ -14,9 +14,8 @@ import lombok.NoArgsConstructor;
 public class Debt {
 
     @Id
-    @GeneratedValue
-    @Column(unique = true, nullable = false)
-    private long idDebt;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int idDebt;
     private Date debtDate;
     private int debtAmount;
 }

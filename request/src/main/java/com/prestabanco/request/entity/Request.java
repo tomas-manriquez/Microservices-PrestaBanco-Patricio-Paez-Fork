@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 public class Request {
 
     @Id
-    @GeneratedValue
-    @Column(unique = true, nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int idRequest;
     private int status; // 1 Rejected 2 Evaluation by executive 3 Accepted 4 Eliminated by customer 5 Delivering loan
     private int idCustomer;

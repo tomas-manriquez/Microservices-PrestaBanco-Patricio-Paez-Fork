@@ -12,9 +12,8 @@ import lombok.NoArgsConstructor;
 public class Loan {
 
     @Id
-    @GeneratedValue
-    @Column(unique = true, nullable = false)
-    private long idLoan;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int idLoan;
     private int selectedYears;
     private int selectedLoan; // 1 its firstHome 2 its SecondHome 3 CommercialProperties 4 Remodeling
     private Double selectedInterest;

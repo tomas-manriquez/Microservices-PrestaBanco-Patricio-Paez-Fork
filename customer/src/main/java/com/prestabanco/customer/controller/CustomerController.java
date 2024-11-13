@@ -2,6 +2,7 @@ package com.prestabanco.customer.controller;
 
 
 import com.prestabanco.customer.entity.Customer;
+import com.prestabanco.customer.repository.CustomerRepository;
 import com.prestabanco.customer.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,8 @@ public class CustomerController {
 
     @Autowired
     private CustomerService customerService;
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @GetMapping("/")
     public ResponseEntity<List<Customer>> list() {
@@ -51,4 +54,5 @@ public class CustomerController {
     public ResponseEntity<Customer> register(@RequestBody Customer customer) {
         Customer customerSaved = customerService.save(customer);
         return ResponseEntity.ok(customerSaved); }
+
 }

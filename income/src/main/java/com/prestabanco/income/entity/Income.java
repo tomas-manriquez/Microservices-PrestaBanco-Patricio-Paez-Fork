@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 public class Income {
 
     @Id
-    @GeneratedValue
-    @Column(unique = true, nullable = false) // Can be used for independant or dependant worker
-    private long idIncome;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Can be used for independant or dependant worker
+    private int idIncome;
     private Date incomeDate;
     private int incomeAmount;
+    private int idCustomer;
 }
