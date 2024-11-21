@@ -1,0 +1,90 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: executive-db-pv
+  labels:
+    type: local
+spec:
+  storageClassName: standard
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/data/executive-db-data"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: executive-db-pvc
+  labels:
+    app: postgres
+    tier: database
+spec:
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: executive-db-deployment
+  labels:
+    app: executive-db-deployment
+    tier: database
+spec:
+  selector:
+    matchLabels:
+      app: executive-db-deployment
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: executive-db-deployment
+        tier: database
+    spec:
+      containers:
+        - name: executive-db
+          image: postgres
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - containerPort: 5434
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: DB_USER_EXECUTIVE
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: DB_PASSWORD_EXECUTIVE
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: executive-db-data
+      volumes:
+        - name: executive-db-data
+          persistentVolumeClaim:
+            claimName: executive-db-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: executive-db-service
+  labels:
+    app: executive-db-service
+    tier: database
+spec:
+  ports:
+    - port: 5434
+      targetPort: 5432
+      protocol: TCP
+  selector:
+    app: executive-db-deployment
+    tier: database
+  type: LoadBalancer

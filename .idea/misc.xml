@@ -10,6 +10,15 @@
         <option value="$PROJECT_DIR$/request/pom.xml" />
         <option value="$PROJECT_DIR$/customer/pom.xml" />
         <option value="$PROJECT_DIR$/executive/pom.xml" />
+        <option value="$PROJECT_DIR$/config-server/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-customer/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-request/pom.xml" />
+        <option value="$PROJECT_DIR$/eureka-server/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-loan/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-income/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-executive/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-debt/pom.xml" />
+        <option value="$PROJECT_DIR$/gateway-server/pom.xml" />
       </list>
     </option>
   </component>

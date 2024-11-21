@@ -1,0 +1,47 @@
+server:
+  port: 8080
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://eureka-server-service:8761/eureka/
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+        default-filters:
+          - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: '*'
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        - id: ms-customer
+          uri: lb://ms-customer:8090
+          predicates:
+            - Path=/api/customer/**
+        - id: ms-debt
+          uri: lb://ms-debt:8091
+          predicates:
+            - Path=/debt/api/**
+        - id: ms-executive
+          uri: lb://ms-executive:8092
+          predicates:
+            - Path=/executive/api/**
+        - id: ms-income
+          uri: lb://ms-income:8093
+          predicates:
+            - Path=/income/api/**
+        - id: ms-loan
+          uri: lb://ms-loan:8094
+          predicates:
+            - Path=/loan/api/**
+        - id: ms-request
+          uri: lb://ms-request:8095
+          predicates:
+            - Path=/request/api/**

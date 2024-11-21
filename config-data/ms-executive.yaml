@@ -1,0 +1,15 @@
+server:
+  port: 8092
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/executive-db
+    username: postgres
+    password: admin
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone: http://eureka-server-service:8761/eureka/
