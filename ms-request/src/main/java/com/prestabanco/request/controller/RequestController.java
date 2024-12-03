@@ -39,12 +39,11 @@ public class RequestController {
     public ResponseEntity<Boolean> delete(@PathVariable int id) throws Exception {
         var isDeleted = requestService.deleteById(id);
         return ResponseEntity.noContent().build();}
-    /*
+
     @PutMapping("/autocheck")
     public ResponseEntity<Request> autocheck(@RequestBody Request request) {
         Request requestNew = requestService.autoCheck(request);
         return ResponseEntity.ok(requestNew);
     }
 
-     */
 }

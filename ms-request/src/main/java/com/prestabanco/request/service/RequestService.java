@@ -1,5 +1,6 @@
 package com.prestabanco.request.service;
-
+import com.prestabanco.request.clients.CustomersFeignClient;
+import com.prestabanco.request.dto.CustomerDTO;
 import com.prestabanco.request.entity.Request;
 import com.prestabanco.request.repository.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +14,8 @@ public class RequestService {
     @Autowired
     private RequestRepository requestRepository;
 
-    //@Autowired
-    //private RestTemplate restTemplate;
-
-    private static final String CUSTOMER_SERVICE_URL = "http://postgres:5432/customer-request/";
+    @Autowired
+    private CustomersFeignClient customersFeignClient;
 
     public List<Request> findAll() { return requestRepository.findAll(); }
 
@@ -32,9 +31,8 @@ public class RequestService {
             throw new Exception("Error deleting request", e);
         }
     }
-    /*
     public Request autoCheck(Request request) {
-        Customer customer = request.getCustomer();
+        CustomerDTO customer = customersFeignClient.getCustomerById(request.getIdCustomer());
 
         int trueCount = 0;
         if (customer.isMinCashOnAccount()) trueCount++;
@@ -57,6 +55,4 @@ public class RequestService {
 
         return requestRepository.save(request);
     }
-
-     */
 }

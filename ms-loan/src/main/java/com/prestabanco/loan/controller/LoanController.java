@@ -1,5 +1,6 @@
 package com.prestabanco.loan.controller;
 
+import com.prestabanco.loan.dto.LoanCalculationDTO;
 import com.prestabanco.loan.entity.Loan;
 import com.prestabanco.loan.service.LoanService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/loan")
@@ -39,5 +41,15 @@ public class LoanController {
     public ResponseEntity<Boolean> delete(@PathVariable int id) throws Exception {
         var isDeleted = loanService.deleteById(id);
         return ResponseEntity.noContent().build();}
+
+    @PostMapping("/calculate")
+    public Map<String, Object> calculateLoan(@RequestBody LoanCalculationDTO request) {
+        return loanService.calculateLoan(
+                request.getLoanType(),
+                request.getPropertyValue(),
+                request.getYears(),
+                request.getInterestRate()
+        );
+    }
 
 }

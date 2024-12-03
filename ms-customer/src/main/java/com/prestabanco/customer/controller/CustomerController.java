@@ -1,6 +1,7 @@
 package com.prestabanco.customer.controller;
 
 
+import com.prestabanco.customer.dto.CustomerDTO;
 import com.prestabanco.customer.entity.Customer;
 import com.prestabanco.customer.repository.CustomerRepository;
 import com.prestabanco.customer.service.CustomerService;
@@ -54,5 +55,22 @@ public class CustomerController {
     public ResponseEntity<Customer> register(@RequestBody Customer customer) {
         Customer customerSaved = customerService.save(customer);
         return ResponseEntity.ok(customerSaved); }
+
+    @GetMapping("/dto/{id}")
+    public CustomerDTO getCustomerById(@PathVariable int id) {
+        Customer customer = customerService.findById(id);
+        return new CustomerDTO(
+                customer.getIdCustomer(),
+                customer.getName(),
+                customer.getAge(),
+                customer.isMinCashOnAccount(),
+                customer.isConsistentSaveHistory(),
+                customer.isPeriodicDeposits(),
+                customer.isRelationYearsAndBalance(),
+                customer.isRecentWithdraws(),
+                customer.isLatePayments()
+        );
+    }
+
 
 }
