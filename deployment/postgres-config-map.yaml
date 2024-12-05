@@ -15,10 +15,12 @@ data:
   DB_PORT_EXECUTIVE: "5434"
   DB_DBNAME_EXECUTIVE: executive-db
   DB_HOST_INCOME: income-db-service
-  DB_PORT_INCOME: "5434"
+  DB_PORT_INCOME: "5435"
   DB_DBNAME_INCOME: income-db
   DB_HOST_LOAN: loan-db-service
-  DB_PORT_LOAN: "5434"
+  DB_PORT_LOAN: "5436"
   DB_DBNAME_LOAN: loan-db
-
+  DB_HOST_REQUEST: request-db-service
+  DB_PORT_REQUEST: "5437"
+  DB_DBNAME_REQUEST: request-db
 

@@ -2,7 +2,7 @@ server:
   port: 8090
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/customers-db
+    url: jdbc:postgresql://customer-db-service:5432/customers-db
     username: postgres
     password: admin
 eureka:

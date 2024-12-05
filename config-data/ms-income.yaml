@@ -2,7 +2,7 @@ server:
   port: 8093
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/income-db
+    url: jdbc:postgresql://income-db-service:5435/income-db
     username: postgres
     password: admin
 eureka:
