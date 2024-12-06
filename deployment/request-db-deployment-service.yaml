@@ -82,7 +82,7 @@ metadata:
 spec:
   ports:
     - port: 5437
-      targetPort: 5437
+      targetPort: 5432
       protocol: TCP
   selector:
     app: request-db-deployment
