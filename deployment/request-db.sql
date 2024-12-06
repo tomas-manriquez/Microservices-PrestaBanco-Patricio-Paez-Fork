@@ -1,9 +1,6 @@
---
 -- PostgreSQL database dump
 --
-
--- Dumped from database version 16.2 (Debian 16.2-1.pgdg120+2)
--- Dumped by pg_dump version 16.2 (Debian 16.2-1.pgdg120+2)
+-- Ajustado para evitar valores nulos en las columnas id_customer e id_loan.
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -27,11 +24,9 @@ SET default_table_access_method = heap;
 CREATE TABLE public.request (
                                 id_request integer NOT NULL,
                                 status integer NOT NULL,
-                                customer bigint,
-                                loan bigint,
-                                customer_id bigint
+                                id_customer bigint NOT NULL,
+                                id_loan bigint NOT NULL
 );
-
 
 ALTER TABLE public.request OWNER TO postgres;
 
@@ -47,22 +42,21 @@ CREATE SEQUENCE public.request_seq
     NO MAXVALUE
     CACHE 1;
 
-
 ALTER SEQUENCE public.request_seq OWNER TO postgres;
 
 --
 -- Data for Name: request; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-COPY public.request (id_request, status, customer, loan, customer_id) FROM stdin;
-1	2	1	1	\N
+COPY public.request (id_request, status, id_customer, id_loan) FROM stdin;
+1	2	1	1
 \.
 
 --
 -- Name: request_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
 --
 
-SELECT pg_catalog.setval('public.request_seq', 351, true);
+SELECT pg_catalog.setval('public.request_seq', 1, true);
 
 --
 -- PostgreSQL database dump complete
