@@ -1,5 +1,5 @@
 server:
-  port: 8093
+  port: 0
 spring:
   datasource:
     url: jdbc:postgresql://income-db-service:5435/income-db

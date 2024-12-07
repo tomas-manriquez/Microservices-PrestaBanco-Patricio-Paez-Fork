@@ -1,5 +1,5 @@
 server:
-  port: 8092
+  port: 0
 spring:
   datasource:
     url: jdbc:postgresql://executive-db-service:5434/executive-db

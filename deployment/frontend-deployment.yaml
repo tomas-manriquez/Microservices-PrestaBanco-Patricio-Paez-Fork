@@ -3,14 +3,14 @@ kind: Deployment
 metadata:
   name: frontend-deployment
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
-      app: frontend
+      app: frontend-deployment
   template:
     metadata:
       labels:
-        app: frontend
+        app: frontend-deployment
     spec:
       containers:
         - name: frontend
@@ -30,7 +30,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    app: frontend
+    app: frontend-deployment
   ports:
     - protocol: TCP
       port: 80

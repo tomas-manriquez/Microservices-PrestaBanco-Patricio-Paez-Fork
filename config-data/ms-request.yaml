@@ -1,5 +1,5 @@
 server:
-  port: 8095
+  port: 0
 spring:
   datasource:
     url: jdbc:postgresql://request-db-service:5437/request-db

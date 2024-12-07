@@ -20,28 +20,29 @@ spring:
             allowedOrigins: '*'
             allowedMethods: "*"
             allowedHeaders: "*"
+            allowCredentials: true
       routes:
         - id: ms-customer
-          uri: lb://ms-customer:8090
+          uri: lb://ms-customer
           predicates:
             - Path=/api/customer/**
         - id: ms-debt
-          uri: lb://ms-debt:8091
+          uri: lb://ms-debt
           predicates:
             - Path=/debt/api/**
         - id: ms-executive
-          uri: lb://ms-executive:8092
+          uri: lb://ms-executive
           predicates:
             - Path=/executive/api/**
         - id: ms-income
-          uri: lb://ms-income:8093
+          uri: lb://ms-income
           predicates:
             - Path=/income/api/**
         - id: ms-loan
-          uri: lb://ms-loan:8094
+          uri: lb://ms-loan
           predicates:
             - Path=/loan/api/**
         - id: ms-request
-          uri: lb://ms-request:8095
+          uri: lb://ms-request
           predicates:
             - Path=/request/api/**
