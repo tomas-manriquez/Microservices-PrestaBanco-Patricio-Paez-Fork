@@ -29,20 +29,20 @@ spring:
         - id: ms-debt
           uri: lb://ms-debt
           predicates:
-            - Path=/debt/api/**
+            - Path=/api/debt/**
         - id: ms-executive
           uri: lb://ms-executive
           predicates:
-            - Path=/executive/api/**
+            - Path=/api/executive/**
         - id: ms-income
           uri: lb://ms-income
           predicates:
-            - Path=/income/api/**
+            - Path=/api/income/**
         - id: ms-loan
           uri: lb://ms-loan
           predicates:
-            - Path=/loan/api/**
+            - Path=/api/loan/**
         - id: ms-request
           uri: lb://ms-request
           predicates:
-            - Path=/request/api/**
+            - Path=/api/request/**
