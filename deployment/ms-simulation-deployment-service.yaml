@@ -15,7 +15,7 @@ spec:
         app: ms-simulation-deployment
     spec:
       containers:
-        - name: ms-debt
+        - name: ms-simulation
           image: niptuss/ms-simulation
           ports:
             - containerPort: 8094
