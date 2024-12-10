@@ -1,5 +1,5 @@
 server:
-  port: ${SERVER_PORT}
+  port: ${SERVER_PORT} # Puerto dinámico (puede ser 0)
 
 spring:
   datasource:
@@ -10,11 +10,14 @@ spring:
 eureka:
   instance:
     prefer-ip-address: true
-    non-secure-port: ${SERVER_PORT:0}
-    instance-id: ${spring.application.name}:${random.value}
-    hostname: ${INSTANCE_HOSTNAME}
+    hostname: ${INSTANCE_HOSTNAME} # Hostname dinámico
+    non-secure-port-enabled: true # Asegura que se registre el puerto dinámico
+    non-secure-port: ${SERVER_PORT:0} # Utiliza el puerto proporcionado dinámicamente
+    instance-id: ${spring.application.name}:${random.value} # Identificador único para cada instancia
+    lease-renewal-interval-in-seconds: 30 # Intervalo de renovación del lease
+    lease-expiration-duration-in-seconds: 90 # Duración antes de que una instancia no renovada sea eliminada
   client:
-    service-url:
-      defaultZone: http://eureka-server-service:8761/eureka/
     fetch-registry: true
     register-with-eureka: true
+    service-url:
+      defaultZone: http://eureka-server-service:8761/eureka/
