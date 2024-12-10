@@ -52,7 +52,7 @@ spec:
           image: postgres
           imagePullPolicy: "IfNotPresent"
           ports:
-            - containerPort: 5434
+            - containerPort: 5433
           env:
             - name: POSTGRES_USER
               valueFrom:
@@ -81,7 +81,7 @@ metadata:
     tier: database
 spec:
   ports:
-    - port: 5434
+    - port: 5433
       targetPort: 5432
       protocol: TCP
   selector:
