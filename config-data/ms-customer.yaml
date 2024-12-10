@@ -1,21 +1,20 @@
 server:
   port: ${SERVER_PORT}
+
 spring:
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DBNAME}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
+
 eureka:
   instance:
-    prefer-ip-address: false
+    prefer-ip-address: true
+    non-secure-port: ${SERVER_PORT:0}
+    instance-id: ${spring.application.name}:${random.value}
     hostname: ${INSTANCE_HOSTNAME}
-    non-secure-port: ${local.server.port:${SERVER_PORT:0}}
-    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
-  feign:
-    discovery:
-      enabled: true
   client:
-    fetch-registry: true
-    register-with-eureka: true
     service-url:
       defaultZone: http://eureka-server-service:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
