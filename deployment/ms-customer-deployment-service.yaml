@@ -47,3 +47,18 @@ spec:
                 secretKeyRef:
                   name: postgres-credentials
                   key: DB_PASSWORD_CUSTOMER
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-customer
+  labels:
+    app: ms-customer-deployment
+spec:
+  selector:
+    app: ms-customer-deployment
+  ports:
+    - protocol: TCP
+      port: 8091
+      targetPort: 8091
+  type: NodePort
