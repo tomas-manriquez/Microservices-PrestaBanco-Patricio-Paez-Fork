@@ -18,7 +18,7 @@ spec:
         - name: ms-loan
           image: niptuss/ms-loan
           ports:
-            - containerPort: 8092
+            - containerPort: 0
           env:
             - name: SERVER_PORT
               value: "0"
@@ -47,3 +47,18 @@ spec:
                 secretKeyRef:
                   name: postgres-credentials
                   key: DB_PASSWORD_LOAN
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-loan-service
+  labels:
+    app: ms-loan-service
+spec:
+  selector:
+    app: ms-loan-deployment
+  ports:
+    - protocol: TCP
+      port: 8093
+      targetPort: 8093
+  type: ClusterIP

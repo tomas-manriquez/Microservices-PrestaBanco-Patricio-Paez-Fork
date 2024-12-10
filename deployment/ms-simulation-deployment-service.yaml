@@ -18,7 +18,7 @@ spec:
         - name: ms-simulation
           image: niptuss/ms-simulation
           ports:
-            - containerPort: 8094
+            - containerPort: 0
           env:
             - name: SERVER_PORT
               value: "0"
@@ -47,3 +47,18 @@ spec:
                 secretKeyRef:
                   name: postgres-credentials
                   key: DB_PASSWORD_SIMULATION
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-simulation-service
+  labels:
+    app: ms-simulation-service
+spec:
+  selector:
+    app: ms-simulation-deployment
+  ports:
+    - protocol: TCP
+      port: 8095
+      targetPort: 8095
+  type: ClusterIP

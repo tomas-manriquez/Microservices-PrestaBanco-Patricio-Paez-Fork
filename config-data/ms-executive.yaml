@@ -7,8 +7,12 @@ spring:
     password: ${DB_PASSWORD}
 eureka:
   instance:
-    preferIpAddress: true
-    instance-id: ${spring.application.name}:${spring.cloud.client.hostname}:${server.port}
+    prefer-ip-address: true
+    lease-renewal-interval-in-seconds: 10
+    lease-expiration-duration-in-seconds: 30
+    non-secure-port-enabled: true
+    non-secure-port: ${server.port}
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
   client:
     fetch-registry: true
     register-with-eureka: true

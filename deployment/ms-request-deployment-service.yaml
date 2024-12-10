@@ -18,7 +18,7 @@ spec:
         - name: ms-request
           image: niptuss/ms-request
           ports:
-            - containerPort: 8093
+            - containerPort: 0
           env:
             - name: SERVER_PORT
               value: "0"
@@ -47,3 +47,18 @@ spec:
                 secretKeyRef:
                   name: postgres-credentials
                   key: DB_PASSWORD_REQUEST
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-request-service
+  labels:
+    app: ms-request-service
+spec:
+  selector:
+    app: ms-request-deployment
+  ports:
+    - protocol: TCP
+      port: 8094
+      targetPort: 8094
+  type: ClusterIP
