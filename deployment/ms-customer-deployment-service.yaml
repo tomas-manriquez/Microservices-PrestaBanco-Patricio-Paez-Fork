@@ -20,6 +20,8 @@ spec:
           env:
             - name: SERVER_PORT
               value: "0"
+            - name: INSTANCE_HOSTNAME
+              value: ms-customer
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
@@ -45,6 +47,8 @@ spec:
                 secretKeyRef:
                   name: postgres-credentials
                   key: DB_PASSWORD_CUSTOMER
+
+
 ---
 apiVersion: v1
 kind: Service
