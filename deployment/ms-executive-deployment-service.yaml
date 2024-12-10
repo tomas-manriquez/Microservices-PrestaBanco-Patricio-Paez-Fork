@@ -49,14 +49,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ms-executive-service
+  name: ms-executive
   labels:
-    app: ms-executive-service
+    app: ms-executive-deployment
 spec:
   selector:
     app: ms-executive-deployment
   ports:
     - protocol: TCP
-      port: 8092
-      targetPort: 8092
-  type: NodePort
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

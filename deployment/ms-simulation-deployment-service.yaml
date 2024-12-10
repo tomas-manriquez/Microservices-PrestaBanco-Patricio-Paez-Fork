@@ -17,8 +17,6 @@ spec:
       containers:
         - name: ms-simulation
           image: niptuss/ms-simulation
-          ports:
-            - containerPort: 0
           env:
             - name: SERVER_PORT
               value: "0"
@@ -51,14 +49,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ms-simulation-service
+  name: ms-simulation
   labels:
-    app: ms-simulation-service
+    app: ms-simulation-deployment
 spec:
   selector:
     app: ms-simulation-deployment
   ports:
     - protocol: TCP
-      port: 8095
-      targetPort: 8095
+      port: 8080
+      targetPort: 8080
   type: ClusterIP

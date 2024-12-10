@@ -17,8 +17,6 @@ spec:
       containers:
         - name: ms-loan
           image: niptuss/ms-loan
-          ports:
-            - containerPort: 0
           env:
             - name: SERVER_PORT
               value: "0"
@@ -51,14 +49,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ms-loan-service
+  name: ms-loan
   labels:
-    app: ms-loan-service
+    app: ms-loan-deployment
 spec:
+  clusterIP: None
   selector:
     app: ms-loan-deployment
   ports:
     - protocol: TCP
-      port: 8093
-      targetPort: 8093
+      port: 8080
+      targetPort: 8080
   type: ClusterIP
