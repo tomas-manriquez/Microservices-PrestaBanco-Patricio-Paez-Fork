@@ -7,7 +7,7 @@ spring:
     password: admin
 eureka:
   instance:
-    preferIpAddress: true
+    prefer-ip-address: true
     instance-id: ${spring.application.name}:${spring.cloud.client.hostname}:${server.port}
   client:
     fetch-registry: true

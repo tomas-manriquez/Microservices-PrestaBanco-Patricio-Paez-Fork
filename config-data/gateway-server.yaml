@@ -7,13 +7,14 @@ eureka:
     service-url:
       defaultZone: http://eureka-server-service:8761/eureka/
   instance:
-    preferIpAddress: true
+    prefer-ip-address: true
 spring:
   cloud:
     gateway:
       discovery:
         locator:
           enabled: true
+          lowerCaseServiceId: true
         default-filters:
           - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_UNIQUE
       globalcors:
