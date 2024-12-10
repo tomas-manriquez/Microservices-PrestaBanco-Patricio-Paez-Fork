@@ -51,7 +51,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ms-customer
+  name: ms-customer-service
   labels:
     app: ms-customer-deployment
 spec:
@@ -60,5 +60,5 @@ spec:
   ports:
     - protocol: TCP
       port: 8091
-      targetPort: 8091
+      targetPort: 0
   type: NodePort

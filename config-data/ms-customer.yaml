@@ -1,21 +1,19 @@
 server:
-  port: ${SERVER_PORT} # Puerto dinámico (puede ser 0)
-
+  port: ${SERVER_PORT}
 spring:
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_DBNAME}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
-
 eureka:
   instance:
-    prefer-ip-address: true
-    hostname: ${INSTANCE_HOSTNAME} # Hostname dinámico
-    non-secure-port-enabled: true # Asegura que se registre el puerto dinámico
-    non-secure-port: ${SERVER_PORT:0} # Utiliza el puerto proporcionado dinámicamente
-    instance-id: ${spring.application.name}:${random.value} # Identificador único para cada instancia
-    lease-renewal-interval-in-seconds: 30 # Intervalo de renovación del lease
-    lease-expiration-duration-in-seconds: 90 # Duración antes de que una instancia no renovada sea eliminada
+    prefer-ip-address: false
+    hostname: ${INSTANCE_HOSTNAME}
+    non-secure-port: ${local.server.port:${SERVER_PORT:0}}
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+  feign:
+    discovery:
+      enabled: true
   client:
     fetch-registry: true
     register-with-eureka: true
