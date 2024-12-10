@@ -51,7 +51,7 @@ kind: Service
 metadata:
   name: ms-customer-service
   labels:
-    app: ms-customer-service
+    app: ms-customer
 spec:
   selector:
     app: ms-customer-deployment
