@@ -47,3 +47,18 @@ spec:
                 secretKeyRef:
                   name: postgres-credentials
                   key: DB_PASSWORD_EXECUTIVE
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-executive-service
+  labels:
+    app: ms-executive-service
+spec:
+  selector:
+    app: ms-executive-deployment
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 0
+  type: NodePort

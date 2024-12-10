@@ -5,14 +5,10 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
     service-url:
-      defaultZone: http://eureka-server-service:8761/eureka/
+      defaultZone: http://eureka-server-service:8761/eureka
   instance:
-    prefer-ip-address: true
+    hostname: gateway-server-service
 spring:
-  logging:
-    level:
-      org.springframework.cloud.gateway: DEBUG
-      org.springframework.cloud.netflix.eureka: DEBUG
   cloud:
     gateway:
       discovery:
@@ -27,7 +23,6 @@ spring:
             allowedOrigins: '*'
             allowedMethods: "*"
             allowedHeaders: "*"
-            allowCredentials: true
       routes:
         - id: ms-customer
           uri: lb://ms-customer
