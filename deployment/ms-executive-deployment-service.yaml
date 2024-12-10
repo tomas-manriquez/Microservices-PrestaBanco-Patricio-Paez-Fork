@@ -49,12 +49,12 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ms-customer-service
+  name: ms-executive-service
   labels:
-    app: ms-customer-service
+    app: ms-executive-service
 spec:
   selector:
-    app: ms-customer-deployment
+    app: ms-executive-deployment
   ports:
     - protocol: TCP
       port: 8092
