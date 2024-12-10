@@ -13,8 +13,8 @@ public class Request {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idRequest;
+    private Long id;
     private int status; // 1 Rejected 2 Evaluation by executive 3 Accepted 4 Eliminated by customer 5 Delivering loan
-    private int idCustomer;
-    private int idLoan;
+    private Long idUser;
+    private Long idLoan;
 }

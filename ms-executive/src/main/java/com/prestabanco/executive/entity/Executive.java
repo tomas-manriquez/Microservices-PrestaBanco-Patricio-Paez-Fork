@@ -12,15 +12,13 @@ import lombok.NoArgsConstructor;
 public class Executive {
 
     @Id
-    @GeneratedValue
-    @Column(unique = true, nullable = false)
-    private long idExecutive;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     private String email;
     private String password;
-
-    @Column(unique = true, nullable = false)
-    private String rut;
     private String name;
-    private String dadSurname;
-    private String motherSurname;
+    private String firstName;
+    private String lastName;
+
 }

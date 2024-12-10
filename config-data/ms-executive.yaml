@@ -2,7 +2,7 @@ server:
   port: 0
 spring:
   datasource:
-    url: jdbc:postgresql://executive-db-service:5434/executive-db
+    url: jdbc:postgresql://executive-db-service:5433/executive-db
     username: postgres
     password: admin
 eureka:

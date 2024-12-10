@@ -18,7 +18,7 @@ spec:
         - name: ms-request
           image: niptuss/ms-request
           ports:
-            - containerPort: 8095
+            - containerPort: 8093
           env:
             - name: SERVER_PORT
               value: "0"

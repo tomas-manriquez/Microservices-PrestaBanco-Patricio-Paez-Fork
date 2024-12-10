@@ -1,39 +1,36 @@
 package com.prestabanco.executive.service;
 
 import com.prestabanco.executive.entity.Executive;
+import com.prestabanco.executive.models.ExecutiveLoginRequest;
+import com.prestabanco.executive.models.ExecutiveLoginResponse;
 import com.prestabanco.executive.repository.ExecutiveRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ExecutiveService {
 
-    @Autowired
-    private ExecutiveRepository executiveRepository;
+    private final ExecutiveRepository executiveRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public List<Executive> findAll() { return executiveRepository.findAll(); }
+    public ExecutiveService(ExecutiveRepository executiveRepository, BCryptPasswordEncoder passwordEncoder) {
+        this.executiveRepository = executiveRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public Executive findById(long id) { return executiveRepository.findById(id).get(); }
 
     public Executive save(Executive executive) { return executiveRepository.save(executive); }
 
-    public boolean deleteById(long id) throws Exception {
-        try{
-            executiveRepository.deleteById(id);
-            return true;
-        } catch (RuntimeException e) {
-            throw new Exception("Error deleting executive", e);
+    public ExecutiveLoginResponse loginExecutive(ExecutiveLoginRequest request) {
+        Executive executive = executiveRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("Executive not found"));
+
+        if (passwordEncoder.matches(request.getPassword(), request.getPassword())) {
+            return new ExecutiveLoginResponse(executive.getId());
+        } else {
+            throw new IllegalArgumentException("Invalid credentials");
         }
     }
 
-    public long login(String email, String password) {
-        Executive executive = executiveRepository.findByEmail(email);
-        if (executive != null && password.equals(executive.getPassword())) {
-            return executive.getIdExecutive();
-        } else {
-            return -1;
-        }
-    }
 }

@@ -1,8 +1,9 @@
 package com.prestabanco.loan.service;
 
+import com.prestabanco.loan.config.RequestFeignClient;
 import com.prestabanco.loan.entity.Loan;
+import com.prestabanco.loan.models.Request;
 import com.prestabanco.loan.repository.LoanRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -12,26 +13,47 @@ import java.util.Map;
 @Service
 public class LoanService {
 
-    @Autowired
-    private LoanRepository loanRepository;
+    private final LoanRepository loanRepository;
+    private final RequestFeignClient requestFeignClient;
 
-    public List<Loan> findAll() { return loanRepository.findAll(); }
+    public LoanService(LoanRepository loanRepository, RequestFeignClient requestFeignClient) {
+        this.loanRepository = loanRepository;
+        this.requestFeignClient = requestFeignClient;
+    }
 
-    public Loan findById(int id) { return loanRepository.findById(id).get(); }
+    public Loan createLoan(Loan loan) {
+        Loan savedLoan = loanRepository.save(loan);
 
-    public Loan save(Loan loan) { return loanRepository.save(loan); }
+        Request request = new Request();
+        request.setStatus(2);
+        request.setIdLoan(savedLoan.getId());
+        requestFeignClient.createRequest(request);
 
-    public boolean deleteById(int id) throws Exception {
-        try{
-            loanRepository.deleteById(id);
-            return true;
-        } catch (RuntimeException e) {
-            throw new Exception("Error deleting loan", e);
+        return savedLoan;
+    }
+
+    public List<Loan> findAll() {
+        return loanRepository.findAll();
+    }
+
+    public Loan findById(Long id) {
+        return loanRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Loan not found with id: " + id));
+    }
+
+    public Loan save(Loan loan) {
+        return loanRepository.save(loan);
+    }
+
+    public void deleteById(Long id) {
+        if (!loanRepository.existsById(id)) {
+            throw new IllegalArgumentException("Loan not found with id: " + id);
         }
+        loanRepository.deleteById(id);
     }
 
     public Map<String, Object> calculateLoan(String loanType, double propertyValue, int years, double interestRate) {
-        // Datos de tipos de préstamos
+
         Map<String, LoanType> loanTypes = Map.of(
                 "First House", new LoanType(3.5, 5, 0.8, 30),
                 "Second House", new LoanType(4, 6, 0.7, 20),
@@ -45,7 +67,6 @@ public class LoanService {
             throw new IllegalArgumentException("Invalid loan type");
         }
 
-        // Validaciones
         if (years > selectedLoanType.getMaxYears()) {
             throw new IllegalArgumentException("Exceeds maximum allowed years");
         }
@@ -55,14 +76,12 @@ public class LoanService {
             throw new IllegalArgumentException("Interest rate out of range");
         }
 
-        // Cálculo de mensualidad
         int months = years * 12;
         double monthlyInterest = interestRate / 12 / 100;
         double monthlyFee = maxLoanAmount *
                 ((monthlyInterest * Math.pow(1 + monthlyInterest, months)) /
                         (Math.pow(1 + monthlyInterest, months) - 1));
 
-        // Construir el mapa de respuesta
         Map<String, Object> response = new HashMap<>();
         response.put("loanAmount", maxLoanAmount);
         response.put("monthlyFee", monthlyFee);

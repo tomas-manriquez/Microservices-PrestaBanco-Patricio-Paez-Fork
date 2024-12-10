@@ -1,9 +1,8 @@
 package com.prestabanco.loan.controller;
 
-import com.prestabanco.loan.dto.LoanCalculationDTO;
+import com.prestabanco.loan.models.LoanCalculation;
 import com.prestabanco.loan.entity.Loan;
 import com.prestabanco.loan.service.LoanService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,36 +13,41 @@ import java.util.Map;
 @RequestMapping("/api/loan")
 public class LoanController {
 
-    @Autowired
-    private LoanService loanService;
+    private final LoanService loanService;
+
+    public LoanController(LoanService loanService) {
+        this.loanService = loanService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<Loan>> list() {
-        List<Loan> loans = loanService.findAll();
-        return ResponseEntity.ok(loans); }
+        return ResponseEntity.ok(loanService.findAll());
+    }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Loan> get(@PathVariable int id) {
-        Loan loan = loanService.findById(id);
-        return ResponseEntity.ok(loan); }
+    public ResponseEntity<Loan> getLoan(@PathVariable Long id) {
+        return ResponseEntity.ok(loanService.findById(id));
+    }
 
-    @PostMapping("/")
-    public ResponseEntity<Loan> save(@RequestBody Loan loan) {
-        Loan loanNew = loanService.save(loan);
-        return ResponseEntity.ok(loanNew); }
+    @PostMapping("/request-loan")
+    public ResponseEntity<Loan> requestLoan(@RequestBody Loan loanRequest) {
+        Loan savedLoan = loanService.createLoan(loanRequest);
+        return ResponseEntity.ok(savedLoan);
+    }
 
     @PutMapping("/")
     public ResponseEntity<Loan> update(@RequestBody Loan loan) {
-        Loan loanNew = loanService.save(loan);
-        return ResponseEntity.ok(loanNew); }
+        return ResponseEntity.ok(loanService.save(loan));
+    }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Boolean> delete(@PathVariable int id) throws Exception {
-        var isDeleted = loanService.deleteById(id);
-        return ResponseEntity.noContent().build();}
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        loanService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 
     @PostMapping("/calculate")
-    public Map<String, Object> calculateLoan(@RequestBody LoanCalculationDTO request) {
+    public Map<String, Object> calculateLoan(@RequestBody LoanCalculation request) {
         return loanService.calculateLoan(
                 request.getLoanType(),
                 request.getPropertyValue(),
@@ -51,5 +55,4 @@ public class LoanController {
                 request.getInterestRate()
         );
     }
-
 }

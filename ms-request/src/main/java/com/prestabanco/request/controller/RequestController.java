@@ -2,18 +2,21 @@ package com.prestabanco.request.controller;
 
 import com.prestabanco.request.entity.Request;
 import com.prestabanco.request.service.RequestService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/request")
 public class RequestController {
 
-    @Autowired
-    private RequestService requestService;
+    private final RequestService requestService;
+
+    public RequestController(final RequestService requestService) {
+        this.requestService = requestService;
+    }
 
     @GetMapping("/")
     public ResponseEntity<List<Request>> list() {
@@ -40,10 +43,9 @@ public class RequestController {
         var isDeleted = requestService.deleteById(id);
         return ResponseEntity.noContent().build();}
 
-    @PutMapping("/autocheck")
-    public ResponseEntity<Request> autocheck(@RequestBody Request request) {
-        Request requestNew = requestService.autoCheck(request);
-        return ResponseEntity.ok(requestNew);
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Map<String, Object>>> getRequestsByUser(@PathVariable Long userId) {
+        List<Map<String, Object>> response = requestService.getRequestsByUser(userId);
+        return ResponseEntity.ok(response);
     }
-
 }

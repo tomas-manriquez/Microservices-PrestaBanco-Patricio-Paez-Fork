@@ -1,21 +1,25 @@
 package com.prestabanco.request.service;
-import com.prestabanco.request.clients.CustomersFeignClient;
-import com.prestabanco.request.dto.CustomerDTO;
+import com.prestabanco.request.config.LoanFeignClient;
 import com.prestabanco.request.entity.Request;
+import com.prestabanco.request.models.Loan;
 import com.prestabanco.request.repository.RequestRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class RequestService {
 
-    @Autowired
-    private RequestRepository requestRepository;
+    private final RequestRepository requestRepository;
+    private final LoanFeignClient loanFeignClient;
 
-    @Autowired
-    private CustomersFeignClient customersFeignClient;
+    public RequestService(RequestRepository requestRepository, LoanFeignClient loanFeignClient) {
+        this.requestRepository = requestRepository;
+        this.loanFeignClient = loanFeignClient;
+    }
 
     public List<Request> findAll() { return requestRepository.findAll(); }
 
@@ -31,28 +35,22 @@ public class RequestService {
             throw new Exception("Error deleting request", e);
         }
     }
-    public Request autoCheck(Request request) {
-        CustomerDTO customer = customersFeignClient.getCustomerById(request.getIdCustomer());
+    public List<Map<String, Object>> getRequestsByUser(Long userId) {
+        List<Loan> loans = loanFeignClient.getLoansByUser(userId);
 
-        int trueCount = 0;
-        if (customer.isMinCashOnAccount()) trueCount++;
-        if (customer.isConsistentSaveHistory()) trueCount++;
-        if (customer.isPeriodicDeposits()) trueCount++;
-        if (customer.isRelationYearsAndBalance()) trueCount++;
-        if (customer.isRecentWithdraws()) trueCount++;
+        List<Long> loanIds = loans.stream().map(Loan::getIdLoan).collect(Collectors.toList());
+        List<Request> requests = requestRepository.findByIdLoanIn(loanIds);
 
-        if (customer.getAge() > 68 || trueCount <= 2 || customer.isLatePayments()) {
-            request.setStatus(1);
-            return requestRepository.save(request);
-        }
+        return requests.stream().map(request -> {
+            Loan loan = loans.stream()
+                    .filter(l -> l.getIdLoan().equals(request.getIdLoan()))
+                    .findFirst()
+                    .orElse(null);
 
-        if (trueCount >= 3) {
-            request.setStatus(2);
-        }
-        if (trueCount == 5) {
-            request.setStatus(3);
-        }
-
-        return requestRepository.save(request);
+            Map<String, Object> map = new HashMap<>();
+            map.put("request", request);
+            map.put("loan", loan);
+            return map;
+        }).collect(Collectors.toList());
     }
 }

@@ -10,26 +10,38 @@
         <module name="ms-executive" />
         <module name="config-server" />
         <module name="ms-customer" />
+        <module name="ms-simulation" />
         <module name="ms-loan" />
-        <module name="ms-debt" />
         <module name="gateway-server" />
-        <module name="ms-income" />
         <module name="eureka-server" />
         <module name="ms-request" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="ms-applicationtracking" target="17" />
+      <module name="ms-creditapplication" target="17" />
+      <module name="ms-creditevaluation" target="17" />
+      <module name="ms-mortgagesimulation" target="17" />
+      <module name="ms-totalcost" target="17" />
+      <module name="ms-userregistration" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="config-server" options="-parameters" />
       <module name="eureka-server" options="-parameters" />
       <module name="gateway-server" options="-parameters" />
+      <module name="ms-applicationtracking" options="-parameters" />
+      <module name="ms-creditapplication" options="-parameters" />
+      <module name="ms-creditevaluation" options="-parameters" />
       <module name="ms-customer" options="-parameters" />
-      <module name="ms-debt" options="-parameters" />
       <module name="ms-executive" options="-parameters" />
-      <module name="ms-income" options="-parameters" />
       <module name="ms-loan" options="-parameters" />
+      <module name="ms-mortgagesimulation" options="-parameters" />
       <module name="ms-request" options="-parameters" />
+      <module name="ms-simulation" options="-parameters" />
+      <module name="ms-totalcost" options="-parameters" />
+      <module name="ms-userregistration" options="-parameters" />
     </option>
   </component>
 </project>

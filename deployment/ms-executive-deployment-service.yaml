@@ -18,7 +18,7 @@ spec:
         - name: ms-executive
           image: niptuss/ms-executive
           ports:
-            - containerPort: 8092
+            - containerPort: 8091
           env:
             - name: SERVER_PORT
               value: "0"

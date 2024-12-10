@@ -4,11 +4,16 @@
     <file url="file://$PROJECT_DIR$/config-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/eureka-server/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/gateway-server/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ms-applicationtracking/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ms-creditapplication/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ms-creditevaluation/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ms-customer/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/ms-debt/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ms-executive/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/ms-income/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ms-loan/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ms-mortgagesimulation/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/ms-request/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ms-simulation/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ms-totalcost/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/ms-userregistration/src/main/java" charset="UTF-8" />
   </component>
 </project>

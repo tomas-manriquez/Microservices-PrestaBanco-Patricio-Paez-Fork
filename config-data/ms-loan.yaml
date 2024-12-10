@@ -2,7 +2,7 @@ server:
   port: 0
 spring:
   datasource:
-    url: jdbc:postgresql://loan-db-service:5436/loan-db
+    url: jdbc:postgresql://loan-db-service:5434/loan-db
     username: postgres
     password: admin
 eureka:

@@ -19,7 +19,24 @@
         <option value="$PROJECT_DIR$/ms-executive/pom.xml" />
         <option value="$PROJECT_DIR$/ms-debt/pom.xml" />
         <option value="$PROJECT_DIR$/gateway-server/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-mortgagesimulation/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-userregistration/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-creditapplication/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-applicationtracking/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-creditevaluation/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-totalcost/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-simulation/pom.xml" />
       </list>
+    </option>
+    <option name="ignoredFiles">
+      <set>
+        <option value="$PROJECT_DIR$/ms-applicationtracking/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-creditapplication/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-creditevaluation/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-mortgagesimulation/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-totalcost/pom.xml" />
+        <option value="$PROJECT_DIR$/ms-userregistration/pom.xml" />
+      </set>
     </option>
   </component>
   <component name="ProjectRootManager" version="2" languageLevel="JDK_22" default="true" project-jdk-name="openjdk-21" project-jdk-type="JavaSDK">

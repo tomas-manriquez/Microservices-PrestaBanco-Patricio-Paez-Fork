@@ -8,19 +8,16 @@ data:
   DB_HOST_CUSTOMER: customer-db-service
   DB_PORT_CUSTOMER: "5432"
   DB_DBNAME_CUSTOMER: customer-db
-  DB_HOST_DEBT: debt-db-service
-  DB_PORT_DEBT: "5433"
-  DB_DBNAME_DEBT: debt-db
   DB_HOST_EXECUTIVE: executive-db-service
-  DB_PORT_EXECUTIVE: "5434"
+  DB_PORT_EXECUTIVE: "5433"
   DB_DBNAME_EXECUTIVE: executive-db
-  DB_HOST_INCOME: income-db-service
-  DB_PORT_INCOME: "5435"
-  DB_DBNAME_INCOME: income-db
   DB_HOST_LOAN: loan-db-service
-  DB_PORT_LOAN: "5436"
+  DB_PORT_LOAN: "5434"
   DB_DBNAME_LOAN: loan-db
   DB_HOST_REQUEST: request-db-service
-  DB_PORT_REQUEST: "5437"
+  DB_PORT_REQUEST: "5435"
   DB_DBNAME_REQUEST: request-db
+  DB_HOST_SIMULATION: simulation-db-service
+  DB_PORT_SIMULATION: "5436"
+  DB_DBNAME_SIMULATION: simulation-db
 
