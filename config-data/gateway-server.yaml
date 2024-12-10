@@ -9,6 +9,10 @@ eureka:
   instance:
     prefer-ip-address: true
 spring:
+  logging:
+    level:
+      org.springframework.cloud.gateway: DEBUG
+      org.springframework.cloud.netflix.eureka: DEBUG
   cloud:
     gateway:
       discovery:
