@@ -8,7 +8,7 @@ spring:
 eureka:
   instance:
     prefer-ip-address: false
-    hostname: ${INSTANCE_HOSTNAME}
+    hostname: ms-customer
     non-secure-port: ${local.server.port:${SERVER_PORT:0}}
     instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
   feign:
