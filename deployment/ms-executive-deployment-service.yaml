@@ -17,8 +17,6 @@ spec:
       containers:
         - name: ms-executive
           image: niptuss/ms-executive
-          ports:
-            - containerPort: 0
           env:
             - name: SERVER_PORT
               value: "0"
@@ -51,14 +49,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ms-executive-service
+  name: ms-customer-service
   labels:
-    app: ms-executive-service
+    app: ms-customer-service
 spec:
   selector:
-    app: ms-executive-deployment
+    app: ms-customer-deployment
   ports:
     - protocol: TCP
       port: 8092
       targetPort: 8092
-  type: ClusterIP
+  type: NodePort

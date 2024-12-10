@@ -17,8 +17,6 @@ spec:
       containers:
         - name: ms-customer
           image: niptuss/ms-customer
-          ports:
-            - containerPort: 0
           env:
             - name: SERVER_PORT
               value: "0"
@@ -61,4 +59,4 @@ spec:
     - protocol: TCP
       port: 8091
       targetPort: 8091
-  type: ClusterIP
+  type: NodePort
