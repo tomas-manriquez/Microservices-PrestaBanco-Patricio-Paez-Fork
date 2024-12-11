@@ -35,7 +35,6 @@ const SignInContainer = styled(Box)(({ theme }) => ({
 const validateInputs = () => {
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
-    const rut = document.getElementById('rut').value;
 
     if (!email || !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
         alert('Please enter a valid email address.');
@@ -44,11 +43,6 @@ const validateInputs = () => {
 
     if (!password || password.length < 6) {
         alert('Password must be at least 6 characters long.');
-        return false;
-    }
-
-    if (!/^(\d{1,8}-[\dkK])$/.test(rut)) {
-        alert('Please enter a valid RUT (e.g., 12345678-5).');
         return false;
     }
 
@@ -67,10 +61,9 @@ const handleSubmit = async (event) => {
     const customer = {
             email: document.getElementById('email').value,
             password: document.getElementById('password').value,
-            rut: document.getElementById('rut').value,
             name: document.getElementById('name').value,
-            dadSurname: document.getElementById('dadSurname').value,
-            motherSurname: document.getElementById('motherSurname').value,
+            firstName: document.getElementById('dadSurname').value,
+            lastName: document.getElementById('motherSurname').value,
             age: document.getElementById('age').value,
     };
 
