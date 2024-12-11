@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface ExecutiveRepository extends JpaRepository<Executive, Long> {
-    Optional<Executive> findByEmail(String email);
+    Optional<Executive> findUExecutiveByEmail(String email);
 }
