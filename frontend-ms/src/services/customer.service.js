@@ -1,27 +1,27 @@
 import httpClient from "../http-common.js";
 
 const list = () => {
-    return httpClient.get('/api/customer/');
+    return httpClient.get('/api/users/');
 }
 
 const get = id => {
-    return httpClient.get(`/api/customer/${id}`);
+    return httpClient.get(`/api/users/${id}`);
 }
 
 const update = data => {
-    return httpClient.put('/api/customer/', data);
+    return httpClient.put('/api/users/', data);
 }
 
 const remove = id => {
-    return httpClient.delete(`/api/customer/${id}`);
+    return httpClient.delete(`/api/users/${id}`);
 }
 
 const login = data => {
-    return httpClient.post('/api/customer/login', data);
+    return httpClient.post('/api/users/login', data);
 }
 
 const register = data => {
-    return httpClient.post('/api/customer/register', data);
+    return httpClient.post('/api/users/register', data);
 }
 
 export default { list, get, update, remove, register, login};
