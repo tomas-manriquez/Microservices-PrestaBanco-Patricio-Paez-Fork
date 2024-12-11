@@ -123,18 +123,6 @@ export default function RegisterCustomer() {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
-                            <FormLabel htmlFor="rut">RUT</FormLabel>
-                            <TextField
-                                name="rut"
-                                id="rut"
-                                placeholder="12345678-K"
-                                required
-                                variant="outlined"
-                            />
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth>
                             <FormLabel htmlFor="name">Name</FormLabel>
                             <TextField
                                 name="name"
