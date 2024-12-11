@@ -26,7 +26,9 @@ const Loans = ({ userId, loanTypes = [
     const [selectedInterest, setSelectedInterest] = useState('');
     const [files, setFiles] = useState({});
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
+    const [calculatedLoan, setCalculatedLoan] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
     useEffect(() => {
         setIsButtonDisabled(
@@ -39,27 +41,36 @@ const Loans = ({ userId, loanTypes = [
         setFiles((prev) => ({ ...prev, [key]: file }));
     };
 
-    const handleSubmit = async () => {
+    const handleCalculate = async () => {
+        try {
+            const response = await LoanService.calculateLoan(
+                selectedLoanType,
+                parseFloat(propertyValue),
+                parseInt(selectedYears, 10),
+                parseFloat(selectedInterest)
+            );
+            setCalculatedLoan(response.data);
+            setOpenConfirmDialog(true);
+        } catch (error) {
+            console.error('Error calculating loan:', error);
+            alert('Failed to calculate loan. Please check your inputs.');
+        }
+    };
+
+    const handleConfirmSubmit = async () => {
+        setOpenConfirmDialog(false);
         const loanData = {
             selectedLoan: parseInt(selectedLoanType, 10),
             selectedYears: parseInt(selectedYears, 10),
             selectedInterest: parseFloat(selectedInterest),
             propertyValue: parseFloat(propertyValue),
-            idUser: userId,
         };
 
-        const formData = new FormData();
-        formData.append('loanData', new Blob([JSON.stringify(loanData)], { type: 'application/json' }));
-
-        Object.keys(files).forEach((key) => {
-            if (files[key]) {
-                formData.append(key, files[key]);
-            }
-        });
-
         try {
-            const response = await LoanService.save(formData);
-            await RequestService.save({ idLoan: response.id, idUser: userId, status: 2 }); // Status 2: Evaluation
+            const loanResponse = await LoanService.save(loanData);
+            const idLoan = loanResponse.data.id;
+
+            await RequestService.save({ idLoan, idUser: userId, status: 2 });
             setOpenDialog(true);
         } catch (error) {
             console.error('Error submitting loan request:', error);
@@ -89,7 +100,7 @@ const Loans = ({ userId, loanTypes = [
                     margin="normal"
                 >
                     {loanTypes.map((loan) => (
-                        <MenuItem key={loan.value} value={loan.value}>
+                        <MenuItem key={loan.value} value={loan.type}>
                             {loan.type}
                         </MenuItem>
                     ))}
@@ -131,13 +142,32 @@ const Loans = ({ userId, loanTypes = [
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleSubmit}
+                    onClick={handleCalculate}
                     disabled={isButtonDisabled}
                     fullWidth
                     style={{ marginTop: '20px' }}
                 >
-                    Submit Request
+                    Calculate Loan
                 </Button>
+                <Dialog open={openConfirmDialog} onClose={() => setOpenConfirmDialog(false)}>
+                    <DialogTitle>Loan Calculation</DialogTitle>
+                    <DialogContent>
+                        {calculatedLoan && (
+                            <>
+                                <Typography>Loan Amount: ${calculatedLoan.loanAmount.toFixed(2)}</Typography>
+                                <Typography>Monthly Fee: ${calculatedLoan.monthlyFee.toFixed(2)}</Typography>
+                                <Typography>Annual Interest Rate: {calculatedLoan.annualInterest}%</Typography>
+                                <Typography>Duration: {calculatedLoan.months} months</Typography>
+                            </>
+                        )}
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpenConfirmDialog(false)}>Cancel</Button>
+                        <Button onClick={handleConfirmSubmit} color="primary">
+                            Confirm and Submit
+                        </Button>
+                    </DialogActions>
+                </Dialog>
                 <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
                     <DialogTitle>Loan Request Submitted</DialogTitle>
                     <DialogContent>

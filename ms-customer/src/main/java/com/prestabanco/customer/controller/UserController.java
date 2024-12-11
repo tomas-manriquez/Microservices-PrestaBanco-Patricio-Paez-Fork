@@ -26,10 +26,15 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<UserLoginResponse> loginUser(@RequestBody UserLoginRequest request) {
+        if (request.getEmail() == null || request.getPassword() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
         UserLoginResponse response = userService.loginUser(request);
-        if (response == null) {
+        if (response == null || response.getUserId() == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
+
         return ResponseEntity.ok(response);
     }
 

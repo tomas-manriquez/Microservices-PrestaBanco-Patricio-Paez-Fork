@@ -20,8 +20,6 @@ public class Loan {
     private int selectedAmount;
     private Double propertyValue;
 
-    private Long idUser;
-
     private byte[] incomeDocument;
     private byte[] appraisalCertificate;
     private byte[] businessFinancialState;

@@ -4,20 +4,15 @@ import com.prestabanco.executive.entity.Executive;
 import com.prestabanco.executive.models.ExecutiveLoginRequest;
 import com.prestabanco.executive.models.ExecutiveLoginResponse;
 import com.prestabanco.executive.repository.ExecutiveRepository;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class ExecutiveService {
 
     private final ExecutiveRepository executiveRepository;
-    private final BCryptPasswordEncoder passwordEncoder;
 
-    public ExecutiveService(ExecutiveRepository executiveRepository, BCryptPasswordEncoder passwordEncoder) {
+    public ExecutiveService(ExecutiveRepository executiveRepository) {
         this.executiveRepository = executiveRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
     public Executive findById(long id) { return executiveRepository.findById(id).get(); }
@@ -25,14 +20,14 @@ public class ExecutiveService {
     public Executive save(Executive executive) { return executiveRepository.save(executive); }
 
     public ExecutiveLoginResponse loginExecutive(ExecutiveLoginRequest request) {
-        Executive executive = executiveRepository.findUExecutiveByEmail(request.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Executive not found"));
-
-        if (passwordEncoder.matches(request.getPassword(), request.getPassword())) {
-            return new ExecutiveLoginResponse(executive.getId());
-        } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        Executive executive = executiveRepository.findFirstByEmail(request.getEmail());
+        if (executive.getPassword() == null) {
+            return new ExecutiveLoginResponse(null);
         }
+        if (executive.getEmail() != null) {
+            return new ExecutiveLoginResponse(executive.getId());
+        }
+        return new ExecutiveLoginResponse(null);
     }
 
 }

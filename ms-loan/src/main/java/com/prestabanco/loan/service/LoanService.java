@@ -1,8 +1,6 @@
 package com.prestabanco.loan.service;
 
-import com.prestabanco.loan.config.RequestFeignClient;
 import com.prestabanco.loan.entity.Loan;
-import com.prestabanco.loan.models.Request;
 import com.prestabanco.loan.repository.LoanRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,22 +12,13 @@ import java.util.Map;
 public class LoanService {
 
     private final LoanRepository loanRepository;
-    private final RequestFeignClient requestFeignClient;
 
-    public LoanService(LoanRepository loanRepository, RequestFeignClient requestFeignClient) {
+    public LoanService(LoanRepository loanRepository) {
         this.loanRepository = loanRepository;
-        this.requestFeignClient = requestFeignClient;
     }
 
     public Loan createLoan(Loan loan) {
-        Loan savedLoan = loanRepository.save(loan);
-
-        Request request = new Request();
-        request.setStatus(2);
-        request.setIdLoan(savedLoan.getId());
-        requestFeignClient.createRequest(request);
-
-        return savedLoan;
+        return loanRepository.save(loan);
     }
 
     public List<Loan> findAll() {

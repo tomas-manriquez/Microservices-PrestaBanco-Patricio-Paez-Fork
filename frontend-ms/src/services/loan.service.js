@@ -12,9 +12,14 @@ const update = data => {
     return httpClient.put('/api/loan/', data);
 }
 
-const save = data => {
-    return httpClient.post('/api/loan/request-loan', data);
-}
+const save = async (data) => {
+    try {
+        return await httpClient.post('/api/loan/request-loan', data);
+    } catch (error) {
+        console.error('Error saving loan:', error);
+        throw error;
+    }
+};
 
 const remove = id => {
     return httpClient.delete(`/api/loan/${id}`);

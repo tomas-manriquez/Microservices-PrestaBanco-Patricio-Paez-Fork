@@ -38,10 +38,14 @@ public class ExecutiveController {
 
     @PostMapping("/login")
     public ResponseEntity<ExecutiveLoginResponse> loginUser(@RequestBody ExecutiveLoginRequest request) {
-        ExecutiveLoginResponse response = executiveService.loginExecutive(request);
-        if (response == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        if (request.getEmail() == null || request.getPassword() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
+        ExecutiveLoginResponse response = executiveService.loginExecutive(request);
+        if (response == null || response.getId() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+
         return ResponseEntity.ok(response);
     }
 

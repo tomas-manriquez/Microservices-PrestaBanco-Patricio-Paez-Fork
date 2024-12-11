@@ -3,10 +3,8 @@ package com.prestabanco.customer.service;
 import com.prestabanco.customer.entity.User;
 import com.prestabanco.customer.models.*;
 import com.prestabanco.customer.repository.UserRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class UserService {
@@ -43,15 +41,19 @@ public class UserService {
     }
 
     public UserLoginResponse loginUser(UserLoginRequest request) {
-        System.out.println("Request received: " + request.getEmail());
-        User user = userRepository.findUserByEmail(request.getEmail())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+        User user = userRepository.findFirstByEmail(request.getEmail());
+
+        if (user == null) {
+            return new UserLoginResponse(null);
+        }
+
         if (passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return new UserLoginResponse(user.getId());
-        } else {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
+
+        return new UserLoginResponse(null);
     }
+
 
     public User updateUser(User user) {
         return userRepository.save(user);

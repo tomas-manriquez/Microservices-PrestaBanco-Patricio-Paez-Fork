@@ -2,6 +2,7 @@ package com.prestabanco.loan.config;
 
 import com.prestabanco.loan.models.Request;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -9,6 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface RequestFeignClient {
 
     @PostMapping("/")
-    Request createRequest(@RequestBody Request request);
+    ResponseEntity<Request> save(@RequestBody Request request);
 }
 

@@ -13,8 +13,6 @@ import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 
 const ListItems = [
     { text: 'Personal Information', icon: <AccountCircleRoundedIcon />, path: '/customer/profile/personal-information' },
-    { text: 'Incomes', icon: <PaidRoundedIcon />, path: '/customer/profile/incomes' },
-    { text: 'Debts', icon: <PaymentsRoundedIcon />, path: '/customer/profile/debts' },
     { text: 'Requests', icon: <RequestPageRoundedIcon />, path: '/customer/profile/requests' },
 ];
 
