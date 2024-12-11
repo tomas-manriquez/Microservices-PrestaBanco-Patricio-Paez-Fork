@@ -30,6 +30,10 @@ public class LoanService {
                 .orElseThrow(() -> new IllegalArgumentException("Loan not found with id: " + id));
     }
 
+    public List<Loan> getLoansByUser(Long userId) {
+        return loanRepository.findByUserId(userId);
+    }
+
     public Loan save(Loan loan) {
         return loanRepository.save(loan);
     }

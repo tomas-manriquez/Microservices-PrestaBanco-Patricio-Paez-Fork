@@ -55,4 +55,11 @@ public class LoanController {
                 request.getInterestRate()
         );
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Loan>> getLoansByUser(@PathVariable Long userId) {
+        List<Loan> loans = loanService.getLoansByUser(userId);
+        return ResponseEntity.ok(loans);
+    }
+
 }

@@ -14,7 +14,7 @@ import {
 import LoanService from '../services/loan.service';
 import RequestService from '../services/request.service';
 
-const Loans = ({ userId, loanTypes = [
+const Loans = ({ loanTypes = [
     { type: 'First House', value: 1 },
     { type: 'Second House', value: 2 },
     { type: 'Commercial Properties', value: 3 },
@@ -42,14 +42,16 @@ const Loans = ({ userId, loanTypes = [
     };
 
     const handleCalculate = async () => {
+        const loanData = {
+            loanType: selectedLoanType,
+            propertyValue: parseFloat(propertyValue),
+            years: parseInt(selectedYears, 10),
+            interestRate: parseFloat(selectedInterest)
+        };
+
         try {
-            const response = await LoanService.calculateLoan(
-                selectedLoanType,
-                parseFloat(propertyValue),
-                parseInt(selectedYears, 10),
-                parseFloat(selectedInterest)
-            );
-            setCalculatedLoan(response.data);
+            const response = await LoanService.calculateLoan(loanData);
+            setCalculatedLoan(response);
             setOpenConfirmDialog(true);
         } catch (error) {
             console.error('Error calculating loan:', error);
@@ -59,7 +61,9 @@ const Loans = ({ userId, loanTypes = [
 
     const handleConfirmSubmit = async () => {
         setOpenConfirmDialog(false);
+        const idUser = localStorage.get('id');
         const loanData = {
+            userId: idUser,
             selectedLoan: parseInt(selectedLoanType, 10),
             selectedYears: parseInt(selectedYears, 10),
             selectedInterest: parseFloat(selectedInterest),
@@ -69,8 +73,7 @@ const Loans = ({ userId, loanTypes = [
         try {
             const loanResponse = await LoanService.save(loanData);
             const idLoan = loanResponse.data.id;
-
-            await RequestService.save({ idLoan, idUser: userId, status: 2 });
+            await RequestService.save({ idLoan, idUser: idUser, status: 2 });
             setOpenDialog(true);
         } catch (error) {
             console.error('Error submitting loan request:', error);

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
-@FeignClient(name = "ms-loan", path = "/api/loans")
+@FeignClient(name = "ms-loan", path = "/api/loan")
 public interface LoanFeignClient {
 
     @GetMapping("/user/{idUser}")

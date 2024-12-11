@@ -27,7 +27,7 @@ const remove = id => {
 
 const calculateLoan = async (loanData) => {
     try {
-        const response = await httpClient.post('/loans/calculate', loanData);
+        const response = await httpClient.post('/api/loan/calculate', loanData);
         return response.data;
     } catch (error) {
         console.error('Error calculating loan:', error);
