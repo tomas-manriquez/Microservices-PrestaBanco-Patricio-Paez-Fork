@@ -10,12 +10,13 @@ const CustomerRequests = () => {
     });
 
     useEffect(() => {
-        CustomerService
-            .get(localStorage.getItem('id'))
+        const userId = localStorage.getItem('id');
+        RequestService
+            .listbyuser(userId)
             .then(response => {
-                setUserInfo(response.data);
+                setUserInfo({ requests: response.data });
             })
-            .catch(error => console.error("Error loading the information:", error));
+            .catch(error => console.error("Error loading the requests:", error));
     }, []);
 
     const getLoanType = (selectedLoan) => {
@@ -31,7 +32,7 @@ const CustomerRequests = () => {
     const getStatusText = (status) => {
         switch (status) {
             case 1: return "Rejected";
-            case 2: return "Evaluation by executive";
+            case 2: return "Evaluating by executive";
             case 3: return "Accepted";
             case 4: return "Eliminated by customer";
             case 5: return "Delivering loan";
@@ -65,17 +66,17 @@ const CustomerRequests = () => {
             ) : (
                 <Stack spacing={2}>
                     {userInfo.requests.map(request => (
-                        <Box key={request.id} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 2, border: '1px solid #ccc', borderRadius: 2 }}>
+                        <Box key={request.request.idRequest} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 2, border: '1px solid #ccc', borderRadius: 2 }}>
                             <Box>
                                 <Typography variant="subtitle1">
-                                    Loan Type: {getLoanType(request.loan.selectedLoan)}
+                                    Loan Type: {getLoanType(request.loan.loanType)} {/* Accede a loan.loanType */}
                                 </Typography>
                                 <Typography variant="body2">
-                                    Status: {getStatusText(request.status)}
+                                    Status: {getStatusText(request.request.status)} {/* Accede a request.status */}
                                 </Typography>
                             </Box>
-                            {(request.status === 2 || request.status === 3) && (
-                                <Button variant="contained" color="secondary" onClick={() => handleCancelRequest(request.idRequest)}>
+                            {(request.request.status === 2 || request.request.status === 3) && (
+                                <Button variant="contained" color="secondary" onClick={() => handleCancelRequest(request.request.idRequest)}>
                                     Cancel request
                                 </Button>
                             )}
