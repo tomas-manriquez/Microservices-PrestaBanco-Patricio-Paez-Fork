@@ -19,7 +19,7 @@ spec:
             - containerPort: 80
           env:
             - name: VITE_BACKEND_SERVER
-              value: "gateway-server-service"
+              value: "127.0.0.1"
             - name: VITE_BACKEND_PORT
               value: "8080"
 ---
