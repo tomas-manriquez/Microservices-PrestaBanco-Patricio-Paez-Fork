@@ -13,7 +13,7 @@ const update = data => {
 }
 
 const save = data => {
-    return httpClient.post('/api/loan/', data);
+    return httpClient.post('/api/loan/request-loan', data);
 }
 
 const remove = id => {

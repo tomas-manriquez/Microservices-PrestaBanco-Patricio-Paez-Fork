@@ -8,14 +8,13 @@ import LoginCustomer from './components/LoginCustomer.jsx';
 import LoginExecutive from './components/LoginExecutive.jsx';
 import RegisterCustomer from "./components/RegisterCustomer.jsx";
 import CustomerProfile from "./components/CustomerProfile.jsx";
-import CustomerIncomes from "./components/CustomerIncomes.jsx";
-import CustomerDebts from "./components/CustomerDebts.jsx";
 import CustomerRequests from "./components/CustomerRequests.jsx";
 import CustomerPersonalInformation from "./components/CustomerPersonalInformation.jsx";
 import Loans from "./components/Loans.jsx";
 import ExecutiveHome from './components/ExecutiveHome.jsx';
 import CustomerHome from './components/CustomerHome.jsx';
 import ManagementExecutive from "./components/ManagementExecutive.jsx";
+import Simulation from "./components/Simulation";
 
 function App() {
     return (
@@ -30,10 +29,9 @@ function App() {
                         <Route path="login" element={<LoginCustomer />} />
                         <Route path="register" element={<RegisterCustomer />} />
                         <Route path="loans" element={<Loans />} />
+                        <Route path="simulation" element={<Simulation />} />
                         <Route path="profile" element={<CustomerProfile />} >
                             <Route path="personal-information" element={<CustomerPersonalInformation />} />
-                            <Route path="incomes" element={<CustomerIncomes />} />
-                            <Route path="debts" element={<CustomerDebts />} />
                             <Route path="requests" element={<CustomerRequests />} />
                         </Route>
                     </Route>

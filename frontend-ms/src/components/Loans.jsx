@@ -12,50 +12,74 @@ import {
     DialogActions,
 } from '@mui/material';
 import LoanService from '../services/loan.service';
-import RequestService from '../services/request.service.js';
+import RequestService from '../services/request.service';
 
-const Loans = ({ loanTypes = [
-    { type: 'First House', minInterest: 3.5, maxInterest: 5, maxPercentage: 0.8, maxYears: 30 },
-    { type: 'Second House', minInterest: 4, maxInterest: 6, maxPercentage: 0.7, maxYears: 20 },
-    { type: 'Commercial Properties', minInterest: 5, maxInterest: 7, maxPercentage: 0.6, maxYears: 25 },
-    { type: 'Remodeling', minInterest: 4.5, maxInterest: 6, maxPercentage: 0.5, maxYears: 15 }
+const Loans = ({ userId, loanTypes = [
+    { type: 'First House', value: 1 },
+    { type: 'Second House', value: 2 },
+    { type: 'Commercial Properties', value: 3 },
+    { type: 'Remodeling', value: 4 },
 ] }) => {
     const [selectedLoanType, setSelectedLoanType] = useState('');
     const [propertyValue, setPropertyValue] = useState('');
-    const [selectedTime, setSelectedTime] = useState('');
-    const [loanAmount, setLoanAmount] = useState('');
+    const [selectedYears, setSelectedYears] = useState('');
     const [selectedInterest, setSelectedInterest] = useState('');
-    const [calculationResult, setCalculationResult] = useState(null);
+    const [files, setFiles] = useState({});
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
     const [openDialog, setOpenDialog] = useState(false);
 
-    const currentLoanType = loanTypes.find((loan) => loan.type === selectedLoanType);
+    useEffect(() => {
+        setIsButtonDisabled(
+            !selectedLoanType || !propertyValue || !selectedYears || !selectedInterest
+        );
+    }, [selectedLoanType, propertyValue, selectedYears, selectedInterest]);
 
-    const handleCalculateLoan = () => {
-        const loanData = {
-            loanType: selectedLoanType,
-            propertyValue: propertyValue,
-            years: selectedTime,
-            interestRate: selectedInterest,
-        };
-
-        LoanService.calculateLoan(loanData)
-            .then((data) => {
-                setCalculationResult(data);
-                setOpenDialog(true);
-            })
-            .catch((error) => {
-                alert('Error calculating loan');
-            });
+    const handleFileChange = (event, key) => {
+        const file = event.target.files[0];
+        setFiles((prev) => ({ ...prev, [key]: file }));
     };
 
+    const handleSubmit = async () => {
+        const loanData = {
+            selectedLoan: parseInt(selectedLoanType, 10),
+            selectedYears: parseInt(selectedYears, 10),
+            selectedInterest: parseFloat(selectedInterest),
+            propertyValue: parseFloat(propertyValue),
+            idUser: userId,
+        };
+
+        const formData = new FormData();
+        formData.append('loanData', new Blob([JSON.stringify(loanData)], { type: 'application/json' }));
+
+        Object.keys(files).forEach((key) => {
+            if (files[key]) {
+                formData.append(key, files[key]);
+            }
+        });
+
+        try {
+            const response = await LoanService.save(formData);
+            await RequestService.save({ idLoan: response.id, idUser: userId, status: 2 }); // Status 2: Evaluation
+            setOpenDialog(true);
+        } catch (error) {
+            console.error('Error submitting loan request:', error);
+            alert('There was an error submitting your loan request.');
+        }
+    };
+
+    const requiredDocuments = {
+        1: ['incomeDocument', 'appraisalCertificate', 'historicalCredit'],
+        2: ['incomeDocument', 'appraisalCertificate', 'historicalCredit', 'firstHomeDeed'],
+        3: ['businessFinancialState', 'incomeDocument', 'appraisalCertificate', 'businessPlan'],
+        4: ['incomeDocument', 'remodelingBudget', 'appraisalCertificate'],
+    };
 
     return (
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
             <div style={{ width: '500px' }}>
-                <Typography variant="h6" align="center">Request a Loan</Typography>
-
-                {/* Campos para seleccionar tipo de préstamo y valores */}
+                <Typography variant="h6" align="center">
+                    Request a Loan
+                </Typography>
                 <TextField
                     select
                     label="Loan Type"
@@ -65,7 +89,7 @@ const Loans = ({ loanTypes = [
                     margin="normal"
                 >
                     {loanTypes.map((loan) => (
-                        <MenuItem key={loan.type} value={loan.type}>
+                        <MenuItem key={loan.value} value={loan.value}>
                             {loan.type}
                         </MenuItem>
                     ))}
@@ -79,10 +103,10 @@ const Loans = ({ loanTypes = [
                     margin="normal"
                 />
                 <TextField
-                    label="Selected Time (years)"
+                    label="Selected Years"
                     type="number"
-                    value={selectedTime}
-                    onChange={(e) => setSelectedTime(e.target.value)}
+                    value={selectedYears}
+                    onChange={(e) => setSelectedYears(e.target.value)}
                     fullWidth
                     margin="normal"
                 />
@@ -94,30 +118,30 @@ const Loans = ({ loanTypes = [
                     fullWidth
                     margin="normal"
                 />
-
-                {/* Botón para calcular préstamo */}
+                {selectedLoanType &&
+                    requiredDocuments[selectedLoanType]?.map((docKey) => (
+                        <div key={docKey} style={{ marginTop: '16px' }}>
+                            <Typography>{docKey.replace(/([A-Z])/g, ' $1')}</Typography>
+                            <input
+                                type="file"
+                                onChange={(e) => handleFileChange(e, docKey)}
+                            />
+                        </div>
+                    ))}
                 <Button
                     variant="contained"
                     color="primary"
-                    onClick={handleCalculateLoan}
+                    onClick={handleSubmit}
                     disabled={isButtonDisabled}
+                    fullWidth
+                    style={{ marginTop: '20px' }}
                 >
-                    Calculate Loan
+                    Submit Request
                 </Button>
-
-                {/* Diálogo para mostrar resultados */}
                 <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-                    <DialogTitle>Loan Calculation Result</DialogTitle>
+                    <DialogTitle>Loan Request Submitted</DialogTitle>
                     <DialogContent>
-                        {calculationResult ? (
-                            <>
-                                <Typography>Monthly Fee: {calculationResult.monthlyFee}</Typography>
-                                <Typography>Total Interest: {calculationResult.totalInterest}</Typography>
-                                <Typography>Total Payment: {calculationResult.totalPayment}</Typography>
-                            </>
-                        ) : (
-                            <Typography>Loading...</Typography>
-                        )}
+                        <Typography>Your loan request has been submitted successfully!</Typography>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={() => setOpenDialog(false)}>Close</Button>

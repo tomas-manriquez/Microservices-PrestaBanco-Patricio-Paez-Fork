@@ -53,6 +53,7 @@ metadata:
   labels:
     app: ms-executive-deployment
 spec:
+  clusterIP: None
   selector:
     app: ms-executive-deployment
   ports:
