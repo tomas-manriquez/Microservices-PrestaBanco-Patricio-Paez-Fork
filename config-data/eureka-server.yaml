@@ -6,3 +6,6 @@ eureka:
     register-with-eureka: false
     service-url:
       defaultZone: ${EUREKA_SERVER_URL}
+    env:
+      - name: CONFIG_SERVER_LOCATION
+      - value: ${CONFIG_SERVER_LOCATION}

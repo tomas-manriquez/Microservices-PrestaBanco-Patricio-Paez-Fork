@@ -19,6 +19,9 @@ spec:
           image: niptuss/eureka-server
           ports:
             - containerPort: 8761
+          env:
+            - name: CONFIG_SERVER_LOCATION
+              value: "http://config-server-service:8888"
 ---
 apiVersion: v1
 kind: Service
