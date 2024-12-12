@@ -18,6 +18,8 @@ spec:
         - name: ms-loan
           image: niptuss/ms-loan
           env:
+            - name: EUREKA_SERVER_URL
+              value: "http://eureka-server-service:8761/eureka"
             - name: SERVER_PORT
               value: "0"
             - name: DB_HOST
