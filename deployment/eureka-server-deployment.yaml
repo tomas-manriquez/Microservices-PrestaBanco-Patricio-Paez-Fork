@@ -20,6 +20,8 @@ spec:
           ports:
             - containerPort: 8761
           env:
+            - name: EUREKA_SERVER_URL
+              value: "http://eureka-server-service:8761/eureka/"
             - name: CONFIG_SERVER_LOCATION
               value: "http://config-server-service:8888"
 ---

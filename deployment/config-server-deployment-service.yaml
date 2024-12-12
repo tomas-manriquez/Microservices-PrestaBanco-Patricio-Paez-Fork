@@ -19,13 +19,6 @@ spec:
           image: niptuss/config-server
           ports:
             - containerPort: 8888
-          env:
-            - name: EUREKA_SERVER_URL
-              value: "http://eureka-server-service:8761/eureka/"
-            - name: EUREKA_SERVER_URL_DEPLOYMENT
-              value: "http://eureka-server-service:8761/eureka"
-            - name: GATEWAY_SERVER_SERVICE
-              value: "gateway-server-service"
 ---
 apiVersion: v1
 kind: Service
