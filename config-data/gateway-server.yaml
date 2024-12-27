@@ -8,6 +8,7 @@ eureka:
       defaultZone: ${EUREKA_SERVER_URL_DEPLOYMENT}
   instance:
     hostname: ${GATEWAY_SERVER_SERVICE}
+    prefer-ip-address: true
 spring:
   cloud:
     gateway:
