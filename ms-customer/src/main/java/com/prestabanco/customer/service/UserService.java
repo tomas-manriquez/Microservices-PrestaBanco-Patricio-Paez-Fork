@@ -6,6 +6,8 @@ import com.prestabanco.customer.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
 
@@ -54,6 +56,9 @@ public class UserService {
         return new UserLoginResponse(null);
     }
 
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
 
     public User updateUser(User user) {
         return userRepository.save(user);

@@ -18,6 +18,8 @@ spec:
         - name: ms-executive
           image: niptuss/ms-executive
           env:
+            - - name: HOSTNAME
+                value: "ms-executive"
             - name: EUREKA_SERVER_URL
               value: "http://eureka-server-service:8761/eureka"
             - name: SERVER_PORT
