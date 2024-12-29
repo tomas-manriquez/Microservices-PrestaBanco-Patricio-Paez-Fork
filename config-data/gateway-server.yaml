@@ -8,6 +8,13 @@ eureka:
       defaultZone: ${EUREKA_SERVER_URL_DEPLOYMENT}
   instance:
     hostname: ${GATEWAY_SERVER_SERVICE}
+    non-secure-port: 8080
+    instance-id: ${spring.application.name}:${spring.application.instance_id:${random.value}}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 spring:
   cloud:
     gateway:
