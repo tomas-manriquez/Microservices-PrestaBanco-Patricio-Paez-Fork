@@ -18,6 +18,8 @@ spec:
         - name: ms-customer
           image: niptuss/ms-customer
           env:
+            - name: HOSTNAME
+              value: "ms-customer"
             - name: EUREKA_SERVER_URL
               value: "http://eureka-server-service:8761/eureka"
             - name: SERVER_PORT
