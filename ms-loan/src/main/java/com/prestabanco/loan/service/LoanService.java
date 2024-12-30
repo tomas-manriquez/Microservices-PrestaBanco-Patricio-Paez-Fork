@@ -65,10 +65,10 @@ public class LoanService {
 
     public Map<String, Object> calculateLoan(int loanType, double propertyValue, int years, double interestRate) {
         Map<Integer, LoanType> loanTypes = Map.of(
-                0, new LoanType(3.5, 5, 0.8, 30), // First House
-                1, new LoanType(4, 6, 0.7, 20), // Second House
-                2, new LoanType(5, 7, 0.6, 25), // Commercial Properties
-                3, new LoanType(4.5, 6, 0.5, 15) // Remodeling
+                1, new LoanType(3.5, 5, 0.8, 30), // First House
+                2, new LoanType(4, 6, 0.7, 20), // Second House
+                3, new LoanType(5, 7, 0.6, 25), // Commercial Properties
+                4, new LoanType(4.5, 6, 0.5, 15) // Remodeling
         );
 
         LoanType selectedLoanType = loanTypes.get(loanType);
