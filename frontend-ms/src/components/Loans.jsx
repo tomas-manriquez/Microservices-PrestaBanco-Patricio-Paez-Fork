@@ -133,7 +133,7 @@ const Loans = ({ loanTypes = [
     };
 
     return (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ backgroundColor: '#f5f5f5', padding: 3 }}>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ backgroundColor: '#c5c1c1', padding: 3 }}>
             <Paper elevation={3} sx={{ padding: 4, maxWidth: 600, width: '100%' }}>
                 <Typography variant="h4" align="center" gutterBottom>
                     Request a Loan

@@ -20,6 +20,9 @@ public class UserService {
     }
 
     public UserResponse registerUser(UserRequest request) {
+        if (userRepository.findFirstByEmail(request.getEmail()) != null) {
+            return new UserResponse(null, "Email already registered");
+        }
         User user = new User();
         user.setName(request.getName());
         user.setFirstName(request.getFirstName());

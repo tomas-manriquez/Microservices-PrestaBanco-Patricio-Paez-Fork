@@ -11,8 +11,8 @@ const CustomerPersonalInformation = () => {
         password: "",
         rut: "",
         name: "",
-        dadSurname: "",
-        motherSurname: "",
+        firstName: "",
+        lastName: "",
         age: "",
         working: false,
         workingYears: "",
@@ -71,14 +71,14 @@ const CustomerPersonalInformation = () => {
                     <TextField
                         label="Father's Surname"
                         name="dadSurname"
-                        value={userInfo.dadSurname}
+                        value={userInfo.firstName}
                         onChange={handleChange}
                         fullWidth
                     />
                     <TextField
                         label="Mother's Surname"
                         name="motherSurname"
-                        value={userInfo.motherSurname}
+                        value={userInfo.lastName}
                         onChange={handleChange}
                         fullWidth
                     />

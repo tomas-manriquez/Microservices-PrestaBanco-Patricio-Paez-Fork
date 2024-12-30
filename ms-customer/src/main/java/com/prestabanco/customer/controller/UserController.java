@@ -52,8 +52,8 @@ public class UserController {
         return ResponseEntity.ok(userSaved);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<User> updateUser(@RequestBody User user) {
+    @PutMapping("/")
+    public ResponseEntity<User> updateUser( @RequestBody User user) {
         User userSaved = userService.updateUser(user);
         return ResponseEntity.ok(userSaved);
     }

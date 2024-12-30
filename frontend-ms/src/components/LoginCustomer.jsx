@@ -7,6 +7,8 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
 import MuiCard from '@mui/material/Card';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import { styled } from '@mui/material/styles';
 import CustomerService from "../services/customer.service.js";
 import { useNavigate } from 'react-router-dom';
@@ -40,7 +42,6 @@ const validateInputs = () => {
     const email = document.getElementById('email').value;
 
     if (!email || !/^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-        alert('Please enter a valid email address.');
         return false;
     }
 
@@ -49,12 +50,17 @@ const validateInputs = () => {
 
 const LoginCustomer = () => {
     const navigate = useNavigate();
+    const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = React.useState('error');
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         const isValid = validateInputs();
         if (!isValid) {
-            console.log("Validation failed");
+            setSnackbarMessage('Please enter a valid email address.');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
             return;
         }
 
@@ -66,19 +72,24 @@ const LoginCustomer = () => {
         CustomerService
             .login(logindata)
             .then((response) => {
-                console.log("Customer logged in.", response.data);
                 localStorage.setItem('token', 1);
                 localStorage.setItem('id', response.data.userId);
                 navigate('/customer/home');
                 window.location.reload();
             })
             .catch((error) => {
-                console.log("There was an error logging in account.", error);
+                if (error.response && error.response.status === 401) {
+                    setSnackbarMessage('Incorrect email or password.');
+                } else {
+                    setSnackbarMessage('There was an error logging in.');
+                }
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
             });
     };
 
     return (
-        <SignInContainer direction="column" justifyContent="space-between">
+        <SignInContainer direction="column" justifyContent="space-between" sx={{ backgroundColor: '#c5c1c1' }}>
             <Card variant="outlined">
                 <Typography
                     component="h1"
@@ -129,6 +140,17 @@ const LoginCustomer = () => {
                     Sign in
                 </Button>
             </Card>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={() => setSnackbarOpen(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right'}}
+                sx={{ mt: '70px' }}
+            >
+                <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </SignInContainer>
     );
 };

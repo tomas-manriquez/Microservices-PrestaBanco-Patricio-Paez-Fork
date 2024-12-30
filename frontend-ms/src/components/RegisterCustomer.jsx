@@ -7,6 +7,9 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import MuiCard from '@mui/material/Card';
+import MenuItem from '@mui/material/MenuItem';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 import { styled } from '@mui/material/styles';
 import customerService from "../services/customer.service.js";
 
@@ -32,58 +35,72 @@ const SignInContainer = styled(Box)(({ theme }) => ({
     height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
 }));
 
-const validateInputs = () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+const RegisterCustomer = () => {
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [name, setName] = React.useState('');
+    const [dadSurname, setDadSurname] = React.useState('');
+    const [motherSurname, setMotherSurname] = React.useState('');
+    const [age, setAge] = React.useState('');
+    const [isValid, setIsValid] = React.useState(false);
+    const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+    const [snackbarMessage, setSnackbarMessage] = React.useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = React.useState('error');
 
-    if (!email || !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
-        alert('Please enter a valid email address.');
-        return false;
-    }
+    const validateInputs = () => {
+        if (!email || !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
+            setSnackbarMessage('Please enter a valid email address.');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+            return false;
+        }
 
-    if (!password || password.length < 6) {
-        alert('Password must be at least 6 characters long.');
-        return false;
-    }
+        if (!password || password.length < 6) {
+            setSnackbarMessage('Password must be at least 6 characters long.');
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+            return false;
+        }
 
-    return true;
-};
-
-
-const handleSubmit = async (event) => {
-    event.preventDefault();
-    const isValid = validateInputs();
-    if (!isValid) {
-        console.log("Validation failed");
-        return;
-    }
-
-    const customer = {
-            email: document.getElementById('email').value,
-            password: document.getElementById('password').value,
-            name: document.getElementById('name').value,
-            firstName: document.getElementById('dadSurname').value,
-            lastName: document.getElementById('motherSurname').value,
-            age: document.getElementById('age').value,
+        return true;
     };
 
-    customerService
-        .register(customer)
-        .then((response) => {
-            console.log("Customer successfully created.", response.data);
-            alert('Account successfully created!, please complete your data in your profile');
-        })
-        .catch((error) => {
-            console.log(
-                "There was an error creating the account.",
-                error
-            );
-        });
-};
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        const isValid = validateInputs();
+        if (!isValid) {
+            return;
+        }
 
-export default function RegisterCustomer() {
+        const customer = {
+            email,
+            password,
+            name,
+            firstName: dadSurname,
+            lastName: motherSurname,
+            age,
+        };
+
+        customerService
+            .register(customer)
+            .then((response) => {
+                setSnackbarMessage('Account successfully created! Please complete your data in your profile.');
+                setSnackbarSeverity('success');
+                setSnackbarOpen(true);
+            })
+            .catch((error) => {
+                setSnackbarMessage('There was an error creating the account.');
+                setSnackbarSeverity('error');
+                setSnackbarOpen(true);
+            });
+    };
+
+    React.useEffect(() => {
+        setIsValid(email && password && name && dadSurname && motherSurname && age);
+    }, [email, password, name, dadSurname, motherSurname, age]);
+
     return (
-        <SignInContainer>
+        <SignInContainer sx={{ backgroundColor: '#c5c1c1' }}>
             <Card variant="outlined">
                 <Typography
                     component="h1"
@@ -104,6 +121,9 @@ export default function RegisterCustomer() {
                                 autoComplete="email"
                                 required
                                 variant="outlined"
+                                helperText="Enter a valid email address"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </FormControl>
                     </Grid>
@@ -118,6 +138,9 @@ export default function RegisterCustomer() {
                                 autoComplete="current-password"
                                 required
                                 variant="outlined"
+                                helperText="Password must be at least 6 characters long"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                         </FormControl>
                     </Grid>
@@ -130,6 +153,9 @@ export default function RegisterCustomer() {
                                 placeholder="John"
                                 required
                                 variant="outlined"
+                                helperText="Enter your first name"
+                                value={name}
+                                onChange={(e) => setName(e.target.value)}
                             />
                         </FormControl>
                     </Grid>
@@ -142,6 +168,9 @@ export default function RegisterCustomer() {
                                 placeholder="Kennedy"
                                 required
                                 variant="outlined"
+                                helperText="Enter your father's surname"
+                                value={dadSurname}
+                                onChange={(e) => setDadSurname(e.target.value)}
                             />
                         </FormControl>
                     </Grid>
@@ -154,6 +183,9 @@ export default function RegisterCustomer() {
                                 placeholder="Lennon"
                                 required
                                 variant="outlined"
+                                helperText="Enter your mother's surname"
+                                value={motherSurname}
+                                onChange={(e) => setMotherSurname(e.target.value)}
                             />
                         </FormControl>
                     </Grid>
@@ -163,10 +195,19 @@ export default function RegisterCustomer() {
                             <TextField
                                 name="age"
                                 id="age"
-                                placeholder="22"
+                                select
                                 required
                                 variant="outlined"
-                            />
+                                helperText="Select your age"
+                                value={age}
+                                onChange={(e) => setAge(e.target.value)}
+                            >
+                                {[...Array(83).keys()].map(i => (
+                                    <MenuItem key={i + 18} value={i + 18}>
+                                        {i + 18}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
                         </FormControl>
                     </Grid>
                 </Grid>
@@ -176,10 +217,23 @@ export default function RegisterCustomer() {
                     variant="contained"
                     onClick={handleSubmit}
                     sx={{ marginTop: 2 }}
+                    disabled={!isValid}
                 >
                     Register
                 </Button>
             </Card>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={() => setSnackbarOpen(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
         </SignInContainer>
     );
-}
+};
+
+export default RegisterCustomer;

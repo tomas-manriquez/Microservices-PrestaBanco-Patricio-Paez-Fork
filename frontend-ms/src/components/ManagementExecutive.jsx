@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import { Typography, Stack, Button, Link } from "@mui/material";
+import { Typography, Stack, Button, Link, Paper } from "@mui/material";
 import RequestService from "../services/request.service.js";
 import LoanService from "../services/loan.service.js";
 
@@ -120,7 +120,7 @@ const ManagementExecutive = () => {
     }
 
     return (
-        <Box sx={{ flexGrow: 1, padding: 3, paddingTop: '70px'}}>
+        <Box sx={{ flexGrow: 1, padding: 3, paddingTop: '70px', backgroundColor: '#e3f2fd', minHeight: '100vh' }}>
             <Typography variant="h5" component="div" gutterBottom>
                 Customer Requests Management
             </Typography>
@@ -130,47 +130,49 @@ const ManagementExecutive = () => {
             ) : (
                 <Stack spacing={2}>
                     {requests.map(request => (
-                        <Box key={request.id} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 2, border: '1px solid #ccc', borderRadius: 2 }}>
-                            <Box>
-                                {request.loan && (
-                                    <>
-                                        <Typography variant="body2">
-                                            Loan Type: {getLoanType(request.loan.selectedLoan)}
-                                        </Typography>
-                                        <Typography variant="body2">
-                                            Years: {request.loan.selectedYears}
-                                        </Typography>
-                                        <Typography variant="body2">
-                                            Interest: {request.loan.selectedInterest}%
-                                        </Typography>
-                                        <Typography variant="body2">
-                                            Property Value: ${request.loan.propertyValue}
-                                        </Typography>
-                                        {renderFiles(request.loan)}
-                                    </>
-                                )}
-                                <Typography variant="body2">
-                                    Status: {getStatusText(request.status)}
-                                </Typography>
-                            </Box>
-                            <Box>
-                                {request.status === 2 && (
-                                    <>
-                                        <Button variant="contained" color="primary" onClick={() => handleChangeStatus(request.id, 3)}>
-                                            Accept
+                        <Paper key={request.id} sx={{ padding: 2, borderRadius: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Box>
+                                    {request.loan && (
+                                        <>
+                                            <Typography variant="body2">
+                                                Loan Type: {getLoanType(request.loan.selectedLoan)}
+                                            </Typography>
+                                            <Typography variant="body2">
+                                                Years: {request.loan.selectedYears}
+                                            </Typography>
+                                            <Typography variant="body2">
+                                                Interest: {request.loan.selectedInterest}%
+                                            </Typography>
+                                            <Typography variant="body2">
+                                                Property Value: ${request.loan.propertyValue}
+                                            </Typography>
+                                            {renderFiles(request.loan)}
+                                        </>
+                                    )}
+                                    <Typography variant="body2">
+                                        Status: {getStatusText(request.status)}
+                                    </Typography>
+                                </Box>
+                                <Box>
+                                    {request.status === 2 && (
+                                        <>
+                                            <Button variant="contained" color="primary" onClick={() => handleChangeStatus(request.id, 3)}>
+                                                Accept
+                                            </Button>
+                                            <Button variant="contained" color="secondary" onClick={() => handleChangeStatus(request.id, 1)} style={{ marginLeft: 10 }}>
+                                                Reject
+                                            </Button>
+                                        </>
+                                    )}
+                                    {request.status === 3 && (
+                                        <Button variant="contained" color="success" onClick={() => handleChangeStatus(request.id, 5)}>
+                                            Deliver Loan
                                         </Button>
-                                        <Button variant="contained" color="secondary" onClick={() => handleChangeStatus(request.id, 1)} style={{ marginLeft: 10 }}>
-                                            Reject
-                                        </Button>
-                                    </>
-                                )}
-                                {request.status === 3 && (
-                                    <Button variant="contained" color="success" onClick={() => handleChangeStatus(request.id, 5)}>
-                                        Deliver Loan
-                                    </Button>
-                                )}
+                                    )}
+                                </Box>
                             </Box>
-                        </Box>
+                        </Paper>
                     ))}
                 </Stack>
             )}

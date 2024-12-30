@@ -10,7 +10,7 @@ const CustomerHome = () => {
             alignItems="center"
             minHeight="100vh"
             px={3}
-            bgcolor="#f4f4f9"
+            sx={{ backgroundColor: '#c5c1c1', padding: 3 }}
         >
             <Typography
                 variant="h3"

@@ -9,8 +9,9 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    Paper,
 } from '@mui/material';
-import LoanService from '../services/loan.service';
+import SimulationService from '../services/simulation.service.js';
 
 const Simulation = ({ loanTypes = [
     { type: 'First House', minInterest: 3.5, maxInterest: 5, maxPercentage: 0.8, maxYears: 30 },
@@ -39,7 +40,7 @@ const Simulation = ({ loanTypes = [
             maxPercentage: currentLoanType?.maxPercentage || 0,
         };
 
-        LoanService.simulate(loanData)
+        SimulationService.simulate(loanData)
             .then((response) => {
                 setCalculationResult(response.data);
                 setOpenDialog(true);
@@ -60,7 +61,7 @@ const Simulation = ({ loanTypes = [
             adminFeeRate: parseFloat(adminFeeRate),
         };
 
-        LoanService.totalcost(totalCostData)
+        SimulationService.totalcost(totalCostData)
             .then((response) => {
                 setTotalCostResult(response.data);
                 setOpenDialog(true);
@@ -71,8 +72,8 @@ const Simulation = ({ loanTypes = [
     };
 
     return (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-            <div style={{ width: '500px' }}>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ backgroundColor: '#c5c1c1', padding: 3 }}>
+            <Paper elevation={3} sx={{ padding: 4, maxWidth: 600, width: '100%' }}>
                 <Typography variant="h6" align="center">Loan Simulator</Typography>
 
                 <TextField
@@ -89,6 +90,11 @@ const Simulation = ({ loanTypes = [
                         </MenuItem>
                     ))}
                 </TextField>
+                {currentLoanType && (
+                    <Typography variant="body2" color="textSecondary">
+                        Interest Rate Range: {currentLoanType.minInterest}% - {currentLoanType.maxInterest}% Max Percentage: {(currentLoanType.maxPercentage * 100).toFixed(2)}% Max Years: {currentLoanType.maxYears}
+                    </Typography>
+                )}
                 <TextField
                     label="Property Value"
                     type="number"
@@ -162,17 +168,17 @@ const Simulation = ({ loanTypes = [
                     <DialogContent>
                         {calculationResult && (
                             <>
-                                <Typography>Loan Amount: {calculationResult.loanAmount}</Typography>
-                                <Typography>Monthly Fee: {calculationResult.monthlyFee}</Typography>
-                                <Typography>Annual Interest: {calculationResult.annualInterest}%</Typography>
+                                <Typography>Loan Amount: {calculationResult.loanAmount.toFixed(2)}</Typography>
+                                <Typography>Monthly Fee: {calculationResult.monthlyFee.toFixed(2)}</Typography>
+                                <Typography>Annual Interest: {calculationResult.annualInterest.toFixed(2)}%</Typography>
                             </>
                         )}
                         {totalCostResult && (
                             <>
-                                <Typography>Total Cost: {totalCostResult.totalCost}</Typography>
-                                <Typography>Insurance Cost: {totalCostResult.insuranceCost}</Typography>
-                                <Typography>Fixed Costs: {totalCostResult.fixedCosts}</Typography>
-                                <Typography>Admin Fee: {totalCostResult.adminFee}</Typography>
+                                <Typography>Total Cost: {totalCostResult.totalCost.toFixed(2)}</Typography>
+                                <Typography>Insurance Cost: {totalCostResult.insuranceCost.toFixed(2)}</Typography>
+                                <Typography>Fixed Costs: {totalCostResult.fixedCosts.toFixed(2)}</Typography>
+                                <Typography>Admin Fee: {totalCostResult.adminFee.toFixed(2)}</Typography>
                             </>
                         )}
                     </DialogContent>
@@ -180,7 +186,7 @@ const Simulation = ({ loanTypes = [
                         <Button onClick={() => setOpenDialog(false)}>Close</Button>
                     </DialogActions>
                 </Dialog>
-            </div>
+            </Paper>
         </Box>
     );
 };

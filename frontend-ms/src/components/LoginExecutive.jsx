@@ -79,12 +79,12 @@ const LoginExecutive = () => {
     };
 
     return (
-        <SignInContainer direction="column" justifyContent="space-between">
+        <SignInContainer direction="column" justifyContent="space-between" sx={{backgroundColor:"#e3f2fd" }}>
             <Card variant="outlined">
                 <Typography
                     component="h1"
                     variant="h4"
-                    sx={{ width: '100%', textAlign: 'center' }}
+                    sx={{ width: '100%', textAlign: 'center',}}
                 >
                     Login
                 </Typography>
