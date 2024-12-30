@@ -1,8 +1,10 @@
 package com.prestabanco.loan.service;
 
 import com.prestabanco.loan.entity.Loan;
+import com.prestabanco.loan.models.LoanCalculation;
 import com.prestabanco.loan.repository.LoanRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +19,23 @@ public class LoanService {
         this.loanRepository = loanRepository;
     }
 
-    public Loan createLoan(Loan loan) {
+    @Transactional
+    public Loan createLoan(LoanCalculation loanCalculation, byte[] incomeDocument, byte[] appraisalCertificate,
+                           byte[] historicalCredit, byte[] firstHomeDeed, byte[] businessFinancialState,
+                           byte[] businessPlan, byte[] remodelingBudget) {
+        Loan loan = new Loan();
+        loan.setSelectedYears(loanCalculation.getSelectedYears());
+        loan.setSelectedLoan(loanCalculation.getSelectedLoan());
+        loan.setSelectedInterest(loanCalculation.getSelectedInterest());
+        loan.setPropertyValue(loanCalculation.getPropertyValue());
+        loan.setUserId(loanCalculation.getUserId());
+        loan.setIncomeDocument(incomeDocument);
+        loan.setAppraisalCertificate(appraisalCertificate);
+        loan.setHistoricalCredit(historicalCredit);
+        loan.setFirstHomeDeed(firstHomeDeed);
+        loan.setBusinessFinancialState(businessFinancialState);
+        loan.setBusinessPlan(businessPlan);
+        loan.setRemodelingBudget(remodelingBudget);
         return loanRepository.save(loan);
     }
 
@@ -45,13 +63,12 @@ public class LoanService {
         loanRepository.deleteById(id);
     }
 
-    public Map<String, Object> calculateLoan(String loanType, double propertyValue, int years, double interestRate) {
-
-        Map<String, LoanType> loanTypes = Map.of(
-                "First House", new LoanType(3.5, 5, 0.8, 30),
-                "Second House", new LoanType(4, 6, 0.7, 20),
-                "Commercial Properties", new LoanType(5, 7, 0.6, 25),
-                "Remodeling", new LoanType(4.5, 6, 0.5, 15)
+    public Map<String, Object> calculateLoan(int loanType, double propertyValue, int years, double interestRate) {
+        Map<Integer, LoanType> loanTypes = Map.of(
+                0, new LoanType(3.5, 5, 0.8, 30), // First House
+                1, new LoanType(4, 6, 0.7, 20), // Second House
+                2, new LoanType(5, 7, 0.6, 25), // Commercial Properties
+                3, new LoanType(4.5, 6, 0.5, 15) // Remodeling
         );
 
         LoanType selectedLoanType = loanTypes.get(loanType);

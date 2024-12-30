@@ -14,7 +14,7 @@ public class Request {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int status; // 1 Rejected 2 Evaluation by executive 3 Accepted 4 Eliminated by customer 5 Delivering loan
+    private int status; // 1 Rejected 2 Evaluating by executive 3 Accepted 4 Eliminated by customer 5 Delivering loan 6 Delivered loan
     private Long idUser;
     private Long idLoan;
 }

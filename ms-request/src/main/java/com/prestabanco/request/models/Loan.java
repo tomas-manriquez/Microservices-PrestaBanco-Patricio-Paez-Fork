@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Loan {
-    private Long idLoan;
+    private Long id;
     private int selectedYears;
     private int selectedLoan;
     private Double selectedInterest;

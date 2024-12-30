@@ -1,6 +1,7 @@
 package com.prestabanco.request.controller;
 
 import com.prestabanco.request.entity.Request;
+import com.prestabanco.request.models.RequestUpdate;
 import com.prestabanco.request.service.RequestService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,8 +35,8 @@ public class RequestController {
         return ResponseEntity.ok(requestSaved); }
 
     @PutMapping("/")
-    public ResponseEntity<Request> update(@RequestBody Request request) {
-        Request requestNew = requestService.save(request);
+    public ResponseEntity<Request> update(@RequestBody RequestUpdate request) {
+        Request requestNew = requestService.update(request);
         return ResponseEntity.ok(requestNew); }
 
     @DeleteMapping("/{id}")

@@ -14,7 +14,11 @@ const update = data => {
 
 const save = async (data) => {
     try {
-        return await httpClient.post('/api/loan/request-loan', data);
+        return await httpClient.post('/api/loan/request-loan', data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
     } catch (error) {
         console.error('Error saving loan:', error);
         throw error;

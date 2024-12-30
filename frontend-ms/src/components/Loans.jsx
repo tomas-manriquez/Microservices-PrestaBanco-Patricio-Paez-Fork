@@ -4,12 +4,14 @@ import {
     Button,
     MenuItem,
     Typography,
-    Grid,
     Box,
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
+    Snackbar,
+    Alert,
+    Paper,
 } from '@mui/material';
 import LoanService from '../services/loan.service';
 import RequestService from '../services/request.service';
@@ -29,12 +31,27 @@ const Loans = ({ loanTypes = [
     const [calculatedLoan, setCalculatedLoan] = useState(null);
     const [openDialog, setOpenDialog] = useState(false);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [loanTypeDetails, setLoanTypeDetails] = useState({});
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [yearsError, setYearsError] = useState(false);
+    const [interestError, setInterestError] = useState(false);
 
     useEffect(() => {
         setIsButtonDisabled(
             !selectedLoanType || !propertyValue || !selectedYears || !selectedInterest
         );
     }, [selectedLoanType, propertyValue, selectedYears, selectedInterest]);
+
+    useEffect(() => {
+        const loanTypeDetails = {
+            1: { minInterest: 3.5, maxInterest: 5, maxYears: 30 },
+            2: { minInterest: 4, maxInterest: 6, maxYears: 20 },
+            3: { minInterest: 5, maxInterest: 7, maxYears: 25 },
+            4: { minInterest: 4.5, maxInterest: 6, maxYears: 15 },
+        };
+        setLoanTypeDetails(loanTypeDetails);
+    }, []);
 
     const handleFileChange = (event, key) => {
         const file = event.target.files[0];
@@ -49,6 +66,26 @@ const Loans = ({ loanTypes = [
             interestRate: parseFloat(selectedInterest)
         };
 
+        const { minInterest, maxInterest, maxYears } = loanTypeDetails[selectedLoanType];
+
+        if (loanData.years > maxYears) {
+            setSnackbarMessage(`Years exceed the maximum allowed years of ${maxYears}`);
+            setSnackbarOpen(true);
+            setYearsError(true);
+            return;
+        } else {
+            setYearsError(false);
+        }
+
+        if (loanData.interestRate < minInterest || loanData.interestRate > maxInterest) {
+            setSnackbarMessage(`Interest rate must be between ${minInterest}% and ${maxInterest}%`);
+            setSnackbarOpen(true);
+            setInterestError(true);
+            return;
+        } else {
+            setInterestError(false);
+        }
+
         try {
             const response = await LoanService.calculateLoan(loanData);
             setCalculatedLoan(response);
@@ -61,17 +98,24 @@ const Loans = ({ loanTypes = [
 
     const handleConfirmSubmit = async () => {
         setOpenConfirmDialog(false);
-        const idUser = localStorage.get('id');
+        const idUser = localStorage.getItem('id'); // Corrected method
         const loanData = {
-            userId: idUser,
+            userId: parseInt(idUser, 10),
             selectedLoan: parseInt(selectedLoanType, 10),
             selectedYears: parseInt(selectedYears, 10),
             selectedInterest: parseFloat(selectedInterest),
             propertyValue: parseFloat(propertyValue),
         };
 
+        const formData = new FormData();
+        formData.append('loanData', JSON.stringify(loanData));
+
+        Object.keys(files).forEach((key) => {
+            formData.append(key, files[key]);
+        });
+
         try {
-            const loanResponse = await LoanService.save(loanData);
+            const loanResponse = await LoanService.save(formData);
             const idLoan = loanResponse.data.id;
             await RequestService.save({ idLoan, idUser: idUser, status: 2 });
             setOpenDialog(true);
@@ -89,9 +133,9 @@ const Loans = ({ loanTypes = [
     };
 
     return (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-            <div style={{ width: '500px' }}>
-                <Typography variant="h6" align="center">
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ backgroundColor: '#f5f5f5', padding: 3 }}>
+            <Paper elevation={3} sx={{ padding: 4, maxWidth: 600, width: '100%' }}>
+                <Typography variant="h4" align="center" gutterBottom>
                     Request a Loan
                 </Typography>
                 <TextField
@@ -101,13 +145,19 @@ const Loans = ({ loanTypes = [
                     onChange={(e) => setSelectedLoanType(e.target.value)}
                     fullWidth
                     margin="normal"
+                    variant="outlined"
                 >
                     {loanTypes.map((loan) => (
-                        <MenuItem key={loan.value} value={loan.type}>
+                        <MenuItem key={loan.value} value={loan.value}>
                             {loan.type}
                         </MenuItem>
                     ))}
                 </TextField>
+                {selectedLoanType && (
+                    <Typography variant="body2" color="textSecondary">
+                        Min Interest: {loanTypeDetails[selectedLoanType]?.minInterest}%, Max Interest: {loanTypeDetails[selectedLoanType]?.maxInterest}%, Max Years: {loanTypeDetails[selectedLoanType]?.maxYears}
+                    </Typography>
+                )}
                 <TextField
                     label="Property Value"
                     type="number"
@@ -115,6 +165,7 @@ const Loans = ({ loanTypes = [
                     onChange={(e) => setPropertyValue(e.target.value)}
                     fullWidth
                     margin="normal"
+                    variant="outlined"
                 />
                 <TextField
                     label="Selected Years"
@@ -123,6 +174,9 @@ const Loans = ({ loanTypes = [
                     onChange={(e) => setSelectedYears(e.target.value)}
                     fullWidth
                     margin="normal"
+                    variant="outlined"
+                    error={yearsError}
+                    helperText={yearsError ? `Max years: ${loanTypeDetails[selectedLoanType]?.maxYears}` : ''}
                 />
                 <TextField
                     label="Interest Rate"
@@ -131,15 +185,26 @@ const Loans = ({ loanTypes = [
                     onChange={(e) => setSelectedInterest(e.target.value)}
                     fullWidth
                     margin="normal"
+                    variant="outlined"
+                    error={interestError}
+                    helperText={interestError ? `Interest rate must be between ${loanTypeDetails[selectedLoanType]?.minInterest}% and ${loanTypeDetails[selectedLoanType]?.maxInterest}%` : ''}
                 />
                 {selectedLoanType &&
                     requiredDocuments[selectedLoanType]?.map((docKey) => (
                         <div key={docKey} style={{ marginTop: '16px' }}>
-                            <Typography>{docKey.replace(/([A-Z])/g, ' $1')}</Typography>
-                            <input
-                                type="file"
-                                onChange={(e) => handleFileChange(e, docKey)}
-                            />
+                            <Button
+                                variant="contained"
+                                component="label"
+                                fullWidth
+                                style={{ marginTop: '8px' }}
+                            >
+                                Upload {docKey.replace(/([A-Z])/g, ' $1')}
+                                <input
+                                    type="file"
+                                    hidden
+                                    onChange={(e) => handleFileChange(e, docKey)}
+                                />
+                            </Button>
                         </div>
                     ))}
                 <Button
@@ -180,7 +245,12 @@ const Loans = ({ loanTypes = [
                         <Button onClick={() => setOpenDialog(false)}>Close</Button>
                     </DialogActions>
                 </Dialog>
-            </div>
+                <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
+                    <Alert onClose={() => setSnackbarOpen(false)} severity="error">
+                        {snackbarMessage}
+                    </Alert>
+                </Snackbar>
+            </Paper>
         </Box>
     );
 };

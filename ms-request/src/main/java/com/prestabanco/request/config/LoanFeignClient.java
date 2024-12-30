@@ -10,6 +10,6 @@ import java.util.List;
 @FeignClient(name = "ms-loan", path = "/api/loan")
 public interface LoanFeignClient {
 
-    @GetMapping("/user/{idUser}")
-    List<Loan> getLoansByUser(@PathVariable("idUser") Long idUser);
+    @GetMapping("/user/{userId}")
+    List<Loan> getLoansByUser(@PathVariable("userId") Long userId);
 }

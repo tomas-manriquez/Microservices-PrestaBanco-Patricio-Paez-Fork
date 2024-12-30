@@ -4,8 +4,13 @@ import lombok.Data;
 
 @Data
 public class LoanCalculation {
-    private String loanType;
-    private double propertyValue;
+    private Long userId;
+    private int loanType;
+    private Double propertyValue;
     private int years;
     private double interestRate;
+    private int selectedLoan;
+    private int selectedYears;
+    private Double selectedInterest;
+
 }

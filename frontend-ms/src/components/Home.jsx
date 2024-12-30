@@ -1,52 +1,83 @@
 import React from 'react';
-import {Box, Card, CardActionArea, CardContent, Divider, IconButton, Typography} from '@mui/material';
-import {Link} from "react-router-dom";
+import { Box, Typography, Container, Grid, Paper } from '@mui/material';
 
 const Home = () => {
     return (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" p={2}>
-            <Card sx={{ p: 4, borderRadius: 5, width: '90%', maxWidth: '1200px', boxShadow: 3, height: '90%', maxHeight: '1900px', minHeight: '80vh' }}>
-                <IconButton edge="start" color="inherit" aria-label="menu" component={Link} to="/home">
-                    <Typography variant="h6" color="inherit">
-                        PrestaBanco
-                    </Typography>
-                </IconButton>
-
-
-                <Box  display="flex" justifyContent="space-around" alignItems="center" flexWrap="wrap" width="100%" gap={2}>
-
-
-                    <Card component={Link} to="/customer/home" sx={{ minHeight: '20vh', p: 2, width: '100%', maxWidth: '30%', borderRadius: 2, border: '1px solid #ccc', boxShadow: 1 }}>
-                        <CardActionArea component={Link} to="/customer/home" sx={{ height: '100%', width: '100%' }}>
-                            <CardContent>
-                                <Typography variant="h6" component="div" gutterBottom>
-                                    Customer Section (Chile)
-                                </Typography>
-                                <Divider />
-                                <Typography variant="body2" align="justify" sx={{ color: 'text.secondary' }}>
-                                    - Simulate a loan<br />
-                                    - Manage personal information<br />
-                                    - View loan status
-                                </Typography>
-                            </CardContent>
-                        </CardActionArea>
-                    </Card>
-
-                    <Card component={Link} to="/executive/home" sx={{ position:'flex' , minHeight: '20vh', p: 2, width: '100%', maxWidth: '30%', borderRadius: 2, border: '1px solid #ccc', boxShadow: 1 }}>
-                        <CardActionArea component={Link} to="/executive/home" sx={{ height: '100%', width: '100%' }}>
-                            <Typography variant="h6" component="div" gutterBottom>
-                                Executive Section
+        <Container maxWidth="lg">
+            <Box display="flex" flexDirection="column" alignItems="center" py={5}>
+                <Typography variant="h3" fontWeight="bold" gutterBottom align="center" color="primary">
+                    Welcome to PrestaBanco Insurance
+                </Typography>
+                <Typography variant="body1" align="center" paragraph color="textSecondary" maxWidth="800px">
+                    At PrestaBanco Insurance, we provide comprehensive insurance solutions to protect you and your loved ones.
+                    Explore our range of services and stay informed with our latest articles.
+                </Typography>
+            </Box>
+            <Box py={5}>
+                <Typography variant="h4" fontWeight="bold" gutterBottom color="primary">
+                    Our Services
+                </Typography>
+                <Grid container spacing={4}>
+                    <Grid item xs={12} md={4}>
+                        <Paper elevation={3} sx={{ p: 3 }}>
+                            <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                Life Insurance
                             </Typography>
-                            <Divider />
-                            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                                - Check requests<br />
-                                - Approve or reject loans
+                            <Typography variant="body2" color="textSecondary">
+                                Secure your family's future with our comprehensive life insurance plans.
                             </Typography>
-                        </CardActionArea>
-                    </Card>
-                </Box>
-            </Card>
-        </Box>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <Paper elevation={3} sx={{ p: 3 }}>
+                            <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                Health Insurance
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                                Get the best health coverage for you and your family with our flexible health insurance options.
+                            </Typography>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12} md={4}>
+                        <Paper elevation={3} sx={{ p: 3 }}>
+                            <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                Auto Insurance
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                                Protect your vehicle with our reliable auto insurance policies.
+                            </Typography>
+                        </Paper>
+                    </Grid>
+                </Grid>
+            </Box>
+            <Box py={5}>
+                <Typography variant="h4" fontWeight="bold" gutterBottom color="primary">
+                    Recent Articles
+                </Typography>
+                <Grid container spacing={4}>
+                    <Grid item xs={12} md={6}>
+                        <Paper elevation={3} sx={{ p: 3 }}>
+                            <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                Understanding Life Insurance
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                                Learn the basics of life insurance and how it can benefit you and your family.
+                            </Typography>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                        <Paper elevation={3} sx={{ p: 3 }}>
+                            <Typography variant="h6" fontWeight="bold" gutterBottom>
+                                Tips for Choosing Health Insurance
+                            </Typography>
+                            <Typography variant="body2" color="textSecondary">
+                                Discover tips and tricks for selecting the best health insurance plan for your needs.
+                            </Typography>
+                        </Paper>
+                    </Grid>
+                </Grid>
+            </Box>
+        </Container>
     );
 };
 

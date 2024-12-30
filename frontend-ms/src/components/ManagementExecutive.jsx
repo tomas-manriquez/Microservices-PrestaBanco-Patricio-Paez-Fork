@@ -1,18 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import { Typography, Stack, Button } from "@mui/material";
+import { Typography, Stack, Button, Link } from "@mui/material";
 import RequestService from "../services/request.service.js";
+import LoanService from "../services/loan.service.js";
 
 const ManagementExecutive = () => {
     const [requests, setRequests] = useState([]);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        RequestService
-            .list()
-            .then(response => {
-                setRequests(response.data);
-            })
-            .catch(error => console.error("Error loading the requests:", error));
+        const fetchRequests = async () => {
+            try {
+                const response = await RequestService.list();
+                const requestsWithLoanData = await Promise.all(response.data.map(async request => {
+                    if (request.idLoan) {
+                        try {
+                            const loanResponse = await LoanService.get(request.idLoan);
+                            return { ...request, loan: loanResponse.data };
+                        } catch (error) {
+                            console.error(`Error loading loan data for loan ${request.idLoan}:`, error);
+                            return { ...request, loan: null };
+                        }
+                    }
+                    return { ...request, loan: null };
+                }));
+                setRequests(requestsWithLoanData);
+            } catch (error) {
+                console.error("Error loading the requests:", error);
+                setError("Failed to load requests");
+            }
+        };
+
+        fetchRequests();
     }, []);
 
     const getLoanType = (selectedLoan) => {
@@ -28,17 +47,18 @@ const ManagementExecutive = () => {
     const getStatusText = (status) => {
         switch (status) {
             case 1: return "Rejected";
-            case 2: return "Evaluation by executive";
+            case 2: return "Evaluating by executive";
             case 3: return "Accepted";
-            case 4: return "Eliminated by customer";
+            case 4: return "Cancelled by customer";
             case 5: return "Delivering loan";
+            case 6: return "Delivered loan";
             default: return "Unknown";
         }
     };
 
     const handleChangeStatus = (requestId, newStatus) => {
         const request = {
-            idRequest: requestId,
+            id: requestId,
             status: newStatus,
         };
         RequestService
@@ -57,6 +77,48 @@ const ManagementExecutive = () => {
             });
     };
 
+    const renderFiles = (loan) => {
+        const requiredDocuments = {
+            1: ['incomeDocument', 'appraisalCertificate', 'historicalCredit'],
+            2: ['incomeDocument', 'appraisalCertificate', 'historicalCredit', 'firstHomeDeed'],
+            3: ['businessFinancialState', 'incomeDocument', 'appraisalCertificate', 'businessPlan'],
+            4: ['incomeDocument', 'remodelingBudget', 'appraisalCertificate'],
+        };
+
+        const fileFields = requiredDocuments[loan.selectedLoan] || [];
+        const missingFiles = fileFields.filter(file => !loan[file]);
+
+        return (
+            <Box>
+                <Typography variant="body2">Files:</Typography>
+                <ul>
+                    {fileFields.map((file, index) => (
+                        loan[file] ? (
+                            <li key={index}>
+                                <Link href={`data:application/octet-stream;base64,${loan[file]}`} target="_blank" rel="noopener">
+                                    {file.replace(/([A-Z])/g, ' $1')}
+                                </Link>
+                            </li>
+                        ) : (
+                            <li key={index} style={{ color: 'red' }}>
+                                {file.replace(/([A-Z])/g, ' $1')} (Missing)
+                            </li>
+                        )
+                    ))}
+                </ul>
+                {missingFiles.length > 0 && (
+                    <Typography variant="body2" color="error">
+                        Missing files for this loan type.
+                    </Typography>
+                )}
+            </Box>
+        );
+    };
+
+    if (error) {
+        return <Typography variant="body1" color="error">{error}</Typography>;
+    }
+
     return (
         <Box sx={{ flexGrow: 1, padding: 3, paddingTop: '70px'}}>
             <Typography variant="h5" component="div" gutterBottom>
@@ -70,14 +132,25 @@ const ManagementExecutive = () => {
                     {requests.map(request => (
                         <Box key={request.id} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 2, border: '1px solid #ccc', borderRadius: 2 }}>
                             <Box>
-                                <Typography variant="body2">
-                                    Loan Type: {getLoanType(request.loan.selectedLoan)}
-                                </Typography>
+                                {request.loan && (
+                                    <>
+                                        <Typography variant="body2">
+                                            Loan Type: {getLoanType(request.loan.selectedLoan)}
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            Years: {request.loan.selectedYears}
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            Interest: {request.loan.selectedInterest}%
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            Property Value: ${request.loan.propertyValue}
+                                        </Typography>
+                                        {renderFiles(request.loan)}
+                                    </>
+                                )}
                                 <Typography variant="body2">
                                     Status: {getStatusText(request.status)}
-                                </Typography>
-                                <Typography variant="body2">
-                                    Years: {request.loan.selectedYears}, Amount: ${request.loan.selectedAmount}, Property Value: ${request.loan.propertyValue}
                                 </Typography>
                             </Box>
                             <Box>

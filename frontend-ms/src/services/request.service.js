@@ -4,6 +4,10 @@ const listbyuser = id => {
     return httpClient.get(`/api/request/user/${id}`);
 }
 
+const list = () => {
+    return httpClient.get('/api/request/');
+}
+
 const get = id => {
     return httpClient.get(`/api/request/${id}`);
 }
@@ -25,4 +29,4 @@ const remove = id => {
     return httpClient.delete(`/api/request/${id}`);
 }
 
-export default { listbyuser, save, get, update, remove};
+export default { listbyuser, save, get, update, remove, list};

@@ -68,7 +68,7 @@ const LoginCustomer = () => {
             .then((response) => {
                 console.log("Customer logged in.", response.data);
                 localStorage.setItem('token', 1);
-                localStorage.setItem('id', response.data);
+                localStorage.setItem('id', response.data.userId);
                 navigate('/customer/home');
                 window.location.reload();
             })
