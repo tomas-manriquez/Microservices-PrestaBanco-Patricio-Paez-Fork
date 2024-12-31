@@ -86,7 +86,9 @@ public class LoanController {
                 request.getLoanType(),
                 request.getPropertyValue(),
                 request.getYears(),
-                request.getInterestRate()
+                request.getInterestRate(),
+                request.getSelectedAmount()
+
         );
     }
 

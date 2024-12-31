@@ -12,6 +12,7 @@ import Snackbar from '@mui/material/Snackbar';
 import Alert from '@mui/material/Alert';
 import { styled } from '@mui/material/styles';
 import customerService from "../services/customer.service.js";
+import { useTranslation } from 'react-i18next';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -46,6 +47,7 @@ const RegisterCustomer = () => {
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState('');
     const [snackbarSeverity, setSnackbarSeverity] = React.useState('error');
+    const { t } = useTranslation();
 
     const validateInputs = () => {
         if (!email || !/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email)) {
@@ -114,21 +116,21 @@ const RegisterCustomer = () => {
                     variant="h4"
                     sx={{ width: '100%', textAlign: 'center' }}
                 >
-                    Create an account
+                    {t("create_account")}
                 </Typography>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
-                            <FormLabel htmlFor="email">Email</FormLabel>
+                            <FormLabel htmlFor="email">{t("email")}</FormLabel>
                             <TextField
                                 id="email"
                                 type="email"
                                 name="email"
-                                placeholder="example@email.com"
+                                placeholder={t("email_example")}
                                 autoComplete="email"
                                 required
                                 variant="outlined"
-                                helperText="Enter a valid email address"
+                                helperText={t("enter_valid_email")}
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
@@ -136,7 +138,7 @@ const RegisterCustomer = () => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
-                            <FormLabel htmlFor="password">Password</FormLabel>
+                            <FormLabel htmlFor="password">{t("password")}</FormLabel>
                             <TextField
                                 name="password"
                                 type="password"
@@ -145,7 +147,7 @@ const RegisterCustomer = () => {
                                 autoComplete="current-password"
                                 required
                                 variant="outlined"
-                                helperText="Password must be at least 6 characters long"
+                                helperText={t("enter_password")}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                             />
@@ -153,14 +155,14 @@ const RegisterCustomer = () => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
-                            <FormLabel htmlFor="name">Name</FormLabel>
+                            <FormLabel htmlFor="name">{t("name")}</FormLabel>
                             <TextField
                                 name="name"
                                 id="name"
                                 placeholder="John"
                                 required
                                 variant="outlined"
-                                helperText="Enter your first name"
+                                helperText={t("enter_name")}
                                 value={name}
                                 onChange={handleTextChange(setName)}
                             />
@@ -168,14 +170,14 @@ const RegisterCustomer = () => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
-                            <FormLabel htmlFor="dadSurname">First Name</FormLabel>
+                            <FormLabel htmlFor="dadSurname">{t("first_name")}</FormLabel>
                             <TextField
                                 name="dadSurname"
                                 id="dadSurname"
                                 placeholder="Kennedy"
                                 required
                                 variant="outlined"
-                                helperText="Enter your first name"
+                                helperText={t("enter_first_name")}
                                 value={dadSurname}
                                 onChange={handleTextChange(setDadSurname)}
                             />
@@ -183,14 +185,14 @@ const RegisterCustomer = () => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
-                            <FormLabel htmlFor="motherSurname">Last Name</FormLabel>
+                            <FormLabel htmlFor="motherSurname">{t("last_name")}</FormLabel>
                             <TextField
                                 name="motherSurname"
                                 id="motherSurname"
                                 placeholder="Lennon"
                                 required
                                 variant="outlined"
-                                helperText="Enter your last name"
+                                helperText={t("enter_last_name")}
                                 value={motherSurname}
                                 onChange={handleTextChange(setMotherSurname)}
                             />
@@ -198,14 +200,14 @@ const RegisterCustomer = () => {
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
-                            <FormLabel htmlFor="age">Age</FormLabel>
+                            <FormLabel htmlFor="age">{t("age")}</FormLabel>
                             <TextField
                                 name="age"
                                 id="age"
                                 select
                                 required
                                 variant="outlined"
-                                helperText="Select your age"
+                                helperText={t("select_age")}
                                 value={age}
                                 onChange={(e) => setAge(e.target.value)}
                             >
@@ -226,7 +228,7 @@ const RegisterCustomer = () => {
                     sx={{ marginTop: 2 }}
                     disabled={!isValid}
                 >
-                    Register
+                    {t("register")}
                 </Button>
             </Card>
             <Snackbar

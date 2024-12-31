@@ -1,7 +1,10 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const CustomerHome = () => {
+    const { t } = useTranslation();
+
     return (
         <Box
             display="flex"
@@ -19,7 +22,7 @@ const CustomerHome = () => {
                 align="center"
                 color="primary"
             >
-                Welcome to PrestaBanco's Customer Portal
+                {t('welcome_message_customer')}
             </Typography>
             <Typography
                 variant="body1"
@@ -28,9 +31,7 @@ const CustomerHome = () => {
                 color="textSecondary"
                 maxWidth="600px"
             >
-                At PrestaBanco, we empower you to take control of your financial future.
-                Easily apply for personalized loan options, track the status of your requests,
-                and access important details about your loans—all in one secure platform.
+                {t('intro_message_customer')}
             </Typography>
             <Typography
                 variant="body1"
@@ -39,8 +40,7 @@ const CustomerHome = () => {
                 color="textSecondary"
                 maxWidth="600px"
             >
-                Whether you’re planning for a big investment or managing your finances, we’re here to support you every step of the way.
-                Log in to explore your loan possibilities today!
+                {t('support_message_customer')}
             </Typography>
         </Box>
     );

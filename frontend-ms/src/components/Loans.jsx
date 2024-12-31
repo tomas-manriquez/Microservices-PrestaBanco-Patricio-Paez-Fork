@@ -15,16 +15,18 @@ import {
 } from '@mui/material';
 import LoanService from '../services/loan.service';
 import RequestService from '../services/request.service';
+import { useTranslation } from 'react-i18next';
 
 const Loans = ({ loanTypes = [
-    { type: 'First House', value: 1 },
-    { type: 'Second House', value: 2 },
-    { type: 'Commercial Properties', value: 3 },
-    { type: 'Remodeling', value: 4 },
+    { type: 'loan_types.first_house', value: 1 },
+    { type: 'loan_types.second_house', value: 2 },
+    { type: 'loan_types.commercial_properties', value: 3 },
+    { type: 'loan_types.remodeling', value: 4 },
 ] }) => {
     const [selectedLoanType, setSelectedLoanType] = useState('');
     const [propertyValue, setPropertyValue] = useState('');
     const [selectedYears, setSelectedYears] = useState('');
+    const [selectedAmount, setSelectedAmount] = useState('');
     const [selectedInterest, setSelectedInterest] = useState('');
     const [files, setFiles] = useState({});
     const [isButtonDisabled, setIsButtonDisabled] = useState(true);
@@ -38,19 +40,20 @@ const Loans = ({ loanTypes = [
     const [interestError, setInterestError] = useState(false);
     const [openWarningDialog, setOpenWarningDialog] = useState(false);
     const [missingFiles, setMissingFiles] = useState([]);
+    const { t } = useTranslation();
 
     useEffect(() => {
         setIsButtonDisabled(
-            !selectedLoanType || !propertyValue || !selectedYears || !selectedInterest
+            !selectedLoanType || !propertyValue || !selectedYears || !selectedInterest || !selectedAmount
         );
-    }, [selectedLoanType, propertyValue, selectedYears, selectedInterest]);
+    }, [selectedLoanType, propertyValue, selectedYears, selectedInterest, selectedAmount]);
 
     useEffect(() => {
         const loanTypeDetails = {
-            1: { minInterest: 3.5, maxInterest: 5, maxYears: 30 },
-            2: { minInterest: 4, maxInterest: 6, maxYears: 20 },
-            3: { minInterest: 5, maxInterest: 7, maxYears: 25 },
-            4: { minInterest: 4.5, maxInterest: 6, maxYears: 15 },
+            1: { minInterest: 3.5, maxInterest: 5, maxAmount: 0.8, maxYears: 30 },
+            2: { minInterest: 4, maxInterest: 6, maxAmount: 0.7, maxYears: 20 },
+            3: { minInterest: 5, maxInterest: 7, maxAmount: 0.6, maxYears: 25 },
+            4: { minInterest: 4.5, maxInterest: 6, maxAmount: 0.5, maxYears: 15 },
         };
         setLoanTypeDetails(loanTypeDetails);
     }, []);
@@ -60,18 +63,51 @@ const Loans = ({ loanTypes = [
         setFiles((prev) => ({ ...prev, [key]: file }));
     };
 
+    const formatNumber = (value) => {
+        return value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    };
+
+    const handlePropertyValueChange = (e) => {
+        const value = e.target.value.replace(/\./g, '');
+        if (/^\d*$/.test(value)) {
+            setPropertyValue(formatNumber(value));
+        }
+    };
+
+    const handleSelectedAmountChange = (e) => {
+        const value = e.target.value.replace(/\./g, '');
+        if (/^\d*$/.test(value)) {
+            setSelectedAmount(formatNumber(value));
+        }
+    };
+
+    const handleSelectedYearsChange = (e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value)) {
+            setSelectedYears(value);
+        }
+    };
+
+    const handleInterestRateChange = (e) => {
+        const value = e.target.value.replace(',', '.');
+        if (/^\d*\.?\d*$/.test(value)) {
+            setSelectedInterest(value);
+        }
+    };
+
     const handleCalculate = async () => {
         const loanData = {
             loanType: selectedLoanType,
-            propertyValue: parseFloat(propertyValue),
+            propertyValue: parseFloat(propertyValue.replace(/\./g, '')),
             years: parseInt(selectedYears, 10),
-            interestRate: parseFloat(selectedInterest)
+            interestRate: parseFloat(selectedInterest),
+            selectedAmount: parseFloat(selectedAmount.replace(/\./g, ''))
         };
 
-        const { minInterest, maxInterest, maxYears } = loanTypeDetails[selectedLoanType];
+        const { minInterest, maxInterest, maxYears, maxAmount } = loanTypeDetails[selectedLoanType];
 
         if (loanData.years > maxYears) {
-            setSnackbarMessage(`Years exceed the maximum allowed years of ${maxYears}`);
+            setSnackbarMessage(`${t('max_years')}: ${maxYears}`);
             setSnackbarOpen(true);
             setYearsError(true);
             return;
@@ -80,12 +116,18 @@ const Loans = ({ loanTypes = [
         }
 
         if (loanData.interestRate < minInterest || loanData.interestRate > maxInterest) {
-            setSnackbarMessage(`Interest rate must be between ${minInterest}% and ${maxInterest}%`);
+            setSnackbarMessage(`${t('interest_rate')} ${minInterest}% - ${maxInterest}%`);
             setSnackbarOpen(true);
             setInterestError(true);
             return;
         } else {
             setInterestError(false);
+        }
+
+        if (loanData.selectedAmount > loanData.propertyValue * maxAmount) {
+            setSnackbarMessage(`${t('selected_amount_exceeds')} ${maxAmount * 100}% ${t('of_property_value')}`);
+            setSnackbarOpen(true);
+            return;
         }
 
         try {
@@ -119,7 +161,8 @@ const Loans = ({ loanTypes = [
             selectedLoan: parseInt(selectedLoanType, 10),
             selectedYears: parseInt(selectedYears, 10),
             selectedInterest: parseFloat(selectedInterest),
-            propertyValue: parseFloat(propertyValue),
+            propertyValue: parseFloat(propertyValue.replace(/\./g, '')),
+            selectedAmount: parseFloat(selectedAmount.replace(/\./g, ''))
         };
 
         const formData = new FormData();
@@ -139,6 +182,7 @@ const Loans = ({ loanTypes = [
             alert('There was an error submitting your loan request.');
         }
     };
+
     const requiredDocuments = {
         1: ['incomeDocument', 'appraisalCertificate', 'historicalCredit'],
         2: ['incomeDocument', 'appraisalCertificate', 'historicalCredit', 'firstHomeDeed'],
@@ -147,18 +191,23 @@ const Loans = ({ loanTypes = [
     };
 
     const formatFileName = (fileName) => {
-        return fileName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+        return t(`files.${fileName.replace(/([A-Z])/g, '_$1').toLowerCase()}`);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenDialog(false);
+        window.location.href = '/customer/profile/requests';
     };
 
     return (
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ backgroundColor: '#c5c1c1', padding: 3 }}>
             <Paper elevation={3} sx={{ padding: 4, maxWidth: 600, width: '100%' }}>
                 <Typography variant="h4" align="center" gutterBottom>
-                    Request a Loan
+                    {t('request_loan')}
                 </Typography>
                 <TextField
                     select
-                    label="Loan Type"
+                    label={t('loan_type')}
                     value={selectedLoanType}
                     onChange={(e) => setSelectedLoanType(e.target.value)}
                     fullWidth
@@ -167,45 +216,56 @@ const Loans = ({ loanTypes = [
                 >
                     {loanTypes.map((loan) => (
                         <MenuItem key={loan.value} value={loan.value}>
-                            {loan.type}
+                            {t(loan.type)}
                         </MenuItem>
                     ))}
                 </TextField>
                 {selectedLoanType && (
                     <Typography variant="body2" color="textSecondary">
-                        Min Interest: {loanTypeDetails[selectedLoanType]?.minInterest}%, Max Interest: {loanTypeDetails[selectedLoanType]?.maxInterest}%, Max Years: {loanTypeDetails[selectedLoanType]?.maxYears}
+                        {t('min_interest')}: {loanTypeDetails[selectedLoanType]?.minInterest}%, {t('max_interest')}: {loanTypeDetails[selectedLoanType]?.maxInterest}%, {t('max_years')}: {loanTypeDetails[selectedLoanType]?.maxYears},
+                        <br />
+                        {t('max_amount')}: {loanTypeDetails[selectedLoanType]?.maxAmount * 100}% {t('of_property_value')}
                     </Typography>
                 )}
                 <TextField
-                    label="Property Value"
-                    type="number"
+                    label={t('property_value')}
+                    type="text"
                     value={propertyValue}
-                    onChange={(e) => setPropertyValue(e.target.value)}
+                    onChange={handlePropertyValueChange}
                     fullWidth
                     margin="normal"
                     variant="outlined"
                 />
                 <TextField
-                    label="Selected Years"
-                    type="number"
+                    label={t('selected_amount')}
+                    type="text"
+                    value={selectedAmount}
+                    onChange={handleSelectedAmountChange}
+                    fullWidth
+                    margin="normal"
+                    variant="outlined"
+                />
+                <TextField
+                    label={t('selected_years')}
+                    type="text"
                     value={selectedYears}
-                    onChange={(e) => setSelectedYears(e.target.value)}
+                    onChange={handleSelectedYearsChange}
                     fullWidth
                     margin="normal"
                     variant="outlined"
                     error={yearsError}
-                    helperText={yearsError ? `Max years: ${loanTypeDetails[selectedLoanType]?.maxYears}` : ''}
+                    helperText={yearsError ? `${t('max_years')}: ${loanTypeDetails[selectedLoanType]?.maxYears}` : ''}
                 />
                 <TextField
-                    label="Interest Rate"
-                    type="number"
+                    label={t('interest_rate')}
+                    type="text"
                     value={selectedInterest}
-                    onChange={(e) => setSelectedInterest(e.target.value)}
+                    onChange={handleInterestRateChange}
                     fullWidth
                     margin="normal"
                     variant="outlined"
                     error={interestError}
-                    helperText={interestError ? `Interest rate must be between ${loanTypeDetails[selectedLoanType]?.minInterest}% and ${loanTypeDetails[selectedLoanType]?.maxInterest}%` : ''}
+                    helperText={interestError ? `${t('interest_rate')} ${loanTypeDetails[selectedLoanType]?.minInterest}% - ${loanTypeDetails[selectedLoanType]?.maxInterest}%` : ''}
                 />
                 {selectedLoanType &&
                     requiredDocuments[selectedLoanType]?.map((docKey) => (
@@ -222,7 +282,7 @@ const Loans = ({ loanTypes = [
                                     },
                                 }}
                             >
-                                Upload {formatFileName(docKey)}
+                                {t('upload')} {formatFileName(docKey)}
                                 <input
                                     type="file"
                                     hidden
@@ -247,17 +307,17 @@ const Loans = ({ loanTypes = [
                         fontSize: '16px',
                     }}
                 >
-                    Calculate Loan
+                    {t('calculate_loan')}
                 </Button>
                 <Dialog open={openConfirmDialog} onClose={() => setOpenConfirmDialog(false)}>
-                    <DialogTitle>Loan Calculation</DialogTitle>
+                    <DialogTitle>{t('loan_calculation')}</DialogTitle>
                     <DialogContent>
                         {calculatedLoan && (
                             <>
-                                <Typography>Loan Amount: ${calculatedLoan.loanAmount.toFixed(2)}</Typography>
-                                <Typography>Monthly Fee: ${calculatedLoan.monthlyFee.toFixed(2)}</Typography>
-                                <Typography>Annual Interest Rate: {calculatedLoan.annualInterest}%</Typography>
-                                <Typography>Duration: {calculatedLoan.months} months</Typography>
+                                <Typography>{t('loan_amount')}: ${calculatedLoan.loanAmount.toFixed(2)}</Typography>
+                                <Typography>{t('monthly_fee')}: ${calculatedLoan.monthlyFee.toFixed(2)}</Typography>
+                                <Typography>{t('annual_interest_rate')}: {calculatedLoan.annualInterest}%</Typography>
+                                <Typography>{t('duration')}: {calculatedLoan.months} {t('months')}</Typography>
                             </>
                         )}
                     </DialogContent>
@@ -268,7 +328,7 @@ const Loans = ({ loanTypes = [
                                 color: '#f44336',
                             }}
                         >
-                            Cancel
+                            {t('cancel')}
                         </Button>
                         <Button
                             onClick={handleConfirmSubmit}
@@ -276,17 +336,17 @@ const Loans = ({ loanTypes = [
                                 color: '#4caf50',
                             }}
                         >
-                            Confirm and Submit
+                            {t('confirm_submit')}
                         </Button>
                     </DialogActions>
                 </Dialog>
-                <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-                    <DialogTitle>Loan Request Submitted</DialogTitle>
+                <Dialog open={openDialog} onClose={handleCloseDialog}>
+                    <DialogTitle>{t('loan_request_submitted')}</DialogTitle>
                     <DialogContent>
-                        <Typography>Your loan request has been submitted successfully!</Typography>
+                        <Typography>{t('loan_request_success')}</Typography>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => setOpenDialog(false)}>Close</Button>
+                        <Button onClick={handleCloseDialog}>{t('close')}</Button>
                     </DialogActions>
                 </Dialog>
                 <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
@@ -296,9 +356,10 @@ const Loans = ({ loanTypes = [
                 </Snackbar>
             </Paper>
             <Dialog open={openWarningDialog} onClose={() => setOpenWarningDialog(false)}>
-                <DialogTitle>Missing Files</DialogTitle>
+                <DialogTitle>{t('missing_files')}</DialogTitle>
                 <DialogContent>
-                    <Typography>Please upload the following files: {missingFiles.map(formatFileName).join(', ')}</Typography>                    <Typography>Do you still want to proceed with the request?</Typography>
+                    <Typography>{t('upload_files')} {missingFiles.map(formatFileName).join(', ')}</Typography>
+                    <Typography>{t('proceed_request')}</Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={() => setOpenWarningDialog(false)}
@@ -306,14 +367,14 @@ const Loans = ({ loanTypes = [
                                 color: '#f44336',
                             }}
                     >
-                        Cancel
+                        {t('cancel')}
                     </Button>
                     <Button onClick={submitLoanRequest}
                             sx={{
-                        color: '#4caf50',
-                    }}
+                                color: '#4caf50',
+                            }}
                     >
-                        Proceed
+                        {t('proceed')}
                     </Button>
                 </DialogActions>
             </Dialog>

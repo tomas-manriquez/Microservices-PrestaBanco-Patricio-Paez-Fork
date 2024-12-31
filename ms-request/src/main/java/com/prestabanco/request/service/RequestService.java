@@ -33,6 +33,8 @@ public class RequestService {
 
     public boolean deleteById(int id) throws Exception {
         try{
+            Long idLoan = requestRepository.findById(id).get().getIdLoan();
+            loanFeignClient.deleteLoan(idLoan);
             requestRepository.deleteById(id);
             return true;
         } catch (RuntimeException e) {
@@ -40,7 +42,6 @@ public class RequestService {
         }
     }
     public List<Map<String, Object>> getRequestsByUser(Long userId) {
-        logger.info("Fetching loans for user ID: {}", userId);
         List<Loan> loans = loanFeignClient.getLoansByUser(userId);
 
         if (loans.isEmpty()) {
@@ -52,7 +53,6 @@ public class RequestService {
                 .map(Loan::getId)
                 .filter(id -> id != null)
                 .collect(Collectors.toList());
-        logger.info("Loan IDs: {}", loanIds);
 
         if (loanIds.isEmpty()) {
             logger.warn("No valid loan IDs found for user ID: {}", userId);

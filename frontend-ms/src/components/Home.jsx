@@ -1,50 +1,52 @@
 import React from 'react';
 import { Box, Typography, Container, Grid, Paper } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const Home = () => {
+    const { t } = useTranslation();
+
     return (
         <Container maxWidth="lg">
             <Box display="flex" flexDirection="column" alignItems="center" py={5}>
                 <Typography variant="h3" fontWeight="bold" gutterBottom align="center" color="primary">
-                    Welcome to PrestaBanco Insurance
+                    {t('welcome_message')}
                 </Typography>
                 <Typography variant="body1" align="center" paragraph color="textSecondary" maxWidth="800px">
-                    At PrestaBanco Insurance, we provide comprehensive insurance solutions to protect you and your loved ones.
-                    Explore our range of services and stay informed with our latest articles.
+                    {t('intro_message')}
                 </Typography>
             </Box>
             <Box py={5}>
                 <Typography variant="h4" fontWeight="bold" gutterBottom color="primary">
-                    Our Services
+                    {t('our_services')}
                 </Typography>
                 <Grid container spacing={4}>
                     <Grid item xs={12} md={4}>
                         <Paper elevation={3} sx={{ p: 3 }}>
                             <Typography variant="h6" fontWeight="bold" gutterBottom>
-                                Life Insurance
+                                {t('life_insurance')}
                             </Typography>
                             <Typography variant="body2" color="textSecondary">
-                                Secure your family's future with our comprehensive life insurance plans.
+                                {t('life_insurance_desc')}
                             </Typography>
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Paper elevation={3} sx={{ p: 3 }}>
                             <Typography variant="h6" fontWeight="bold" gutterBottom>
-                                Health Insurance
+                                {t('health_insurance')}
                             </Typography>
                             <Typography variant="body2" color="textSecondary">
-                                Get the best health coverage for you and your family with our flexible health insurance options.
+                                {t('health_insurance_desc')}
                             </Typography>
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={4}>
                         <Paper elevation={3} sx={{ p: 3 }}>
                             <Typography variant="h6" fontWeight="bold" gutterBottom>
-                                Auto Insurance
+                                {t('property_insurance')}
                             </Typography>
                             <Typography variant="body2" color="textSecondary">
-                                Protect your vehicle with our reliable auto insurance policies.
+                                {t('property_insurance_desc')}
                             </Typography>
                         </Paper>
                     </Grid>
@@ -52,26 +54,26 @@ const Home = () => {
             </Box>
             <Box py={5}>
                 <Typography variant="h4" fontWeight="bold" gutterBottom color="primary">
-                    Recent Articles
+                    {t('recent_articles')}
                 </Typography>
                 <Grid container spacing={4}>
                     <Grid item xs={12} md={6}>
                         <Paper elevation={3} sx={{ p: 3 }}>
                             <Typography variant="h6" fontWeight="bold" gutterBottom>
-                                Understanding Life Insurance
+                                {t('understanding_life_insurance')}
                             </Typography>
                             <Typography variant="body2" color="textSecondary">
-                                Learn the basics of life insurance and how it can benefit you and your family.
+                                {t('understanding_life_insurance_desc')}
                             </Typography>
                         </Paper>
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <Paper elevation={3} sx={{ p: 3 }}>
                             <Typography variant="h6" fontWeight="bold" gutterBottom>
-                                Tips for Choosing Health Insurance
+                                {t('choosing_health_insurance')}
                             </Typography>
                             <Typography variant="body2" color="textSecondary">
-                                Discover tips and tricks for selecting the best health insurance plan for your needs.
+                                {t('choosing_health_insurance_desc')}
                             </Typography>
                         </Paper>
                     </Grid>

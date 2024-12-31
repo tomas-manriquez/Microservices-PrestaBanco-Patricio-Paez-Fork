@@ -16,6 +16,7 @@ public class Loan {
     private Long id;
     private int selectedYears;
     private int selectedLoan; // 1 its firstHome 2 its SecondHome 3 CommercialProperties 4 Remodeling
+    private Double selectedAmount;
     private Double selectedInterest;
     private Double propertyValue;
 

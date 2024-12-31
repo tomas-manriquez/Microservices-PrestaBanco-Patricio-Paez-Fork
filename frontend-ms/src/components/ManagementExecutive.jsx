@@ -3,8 +3,10 @@ import Box from '@mui/material/Box';
 import { Typography, Stack, Button, Link, Paper } from "@mui/material";
 import RequestService from "../services/request.service.js";
 import LoanService from "../services/loan.service.js";
+import { useTranslation } from 'react-i18next';
 
 const ManagementExecutive = () => {
+    const { t } = useTranslation();
     const [requests, setRequests] = useState([]);
     const [error, setError] = useState(null);
 
@@ -27,7 +29,7 @@ const ManagementExecutive = () => {
                 setRequests(requestsWithLoanData);
             } catch (error) {
                 console.error("Error loading the requests:", error);
-                setError("Failed to load requests");
+                setError(t('failed_to_load_requests'));
             }
         };
 
@@ -36,23 +38,23 @@ const ManagementExecutive = () => {
 
     const getLoanType = (selectedLoan) => {
         switch (selectedLoan) {
-            case 1: return "First House";
-            case 2: return "Second House";
-            case 3: return "Business Properties";
-            case 4: return "Remodeling";
-            default: return "Unknown";
+            case 1: return t("first_house");
+            case 2: return t("second_house");
+            case 3: return t("business_properties");
+            case 4: return t("remodeling");
+            default: return t("unknown");
         }
     };
 
     const getStatusText = (status) => {
         switch (status) {
-            case 1: return "Rejected";
-            case 2: return "Evaluating by executive";
-            case 3: return "Accepted";
-            case 4: return "Cancelled by customer";
-            case 5: return "Delivering loan";
-            case 6: return "Delivered loan";
-            default: return "Unknown";
+            case 1: return t("rejected");
+            case 2: return t("evaluating_by_executive");
+            case 3: return t("accepted");
+            case 4: return t("cancelled_by_customer");
+            case 5: return t("delivering_loan");
+            case 6: return t("delivered_loan");
+            default: return t("unknown");
         }
     };
 
@@ -64,7 +66,7 @@ const ManagementExecutive = () => {
         RequestService
             .update(request)
             .then(() => {
-                alert(`Status changed to ${getStatusText(newStatus)}`);
+                alert(t('status_changed_to', { status: getStatusText(newStatus) }));
                 setRequests(prevRequests =>
                     prevRequests.map(req =>
                         req.id === requestId ? { ...req, status: newStatus } : req
@@ -73,7 +75,7 @@ const ManagementExecutive = () => {
             })
             .catch((error) => {
                 console.error(`Error updating status for request ${requestId}:`, error);
-                alert("Failed to change request status");
+                alert(t("failed_to_change_request_status"));
             });
     };
 
@@ -90,25 +92,25 @@ const ManagementExecutive = () => {
 
         return (
             <Box>
-                <Typography variant="body2">Files:</Typography>
+                <Typography variant="body2">{t('files_header')}:</Typography>
                 <ul>
                     {fileFields.map((file, index) => (
                         loan[file] ? (
                             <li key={index}>
                                 <Link href={`data:application/octet-stream;base64,${loan[file]}`} target="_blank" rel="noopener">
-                                    {file.replace(/([A-Z])/g, ' $1')}
+                                    {t(`files.${file.replace(/([A-Z])/g, '_$1').toLowerCase()}`)}
                                 </Link>
                             </li>
                         ) : (
                             <li key={index} style={{ color: 'red' }}>
-                                {file.replace(/([A-Z])/g, ' $1')} (Missing)
+                                {t(`files.${file.replace(/([A-Z])/g, '_$1').toLowerCase()}`)} ({t('missing')})
                             </li>
                         )
                     ))}
                 </ul>
                 {missingFiles.length > 0 && (
                     <Typography variant="body2" color="error">
-                        Missing files for this loan type.
+                        {t('missing_files_for_this_loan_type')}
                     </Typography>
                 )}
             </Box>
@@ -122,11 +124,11 @@ const ManagementExecutive = () => {
     return (
         <Box sx={{ flexGrow: 1, padding: 3, paddingTop: '70px', backgroundColor: '#e3f2fd', minHeight: '100vh' }}>
             <Typography variant="h5" component="div" gutterBottom>
-                Customer Requests Management
+                {t('customer_requests_management')}
             </Typography>
 
             {requests.length === 0 ? (
-                <Typography variant="body1">No requests available</Typography>
+                <Typography variant="body1">{t('no_requests_available')}</Typography>
             ) : (
                 <Stack spacing={2}>
                     {requests.map(request => (
@@ -136,38 +138,38 @@ const ManagementExecutive = () => {
                                     {request.loan && (
                                         <>
                                             <Typography variant="body2">
-                                                Loan Type: {getLoanType(request.loan.selectedLoan)}
+                                                {t('loan_type')}: {getLoanType(request.loan.selectedLoan)}
                                             </Typography>
                                             <Typography variant="body2">
-                                                Years: {request.loan.selectedYears}
+                                                {t('years')}: {request.loan.selectedYears}
                                             </Typography>
                                             <Typography variant="body2">
-                                                Interest: {request.loan.selectedInterest}%
+                                                {t('interest')}: {request.loan.selectedInterest}%
                                             </Typography>
                                             <Typography variant="body2">
-                                                Property Value: ${request.loan.propertyValue}
+                                                {t('property_value')}: ${request.loan.propertyValue}
                                             </Typography>
                                             {renderFiles(request.loan)}
                                         </>
                                     )}
                                     <Typography variant="body2">
-                                        Status: {getStatusText(request.status)}
+                                        {t('status')}: {getStatusText(request.status)}
                                     </Typography>
                                 </Box>
                                 <Box>
                                     {request.status === 2 && (
                                         <>
                                             <Button variant="contained" color="primary" onClick={() => handleChangeStatus(request.id, 3)}>
-                                                Accept
+                                                {t('accept')}
                                             </Button>
                                             <Button variant="contained" color="secondary" onClick={() => handleChangeStatus(request.id, 1)} style={{ marginLeft: 10 }}>
-                                                Reject
+                                                {t('reject')}
                                             </Button>
                                         </>
                                     )}
                                     {request.status === 3 && (
                                         <Button variant="contained" color="success" onClick={() => handleChangeStatus(request.id, 5)}>
-                                            Deliver Loan
+                                            {t('deliver_loan')}
                                         </Button>
                                     )}
                                 </Box>

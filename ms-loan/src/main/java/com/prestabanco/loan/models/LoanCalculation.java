@@ -11,6 +11,7 @@ public class LoanCalculation {
     private double interestRate;
     private int selectedLoan;
     private int selectedYears;
+    private Double selectedAmount;
     private Double selectedInterest;
 
 }

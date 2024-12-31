@@ -36,6 +36,7 @@ public class LoanService {
         loan.setBusinessFinancialState(businessFinancialState);
         loan.setBusinessPlan(businessPlan);
         loan.setRemodelingBudget(remodelingBudget);
+        loan.setSelectedAmount(loanCalculation.getSelectedAmount()); // Add this line
         return loanRepository.save(loan);
     }
 
@@ -63,7 +64,7 @@ public class LoanService {
         loanRepository.deleteById(id);
     }
 
-    public Map<String, Object> calculateLoan(int loanType, double propertyValue, int years, double interestRate) {
+    public Map<String, Object> calculateLoan(int loanType, double propertyValue, int years, double interestRate, double selectedAmount) {
         Map<Integer, LoanType> loanTypes = Map.of(
                 1, new LoanType(3.5, 5, 0.8, 30), // First House
                 2, new LoanType(4, 6, 0.7, 20), // Second House
@@ -82,18 +83,22 @@ public class LoanService {
         }
 
         double maxLoanAmount = propertyValue * selectedLoanType.getMaxPercentage();
+        if (selectedAmount > maxLoanAmount) {
+            throw new IllegalArgumentException("Selected amount exceeds maximum allowed loan amount");
+        }
+
         if (interestRate < selectedLoanType.getMinInterest() || interestRate > selectedLoanType.getMaxInterest()) {
             throw new IllegalArgumentException("Interest rate out of range");
         }
 
         int months = years * 12;
         double monthlyInterest = interestRate / 12 / 100;
-        double monthlyFee = maxLoanAmount *
+        double monthlyFee = selectedAmount *
                 ((monthlyInterest * Math.pow(1 + monthlyInterest, months)) /
                         (Math.pow(1 + monthlyInterest, months) - 1));
 
         Map<String, Object> response = new HashMap<>();
-        response.put("loanAmount", maxLoanAmount);
+        response.put("loanAmount", selectedAmount);
         response.put("monthlyFee", monthlyFee);
         response.put("annualInterest", interestRate);
         response.put("monthlyInterest", monthlyInterest);

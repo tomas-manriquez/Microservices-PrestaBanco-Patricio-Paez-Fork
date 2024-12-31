@@ -10,6 +10,7 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import ExecutiveService from "../services/executive.service.js";
 import {useNavigate} from "react-router-dom";
+import { useTranslation } from 'react-i18next';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -51,6 +52,7 @@ const validateInputs = () => {
 
 const LoginExecutive = () => {
     const navigate = useNavigate();
+    const { t } = useTranslation();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -86,15 +88,15 @@ const LoginExecutive = () => {
                     variant="h4"
                     sx={{ width: '100%', textAlign: 'center',}}
                 >
-                    Login
+                    {t('login')}
                 </Typography>
                 <FormControl>
-                    <FormLabel htmlFor="email">Email</FormLabel>
+                    <FormLabel htmlFor="email">{t('email')}</FormLabel>
                     <TextField
                         id="email"
                         type="email"
                         name="email"
-                        placeholder="example@email.com"
+                        placeholder={t('email_example')}
                         autoComplete="email"
                         autoFocus
                         required
@@ -105,7 +107,7 @@ const LoginExecutive = () => {
                 </FormControl>
                 <FormControl>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <FormLabel htmlFor="password">Password</FormLabel>
+                        <FormLabel htmlFor="password">{t('password')}</FormLabel>
                     </Box>
                     <TextField
                         name="password"
@@ -127,7 +129,7 @@ const LoginExecutive = () => {
                     onClick={handleSubmit}
                     sx={{ margin: 'auto' }}
                 >
-                    Sign in
+                    {t('sign_in')}
                 </Button>
             </Card>
         </SignInContainer>

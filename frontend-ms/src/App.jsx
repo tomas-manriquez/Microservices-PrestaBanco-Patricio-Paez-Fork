@@ -1,5 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './components/i18n';
 import NavbarExecutive from './components/NavbarExecutive.jsx';
 import Home from './components/Home';
 import NotFoundPage from './components/NotFoundPage';
@@ -19,34 +21,35 @@ import NavbarHome from "./components/NavbarHome.jsx";
 
 function App() {
     return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<NavbarHome />}>
-                    <Route index element={<Home />} />
-                    <Route path="home" element={<Home />} />
-                </Route>
-                <Route path="/customer" element={<NavbarCustomer />}>
-                    <Route path="home" element={<CustomerHome />} />
-                    <Route path="login" element={<LoginCustomer />} />
-                    <Route path="register" element={<RegisterCustomer />} />
-                    <Route path="loans" element={<Loans />} />
-                    <Route path="simulation" element={<Simulation />} />
-                    <Route path="profile" element={<CustomerProfile />}>
-                        <Route path="personal-information" element={<CustomerPersonalInformation />} />
-                        <Route path="requests" element={<CustomerRequests />} />
+        <I18nextProvider i18n={i18n}>
+            <Router>
+                <Routes>
+                    <Route path="/" element={<NavbarHome />}>
+                        <Route index element={<Home />} />
+                        <Route path="home" element={<Home />} />
                     </Route>
-                </Route>
-                <Route path="/executive" element={<NavbarExecutive />}>
-                    <Route path="home" element={<ExecutiveHome />} />
-                    <Route path="management" element={<ManagementExecutive />} />
-                    <Route path="profile" element={<ExecutiveHome />} />
-                    <Route path="login" element={<LoginExecutive />} />
-                </Route>
-                <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-        </Router>
+                    <Route path="/customer" element={<NavbarCustomer />}>
+                        <Route path="home" element={<CustomerHome />} />
+                        <Route path="login" element={<LoginCustomer />} />
+                        <Route path="register" element={<RegisterCustomer />} />
+                        <Route path="loans" element={<Loans />} />
+                        <Route path="simulation" element={<Simulation />} />
+                        <Route path="profile" element={<CustomerProfile />}>
+                            <Route path="personal-information" element={<CustomerPersonalInformation />} />
+                            <Route path="requests" element={<CustomerRequests />} />
+                        </Route>
+                    </Route>
+                    <Route path="/executive" element={<NavbarExecutive />}>
+                        <Route path="home" element={<ExecutiveHome />} />
+                        <Route path="management" element={<ManagementExecutive />} />
+                        <Route path="profile" element={<ExecutiveHome />} />
+                        <Route path="login" element={<LoginExecutive />} />
+                    </Route>
+                    <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+            </Router>
+        </I18nextProvider>
     );
 }
-
 
 export default App;

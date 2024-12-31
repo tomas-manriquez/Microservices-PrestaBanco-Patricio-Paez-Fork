@@ -1,7 +1,10 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 const ExecutiveHome = () => {
+    const { t } = useTranslation();
+
     return (
         <Box
             display="flex"
@@ -19,7 +22,7 @@ const ExecutiveHome = () => {
                 align="center"
                 color="primary"
             >
-                Welcome to PrestaBanco's Executive Portal
+                {t('welcome_message_executive')}
             </Typography>
             <Typography
                 variant="body1"
@@ -28,8 +31,7 @@ const ExecutiveHome = () => {
                 color="textSecondary"
                 maxWidth="700px"
             >
-                As an executive at PrestaBanco, you have the tools to efficiently manage and review customer loan requests.
-                You can view, approve, reject, and track the progress of loan applications in real time.
+                {t('intro_message_executive')}
             </Typography>
             <Typography
                 variant="body1"
@@ -38,8 +40,7 @@ const ExecutiveHome = () => {
                 color="textSecondary"
                 maxWidth="700px"
             >
-                Ensure that customers receive the support they need and help them move forward with their financial goals.
-                You are at the heart of PrestaBanco's decision-making process.
+                {t('support_message_executive')}
             </Typography>
         </Box>
     );

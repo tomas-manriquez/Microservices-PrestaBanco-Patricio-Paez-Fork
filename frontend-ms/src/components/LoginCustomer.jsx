@@ -12,6 +12,7 @@ import Alert from '@mui/material/Alert';
 import { styled } from '@mui/material/styles';
 import CustomerService from "../services/customer.service.js";
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const Card = styled(MuiCard)(({ theme }) => ({
     display: 'flex',
@@ -49,6 +50,7 @@ const validateInputs = () => {
 };
 
 const LoginCustomer = () => {
+    const { t } = useTranslation();
     const navigate = useNavigate();
     const [snackbarOpen, setSnackbarOpen] = React.useState(false);
     const [snackbarMessage, setSnackbarMessage] = React.useState('');
@@ -58,7 +60,7 @@ const LoginCustomer = () => {
         event.preventDefault();
         const isValid = validateInputs();
         if (!isValid) {
-            setSnackbarMessage('Please enter a valid email address.');
+            setSnackbarMessage(t('please_enter_valid_email'));
             setSnackbarSeverity('error');
             setSnackbarOpen(true);
             return;
@@ -79,9 +81,9 @@ const LoginCustomer = () => {
             })
             .catch((error) => {
                 if (error.response && error.response.status === 401) {
-                    setSnackbarMessage('Incorrect email or password.');
+                    setSnackbarMessage(t('incorrect_email_or_password'));
                 } else {
-                    setSnackbarMessage('There was an error logging in.');
+                    setSnackbarMessage(t('error_logging_in'));
                 }
                 setSnackbarSeverity('error');
                 setSnackbarOpen(true);
@@ -96,15 +98,15 @@ const LoginCustomer = () => {
                     variant="h4"
                     sx={{ width: '100%', textAlign: 'center' }}
                 >
-                    Login
+                    {t('login')}
                 </Typography>
                 <FormControl>
-                    <FormLabel htmlFor="email">Email</FormLabel>
+                    <FormLabel htmlFor="email">{t('email')}</FormLabel>
                     <TextField
                         id="email"
                         type="email"
                         name="email"
-                        placeholder="example@email.com"
+                        placeholder={t('email_example')}
                         autoComplete="email"
                         autoFocus
                         required
@@ -115,7 +117,7 @@ const LoginCustomer = () => {
                 </FormControl>
                 <FormControl>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <FormLabel htmlFor="password">Password</FormLabel>
+                        <FormLabel htmlFor="password">{t('password')}</FormLabel>
                     </Box>
                     <TextField
                         name="password"
@@ -137,7 +139,7 @@ const LoginCustomer = () => {
                     onClick={handleSubmit}
                     sx={{ margin: 'auto' }}
                 >
-                    Sign in
+                    {t('sign_in')}
                 </Button>
             </Card>
             <Snackbar
