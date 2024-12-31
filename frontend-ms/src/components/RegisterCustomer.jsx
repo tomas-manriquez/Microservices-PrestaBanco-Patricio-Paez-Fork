@@ -95,6 +95,13 @@ const RegisterCustomer = () => {
             });
     };
 
+    const handleTextChange = (setter) => (event) => {
+        const value = event.target.value;
+        if (/^[a-zA-Z]*$/.test(value)) {
+            setter(value);
+        }
+    };
+
     React.useEffect(() => {
         setIsValid(email && password && name && dadSurname && motherSurname && age);
     }, [email, password, name, dadSurname, motherSurname, age]);
@@ -155,37 +162,37 @@ const RegisterCustomer = () => {
                                 variant="outlined"
                                 helperText="Enter your first name"
                                 value={name}
-                                onChange={(e) => setName(e.target.value)}
+                                onChange={handleTextChange(setName)}
                             />
                         </FormControl>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
-                            <FormLabel htmlFor="dadSurname">Father Surname</FormLabel>
+                            <FormLabel htmlFor="dadSurname">First Name</FormLabel>
                             <TextField
                                 name="dadSurname"
                                 id="dadSurname"
                                 placeholder="Kennedy"
                                 required
                                 variant="outlined"
-                                helperText="Enter your father's surname"
+                                helperText="Enter your first name"
                                 value={dadSurname}
-                                onChange={(e) => setDadSurname(e.target.value)}
+                                onChange={handleTextChange(setDadSurname)}
                             />
                         </FormControl>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <FormControl fullWidth>
-                            <FormLabel htmlFor="motherSurname">Mother Surname</FormLabel>
+                            <FormLabel htmlFor="motherSurname">Last Name</FormLabel>
                             <TextField
                                 name="motherSurname"
                                 id="motherSurname"
                                 placeholder="Lennon"
                                 required
                                 variant="outlined"
-                                helperText="Enter your mother's surname"
+                                helperText="Enter your last name"
                                 value={motherSurname}
-                                onChange={(e) => setMotherSurname(e.target.value)}
+                                onChange={handleTextChange(setMotherSurname)}
                             />
                         </FormControl>
                     </Grid>

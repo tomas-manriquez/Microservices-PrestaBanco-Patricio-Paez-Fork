@@ -36,6 +36,8 @@ const Loans = ({ loanTypes = [
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [yearsError, setYearsError] = useState(false);
     const [interestError, setInterestError] = useState(false);
+    const [openWarningDialog, setOpenWarningDialog] = useState(false);
+    const [missingFiles, setMissingFiles] = useState([]);
 
     useEffect(() => {
         setIsButtonDisabled(
@@ -97,8 +99,21 @@ const Loans = ({ loanTypes = [
     };
 
     const handleConfirmSubmit = async () => {
+        const requiredDocs = requiredDocuments[selectedLoanType] || [];
+        const missingFiles = requiredDocs.filter(doc => !files[doc]);
+
+        if (missingFiles.length > 0) {
+            setMissingFiles(missingFiles);
+            setOpenWarningDialog(true);
+            return;
+        }
+
+        await submitLoanRequest();
+    };
+
+    const submitLoanRequest = async () => {
         setOpenConfirmDialog(false);
-        const idUser = localStorage.getItem('id'); // Corrected method
+        const idUser = localStorage.getItem('id');
         const loanData = {
             userId: parseInt(idUser, 10),
             selectedLoan: parseInt(selectedLoanType, 10),
@@ -124,12 +139,15 @@ const Loans = ({ loanTypes = [
             alert('There was an error submitting your loan request.');
         }
     };
-
     const requiredDocuments = {
         1: ['incomeDocument', 'appraisalCertificate', 'historicalCredit'],
         2: ['incomeDocument', 'appraisalCertificate', 'historicalCredit', 'firstHomeDeed'],
         3: ['businessFinancialState', 'incomeDocument', 'appraisalCertificate', 'businessPlan'],
         4: ['incomeDocument', 'remodelingBudget', 'appraisalCertificate'],
+    };
+
+    const formatFileName = (fileName) => {
+        return fileName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
     };
 
     return (
@@ -196,9 +214,15 @@ const Loans = ({ loanTypes = [
                                 variant="contained"
                                 component="label"
                                 fullWidth
-                                style={{ marginTop: '8px' }}
+                                sx={{
+                                    marginTop: '8px',
+                                    backgroundColor: files[docKey] ? '#4caf50' : '#1976d2', // Change color based on file presence
+                                    '&:hover': {
+                                        backgroundColor: files[docKey] ? '#388e3c' : '#115293', // Change hover color based on file presence
+                                    },
+                                }}
                             >
-                                Upload {docKey.replace(/([A-Z])/g, ' $1')}
+                                Upload {formatFileName(docKey)}
                                 <input
                                     type="file"
                                     hidden
@@ -213,7 +237,15 @@ const Loans = ({ loanTypes = [
                     onClick={handleCalculate}
                     disabled={isButtonDisabled}
                     fullWidth
-                    style={{ marginTop: '20px' }}
+                    sx={{
+                        marginTop: '20px',
+                        backgroundColor: '#1976d2',
+                        '&:hover': {
+                            backgroundColor: '#115293',
+                        },
+                        padding: '10px 20px',
+                        fontSize: '16px',
+                    }}
                 >
                     Calculate Loan
                 </Button>
@@ -230,8 +262,20 @@ const Loans = ({ loanTypes = [
                         )}
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => setOpenConfirmDialog(false)}>Cancel</Button>
-                        <Button onClick={handleConfirmSubmit} color="primary">
+                        <Button
+                            onClick={() => setOpenConfirmDialog(false)}
+                            sx={{
+                                color: '#f44336',
+                            }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleConfirmSubmit}
+                            sx={{
+                                color: '#4caf50',
+                            }}
+                        >
                             Confirm and Submit
                         </Button>
                     </DialogActions>
@@ -251,6 +295,28 @@ const Loans = ({ loanTypes = [
                     </Alert>
                 </Snackbar>
             </Paper>
+            <Dialog open={openWarningDialog} onClose={() => setOpenWarningDialog(false)}>
+                <DialogTitle>Missing Files</DialogTitle>
+                <DialogContent>
+                    <Typography>Please upload the following files: {missingFiles.map(formatFileName).join(', ')}</Typography>                    <Typography>Do you still want to proceed with the request?</Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setOpenWarningDialog(false)}
+                            sx={{
+                                color: '#f44336',
+                            }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button onClick={submitLoanRequest}
+                            sx={{
+                        color: '#4caf50',
+                    }}
+                    >
+                        Proceed
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };
