@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import { Typography, Stack, Button, Link, Paper } from "@mui/material";
+import { Typography, Stack, Button, Link, Paper, Snackbar, Alert } from "@mui/material";
 import RequestService from "../services/request.service.js";
 import LoanService from "../services/loan.service.js";
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,9 @@ const ManagementExecutive = () => {
     const { t } = useTranslation();
     const [requests, setRequests] = useState([]);
     const [error, setError] = useState(null);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertSeverity, setAlertSeverity] = useState('success');
+    const [alertOpen, setAlertOpen] = useState(false);
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -66,7 +69,9 @@ const ManagementExecutive = () => {
         RequestService
             .update(request)
             .then(() => {
-                alert(t('status_changed_to', { status: getStatusText(newStatus) }));
+                setAlertMessage(t('status_changed_to', { status: getStatusText(newStatus) }));
+                setAlertSeverity('success');
+                setAlertOpen(true);
                 setRequests(prevRequests =>
                     prevRequests.map(req =>
                         req.id === requestId ? { ...req, status: newStatus } : req
@@ -75,7 +80,9 @@ const ManagementExecutive = () => {
             })
             .catch((error) => {
                 console.error(`Error updating status for request ${requestId}:`, error);
-                alert(t("failed_to_change_request_status"));
+                setAlertMessage(t("failed_to_change_request_status"));
+                setAlertSeverity('error');
+                setAlertOpen(true);
             });
     };
 
@@ -178,6 +185,12 @@ const ManagementExecutive = () => {
                     ))}
                 </Stack>
             )}
+
+            <Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => setAlertOpen(false)}>
+                <Alert onClose={() => setAlertOpen(false)} severity={alertSeverity}>
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };

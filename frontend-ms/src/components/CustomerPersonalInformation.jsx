@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import { Typography, TextField, Button, Stack, Checkbox, FormControlLabel } from "@mui/material";
+import { Typography, TextField, Button, Stack, Checkbox, FormControlLabel, Snackbar, Alert } from "@mui/material";
 import CustomerService from "../services/customer.service.js";
 import FormControl from "@mui/material/FormControl";
 import { useTranslation } from 'react-i18next';
@@ -29,6 +29,10 @@ const CustomerPersonalInformation = () => {
         recentWithdraws: false,
     });
 
+    const [alertMessage, setAlertMessage] = useState('');
+    const [alertSeverity, setAlertSeverity] = useState('success');
+    const [alertOpen, setAlertOpen] = useState(false);
+
     useEffect(() => {
         CustomerService
             .get(localStorage.getItem('id'))
@@ -50,9 +54,16 @@ const CustomerPersonalInformation = () => {
         CustomerService
             .update(userInfo)
             .then(() => {
-                alert(t("updated_info_successfully"));
+                setAlertMessage(t("updated_info_successfully"));
+                setAlertSeverity('success');
+                setAlertOpen(true);
             })
-            .catch(error => console.error("Error updating the information:", error));
+            .catch(error => {
+                console.error("Error updating the information:", error);
+                setAlertMessage(t("failed_to_update_info"));
+                setAlertSeverity('error');
+                setAlertOpen(true);
+            });
     };
 
     return (
@@ -215,6 +226,11 @@ const CustomerPersonalInformation = () => {
                     {t("update_info")}
                 </Button>
             </Stack>
+            <Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => setAlertOpen(false)}>
+                <Alert onClose={() => setAlertOpen(false)} severity={alertSeverity}>
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };
