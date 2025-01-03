@@ -2,6 +2,7 @@ package com.prestabanco.loan.service;
 
 import com.prestabanco.loan.entity.Loan;
 import com.prestabanco.loan.models.LoanCalculation;
+import com.prestabanco.loan.models.LoanType;
 import com.prestabanco.loan.repository.LoanRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -107,22 +108,4 @@ public class LoanService {
         return response;
     }
 
-    static class LoanType {
-        private final double minInterest;
-        private final double maxInterest;
-        private final double maxPercentage;
-        private final int maxYears;
-
-        public LoanType(double minInterest, double maxInterest, double maxPercentage, int maxYears) {
-            this.minInterest = minInterest;
-            this.maxInterest = maxInterest;
-            this.maxPercentage = maxPercentage;
-            this.maxYears = maxYears;
-        }
-
-        public double getMinInterest() { return minInterest; }
-        public double getMaxInterest() { return maxInterest; }
-        public double getMaxPercentage() { return maxPercentage; }
-        public int getMaxYears() { return maxYears; }
-    }
 }

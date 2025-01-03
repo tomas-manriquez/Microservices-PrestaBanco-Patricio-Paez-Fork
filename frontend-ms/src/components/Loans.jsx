@@ -17,6 +17,24 @@ import LoanService from '../services/loan.service';
 import RequestService from '../services/request.service';
 import { useTranslation } from 'react-i18next';
 
+const MinimalistDialog = ({ open, onClose, title, content, actions }) => {
+    const { t } = useTranslation();
+
+    return (
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+            <DialogTitle sx={{ textAlign: 'center', fontSize: '1.5rem', fontWeight: 'bold' }}>
+                {title}
+            </DialogTitle>
+            <DialogContent sx={{ padding: '2rem', textAlign: 'center' }}>
+                {content}
+            </DialogContent>
+            <DialogActions sx={{ justifyContent: 'center', padding: '1rem' }}>
+                {actions}
+            </DialogActions>
+        </Dialog>
+    );
+};
+
 const Loans = ({ loanTypes = [
     { type: 'loan_types.first_house', value: 1 },
     { type: 'loan_types.second_house', value: 2 },
@@ -36,6 +54,7 @@ const Loans = ({ loanTypes = [
     const [loanTypeDetails, setLoanTypeDetails] = useState({});
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [snackbarSeverity, setSnackbarSeverity] = useState('error');
     const [yearsError, setYearsError] = useState(false);
     const [interestError, setInterestError] = useState(false);
     const [openWarningDialog, setOpenWarningDialog] = useState(false);
@@ -309,48 +328,50 @@ const Loans = ({ loanTypes = [
                 >
                     {t('calculate_loan')}
                 </Button>
-                <Dialog open={openConfirmDialog} onClose={() => setOpenConfirmDialog(false)}>
-                    <DialogTitle>{t('loan_calculation')}</DialogTitle>
-                    <DialogContent>
-                        {calculatedLoan && (
-                            <>
-                                <Typography>{t('loan_amount')}: ${calculatedLoan.loanAmount.toFixed(2)}</Typography>
-                                <Typography>{t('monthly_fee')}: ${calculatedLoan.monthlyFee.toFixed(2)}</Typography>
-                                <Typography>{t('annual_interest_rate')}: {calculatedLoan.annualInterest}%</Typography>
-                                <Typography>{t('duration')}: {calculatedLoan.months} {t('months')}</Typography>
-                            </>
-                        )}
-                    </DialogContent>
-                    <DialogActions>
-                        <Button
-                            onClick={() => setOpenConfirmDialog(false)}
-                            sx={{
-                                color: '#f44336',
-                            }}
-                        >
-                            {t('cancel')}
+                <MinimalistDialog
+                    open={openConfirmDialog}
+                    onClose={() => setOpenConfirmDialog(false)}
+                    title={t('loan_calculation')}
+                    content={
+                        calculatedLoan && (
+                            <Box>
+                                <Typography variant="h6">{t('loan_amount')}: ${calculatedLoan.loanAmount.toFixed(2)}</Typography>
+                                <Typography variant="h6">{t('monthly_fee')}: ${calculatedLoan.monthlyFee.toFixed(2)}</Typography>
+                                <Typography variant="h6">{t('annual_interest_rate')}: {calculatedLoan.annualInterest}%</Typography>
+                                <Typography variant="h6">{t('duration')}: {calculatedLoan.months} {t('months')}</Typography>
+                            </Box>
+                        )
+                    }
+                    actions={
+                        <>
+                            <Button onClick={() => setOpenConfirmDialog(false)} sx={{ color: '#f44336' }}>
+                                {t('cancel')}
+                            </Button>
+                            <Button onClick={handleConfirmSubmit} sx={{ color: '#4caf50' }}>
+                                {t('confirm_submit')}
+                            </Button>
+                        </>
+                    }
+                />
+                <MinimalistDialog
+                    open={openDialog}
+                    onClose={handleCloseDialog}
+                    title={t('loan_request_submitted')}
+                    content={<Typography>{t('loan_request_success')}</Typography>}
+                    actions={
+                        <Button onClick={handleCloseDialog} sx={{ color: '#4caf50' }}>
+                            {t('close')}
                         </Button>
-                        <Button
-                            onClick={handleConfirmSubmit}
-                            sx={{
-                                color: '#4caf50',
-                            }}
-                        >
-                            {t('confirm_submit')}
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-                <Dialog open={openDialog} onClose={handleCloseDialog}>
-                    <DialogTitle>{t('loan_request_submitted')}</DialogTitle>
-                    <DialogContent>
-                        <Typography>{t('loan_request_success')}</Typography>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={handleCloseDialog}>{t('close')}</Button>
-                    </DialogActions>
-                </Dialog>
-                <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={() => setSnackbarOpen(false)}>
-                    <Alert onClose={() => setSnackbarOpen(false)} severity="error">
+                    }
+                />
+                <Snackbar
+                    open={snackbarOpen}
+                    autoHideDuration={6000}
+                    onClose={() => setSnackbarOpen(false)}
+                    anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    sx={{ marginTop: '64px' }} // Adjust this value based on your navbar height
+                >
+                    <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity}>
                         {snackbarMessage}
                     </Alert>
                 </Snackbar>

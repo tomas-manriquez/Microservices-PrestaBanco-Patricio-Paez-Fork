@@ -38,6 +38,9 @@
   "enter_last_name": "Enter your last name",
   "enter_valid_email": "Enter a valid email address",
   "enter_password": "Enter a password with at least 6 characters",
+  "account_created_success": "Account created successfully. Please log in and complete your profile.",
+  "account_creation_error": "There was an error creating your account",
+  "email_already_registered": "This email is already registered",
 
   "request_loan": "Request a Loan",
   "loan_type": "Loan Type",
@@ -64,7 +67,7 @@
   "proceed_request": "Do you still want to proceed with the request?",
   "proceed": "Proceed",
   "upload": "Upload",
-  "months": "months",
+  "months": "Months",
   "selected_amount_exceeds": "Selected amount exceeds",
   "of_property_value": "of the property value",
   "loan_types": {
@@ -98,6 +101,11 @@
   "close": "Close",
   "loan_calculation_results": "Loan Calculation Results",
   "simulation": "Simulation",
+  "loan_max_amount": "Loan Max Amount",
+  "monthly_interest": "Monthly Interest",
+  "monthly_cost": "Monthly Cost",
+  "relief_insurance": "Relief Insurance",
+  "fire_insurance": "Fire Insurance",
 
   "personal_information": "Personal Information",
   "requests": "Requests",
@@ -152,7 +160,7 @@
   "consistent_save_history": "Consistent save history?",
   "periodic_deposits": "Does periodic deposits?",
   "relation_years_and_balance": "Good relation between years and balance?",
-  "recent_withdraws": "Recent withdraws?",
+  "recent_withdraws": "Recent withdraws in accounts?",
   "update_info": "Update info",
   "updated_info_successfully": "Updated info successfully.",
 

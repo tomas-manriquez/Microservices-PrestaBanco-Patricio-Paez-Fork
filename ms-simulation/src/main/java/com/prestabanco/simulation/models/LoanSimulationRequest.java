@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class LoanSimulationRequest {
+    private int selectedLoan;
     private double propertyValue;
     private int years;
     private double interestRate;

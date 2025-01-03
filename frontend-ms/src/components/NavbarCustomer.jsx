@@ -64,7 +64,9 @@ const NavbarCustomer = () => {
                             <Button color="inherit" startIcon={<CreditScoreIcon />} component={Link} to="/customer/loans">
                                 {t('loans')}
                             </Button>
-
+                            <Button color="inherit" startIcon={<CreditScoreIcon />} component={Link} to="/customer/simulation">
+                                {t('simulate')}
+                            </Button>
                             <Button color="inherit" startIcon={<AccountCircle />} component={Link} to="/customer/profile/personal-information">
                                 {t('profile')}
                             </Button>

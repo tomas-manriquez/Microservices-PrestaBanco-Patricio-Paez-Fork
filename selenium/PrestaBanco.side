@@ -2,7 +2,7 @@
   "id": "882d0783-1f4a-417c-bf30-9cbdf63b3f14",
   "version": "2.0",
   "name": "PrestaBanco",
-  "url": "http://localhost:3000/customer/loans",
+  "url": "http://localhost:3000/customer/simulation",
   "tests": [{
     "id": "a33401cb-44fd-4c7c-83a8-0cd1bad7e543",
     "name": "test-showFilesBySelectingLoanType",
@@ -265,6 +265,14 @@
       ],
       "value": ""
     }]
+  }, {
+    "id": "79f85250-5afb-43a5-bdd3-2ab96b9a2c3d",
+    "name": "simulate-showAlertWrongValue",
+    "commands": []
+  }, {
+    "id": "342a6d4c-fda1-4d2c-885c-0cb5f591c438",
+    "name": "simulate-successSimulation",
+    "commands": []
   }],
   "suites": [{
     "id": "abe66eb8-4528-4ab2-85a8-eac92ab9c58e",

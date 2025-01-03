@@ -37,6 +37,9 @@
   "enter_last_name": "Ingrese su segundo apellido",
   "enter_valid_email": "Ingrese un correo electrónico válido",
   "enter_password": "Ingrese una contraseña de al menos 6 caracteres",
+  "account_created_success": "Cuenta creada con éxito. Por favor, inicie sesión y complete su perfil.",
+  "account_creation_error": "Hubo un error al crear su cuenta",
+  "email_already_registered": "Este correo electrónico ya está registrado",
 
   "request_loan": "Solicitar un Préstamo",
   "loan_type": "Tipo de Préstamo",
@@ -63,7 +66,7 @@
   "proceed_request": "¿Aún así desea proceder con la solicitud?",
   "proceed": "Proceder",
   "upload": "Subir",
-  "months": "meses",
+  "months": "Meses",
   "selected_amount_exceeds": "El monto seleccionado excede",
   "of_property_value": "del valor de la propiedad",
   "loan_types": {
@@ -97,6 +100,11 @@
   "close": "Cerrar",
   "loan_calculation_results": "Resultados del Cálculo del Préstamo",
   "simulation": "Simulación",
+  "loan_max_amount": "Monto Máximo del Préstamo",
+  "monthly_interest": "Interés Mensual",
+  "monthly_cost": "Costo Mensual",
+  "relief_insurance": "Seguro de Desgravamen",
+  "fire_insurance": "Seguro de Incendio",
 
   "personal_information": "Información Personal",
   "requests": "Solicitudes",
@@ -151,7 +159,7 @@
   "consistent_save_history": "¿Historial de ahorro consistente?",
   "periodic_deposits": "¿Realiza depósitos periódicos?",
   "relation_years_and_balance": "¿Buena relación entre años y balance?",
-  "recent_withdraws": "¿Retiros recientes?",
+  "recent_withdraws": "¿Retiros recientes en cuentas?",
   "update_info": "Actualizar información",
   "updated_info_successfully": "Información actualizada con éxito.",
 

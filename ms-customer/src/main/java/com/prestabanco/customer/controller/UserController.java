@@ -49,6 +49,14 @@ public class UserController {
     @PostMapping("/register")
     public ResponseEntity<UserResponse> registerUser(@RequestBody UserRequest user) {
         UserResponse userSaved = userService.registerUser(user);
+        if (userSaved.getId() == 2) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(userSaved);
+        }
+
+        if (userSaved.getId() == 3) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(userSaved);
+        }
+
         return ResponseEntity.ok(userSaved);
     }
 

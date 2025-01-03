@@ -21,7 +21,7 @@ public class UserService {
 
     public UserResponse registerUser(UserRequest request) {
         if (userRepository.findFirstByEmail(request.getEmail()) != null) {
-            return new UserResponse(null, "Email already registered");
+            return new UserResponse(2, "Email already registered");
         }
         User user = new User();
         user.setName(request.getName());
@@ -41,8 +41,10 @@ public class UserService {
         user.setWorkingYears(0);
         user.setIndependentWorker(false);
         userRepository.save(user);
-
-        return new UserResponse(user.getId(), "User registered successfully");
+        if (user.getId() == null) {
+            return new UserResponse(3, "Error registering user");
+        }
+        return new UserResponse(1, "User registered successfully");
     }
 
     public UserLoginResponse loginUser(UserLoginRequest request) {

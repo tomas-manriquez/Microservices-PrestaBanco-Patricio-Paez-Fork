@@ -86,12 +86,16 @@ const RegisterCustomer = () => {
         customerService
             .register(customer)
             .then((response) => {
-                setSnackbarMessage('Account successfully created! Please complete your data in your profile.');
+                setSnackbarMessage(t('account_created_success'));
                 setSnackbarSeverity('success');
                 setSnackbarOpen(true);
             })
             .catch((error) => {
-                setSnackbarMessage('There was an error creating the account.');
+                if (error.response && error.response.status === 409) {
+                    setSnackbarMessage(t('email_already_registered'));
+                } else {
+                    setSnackbarMessage(t('account_creation_error'));
+                }
                 setSnackbarSeverity('error');
                 setSnackbarOpen(true);
             });

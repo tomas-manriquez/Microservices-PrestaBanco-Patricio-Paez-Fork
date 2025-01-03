@@ -5,37 +5,56 @@ import {
     MenuItem,
     Typography,
     Box,
+    Snackbar,
     Dialog,
     DialogTitle,
     DialogContent,
     DialogActions,
     Paper,
+    Alert,
 } from '@mui/material';
 import SimulationService from '../services/simulation.service.js';
 import { useTranslation } from 'react-i18next';
 
+const MinimalistDialog = ({ open, onClose, title, content, actions }) => {
+    const { t } = useTranslation();
+
+    return (
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+            <DialogTitle sx={{ textAlign: 'center', fontSize: '1.5rem', fontWeight: 'bold' }}>
+                {title}
+            </DialogTitle>
+            <DialogContent sx={{ padding: '2rem', textAlign: 'center' }}>
+                {content}
+            </DialogContent>
+            <DialogActions sx={{ justifyContent: 'center', padding: '1rem' }}>
+                {actions}
+            </DialogActions>
+        </Dialog>
+    );
+};
+
 const Simulation = ({ loanTypes = [
-    { type: 'loan_types.first_house', minInterest: 3.5, maxInterest: 5, maxPercentage: 0.8, maxYears: 30 },
-    { type: 'loan_types.second_house', minInterest: 4, maxInterest: 6, maxPercentage: 0.7, maxYears: 20 },
-    { type: 'loan_types.commercial_properties', minInterest: 5, maxInterest: 7, maxPercentage: 0.6, maxYears: 25 },
-    { type: 'loan_types.remodeling', minInterest: 4.5, maxInterest: 6, maxPercentage: 0.5, maxYears: 15 }
+    { type: 'loan_types.first_house', value: 1, minInterest: 3.5, maxInterest: 5, maxPercentage: 0.8, maxYears: 30 },
+    { type: 'loan_types.second_house', value: 2, minInterest: 4, maxInterest: 6, maxPercentage: 0.7, maxYears: 20 },
+    { type: 'loan_types.commercial_properties', value: 3, minInterest: 5, maxInterest: 7, maxPercentage: 0.6, maxYears: 25 },
+    { type: 'loan_types.remodeling', value: 4, minInterest: 4.5, maxInterest: 6, maxPercentage: 0.5, maxYears: 15 }
 ] }) => {
     const { t } = useTranslation();
     const [selectedLoanType, setSelectedLoanType] = useState('');
     const [propertyValue, setPropertyValue] = useState('');
     const [selectedTime, setSelectedTime] = useState('');
     const [selectedInterest, setSelectedInterest] = useState('');
-    const [insuranceRate, setInsuranceRate] = useState('');
-    const [fixedMonthlyCost, setFixedMonthlyCost] = useState('');
-    const [adminFeeRate, setAdminFeeRate] = useState('');
     const [calculationResult, setCalculationResult] = useState(null);
     const [totalCostResult, setTotalCostResult] = useState(null);
     const [openLoanDialog, setOpenLoanDialog] = useState(false);
     const [openTotalCostDialog, setOpenTotalCostDialog] = useState(false);
     const [isCalculateLoanDisabled, setIsCalculateLoanDisabled] = useState(true);
     const [isCalculateTotalCostDisabled, setIsCalculateTotalCostDisabled] = useState(true);
+    const [error, setError] = useState(null);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-    const currentLoanType = loanTypes.find((loan) => loan.type === selectedLoanType);
+    const currentLoanType = loanTypes.find((loan) => loan.value === selectedLoanType);
 
     useEffect(() => {
         setIsCalculateLoanDisabled(
@@ -45,54 +64,110 @@ const Simulation = ({ loanTypes = [
 
     useEffect(() => {
         setIsCalculateTotalCostDisabled(
-            !selectedLoanType || !propertyValue || !selectedTime || !selectedInterest || !insuranceRate || !fixedMonthlyCost || !adminFeeRate
+            !selectedLoanType || !propertyValue || !selectedTime || !selectedInterest
         );
-    }, [selectedLoanType, propertyValue, selectedTime, selectedInterest, insuranceRate, fixedMonthlyCost, adminFeeRate]);
+    }, [selectedLoanType, propertyValue, selectedTime, selectedInterest]);
+
+    const formatNumber = (value) => {
+        return value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    };
+
+    const handlePropertyValueChange = (e) => {
+        const value = e.target.value.replace(/\./g, '');
+        if (/^\d*$/.test(value)) {
+            setPropertyValue(formatNumber(value));
+        }
+    };
+
+    const handleSelectedYearsChange = (e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value)) {
+            setSelectedTime(value);
+        }
+    };
+
+    const handleInterestRateChange = (e) => {
+        const value = e.target.value.replace(',', '.');
+        if (/^\d*\.?\d*$/.test(value)) {
+            setSelectedInterest(value);
+        }
+    };
 
     const handleCalculateLoan = () => {
         const loanData = {
-            propertyValue: parseFloat(propertyValue),
+            selectedLoan: selectedLoanType,
+            propertyValue: parseFloat(propertyValue.replace(/\./g, '')),
             years: parseInt(selectedTime),
             interestRate: parseFloat(selectedInterest),
             maxPercentage: currentLoanType?.maxPercentage || 0,
         };
+
+        const { minInterest, maxInterest, maxYears } = currentLoanType;
+
+        if (loanData.years > maxYears) {
+            setError(`${t('max_years')}: ${maxYears}`);
+            setSnackbarOpen(true);
+            return;
+        }
+
+        if (loanData.interestRate < minInterest || loanData.interestRate > maxInterest) {
+            setError(`${t('interest_rate')} ${minInterest}% - ${maxInterest}%`);
+            setSnackbarOpen(true);
+            return;
+        }
 
         SimulationService.simulate(loanData)
             .then((response) => {
                 setCalculationResult(response.data);
                 setOpenLoanDialog(true);
+                setError(null);
             })
             .catch(() => {
-                alert(t('error_calculating_loan'));
+                setError(t('error_calculating_loan'));
+                setSnackbarOpen(true);
             });
     };
 
     const handleCalculateTotalCost = () => {
         const totalCostData = {
-            propertyValue: parseFloat(propertyValue),
+            selectedLoan: selectedLoanType,
+            propertyValue: parseFloat(propertyValue.replace(/\./g, '')),
             years: parseInt(selectedTime),
             interestRate: parseFloat(selectedInterest),
             maxPercentage: currentLoanType?.maxPercentage || 0,
-            insuranceRate: parseFloat(insuranceRate),
-            fixedMonthlyCost: parseFloat(fixedMonthlyCost),
-            adminFeeRate: parseFloat(adminFeeRate),
         };
+
+        const { minInterest, maxInterest, maxYears } = currentLoanType;
+
+        if (totalCostData.years > maxYears) {
+            setError(`${t('max_years')}: ${maxYears}`);
+            setSnackbarOpen(true);
+            return;
+        }
+
+        if (totalCostData.interestRate < minInterest || totalCostData.interestRate > maxInterest) {
+            setError(`${t('interest_rate')} ${minInterest}% - ${maxInterest}%`);
+            setSnackbarOpen(true);
+            return;
+        }
 
         SimulationService.totalcost(totalCostData)
             .then((response) => {
                 setTotalCostResult(response.data);
                 setOpenTotalCostDialog(true);
+                setError(null);
             })
             .catch(() => {
-                alert(t('error_calculating_total_cost'));
+                setError(t('error_calculating_total_cost'));
+                setSnackbarOpen(true);
             });
     };
 
     return (
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh" sx={{ backgroundColor: '#c5c1c1', padding: 3 }}>
-            <Box display="flex" flexDirection="row" justifyContent="space-between" sx={{ width: '100%', maxWidth: 1200 }}>
-                <Paper elevation={3} sx={{ padding: 4, width: '48%' }}>
-                    <Typography variant="h6" align="center">{t('simulation')}</Typography>
+            <Box display="flex" justifyContent="center" sx={{ width: '100%', maxWidth: 600 }}>
+                <Paper elevation={3} sx={{ padding: 4, width: '100%' }}>
+                    <Typography variant="h4" align="center">{t('simulation')}</Typography>
                     <Box component="form">
                         <TextField
                             select
@@ -103,7 +178,7 @@ const Simulation = ({ loanTypes = [
                             margin="normal"
                         >
                             {loanTypes.map((loan) => (
-                                <MenuItem key={loan.type} value={loan.type}>
+                                <MenuItem key={loan.value} value={loan.value}>
                                     {t(loan.type)}
                                 </MenuItem>
                             ))}
@@ -115,25 +190,25 @@ const Simulation = ({ loanTypes = [
                         )}
                         <TextField
                             label={t('property_value')}
-                            type="number"
+                            type="text"
                             value={propertyValue}
-                            onChange={(e) => setPropertyValue(e.target.value)}
+                            onChange={handlePropertyValueChange}
                             fullWidth
                             margin="normal"
                         />
                         <TextField
                             label={t('selected_years')}
-                            type="number"
+                            type="text"
                             value={selectedTime}
-                            onChange={(e) => setSelectedTime(e.target.value)}
+                            onChange={handleSelectedYearsChange}
                             fullWidth
                             margin="normal"
                         />
                         <TextField
                             label={t('interest_rate')}
-                            type="number"
+                            type="text"
                             value={selectedInterest}
-                            onChange={(e) => setSelectedInterest(e.target.value)}
+                            onChange={handleInterestRateChange}
                             fullWidth
                             margin="normal"
                         />
@@ -147,37 +222,7 @@ const Simulation = ({ loanTypes = [
                                 {t('calculate_loan')}
                             </Button>
                         </Box>
-                    </Box>
-                </Paper>
-
-                <Paper elevation={3} sx={{ padding: 4, width: '48%' }}>
-                    <Typography variant="h6" align="center">{t('total_cost')}</Typography>
-                    <Box component="form">
-                        <TextField
-                            label={t('insurance_rate')}
-                            type="number"
-                            value={insuranceRate}
-                            onChange={(e) => setInsuranceRate(e.target.value)}
-                            fullWidth
-                            margin="normal"
-                        />
-                        <TextField
-                            label={t('fixed_monthly_cost')}
-                            type="number"
-                            value={fixedMonthlyCost}
-                            onChange={(e) => setFixedMonthlyCost(e.target.value)}
-                            fullWidth
-                            margin="normal"
-                        />
-                        <TextField
-                            label={t('admin_fee_rate')}
-                            type="number"
-                            value={adminFeeRate}
-                            onChange={(e) => setAdminFeeRate(e.target.value)}
-                            fullWidth
-                            margin="normal"
-                        />
-                        <Box paddingTop={15} display="flex" justifyContent="center">
+                        <Box display="flex" justifyContent="center" sx={{ marginTop: '1rem' }}>
                             <Button
                                 variant="contained"
                                 color="secondary"
@@ -191,38 +236,61 @@ const Simulation = ({ loanTypes = [
                 </Paper>
             </Box>
 
-            <Dialog open={openLoanDialog} onClose={() => setOpenLoanDialog(false)}>
-                <DialogTitle>{t('loan_calculation_results')}</DialogTitle>
-                <DialogContent>
-                    {calculationResult && (
-                        <>
-                            <Typography>{t('loan_amount')}: {calculationResult.loanAmount.toFixed(2)}</Typography>
-                            <Typography>{t('monthly_fee')}: {calculationResult.monthlyFee.toFixed(2)}</Typography>
-                            <Typography>{t('annual_interest')}: {calculationResult.annualInterest.toFixed(2)}%</Typography>
-                        </>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenLoanDialog(false)}>{t('close')}</Button>
-                </DialogActions>
-            </Dialog>
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={() => setSnackbarOpen(false)}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                sx={{ marginTop: '64px' }} // Adjust this value based on your navbar height
+            >
+                <Alert onClose={() => setSnackbarOpen(false)} severity="error">
+                    {error}
+                </Alert>
+            </Snackbar>
 
-            <Dialog open={openTotalCostDialog} onClose={() => setOpenTotalCostDialog(false)}>
-                <DialogTitle>{t('total_cost_calculation_results')}</DialogTitle>
-                <DialogContent>
-                    {totalCostResult && (
-                        <>
-                            <Typography>{t('total_cost')}: {totalCostResult.totalCost.toFixed(2)}</Typography>
-                            <Typography>{t('insurance_cost')}: {totalCostResult.insuranceCost.toFixed(2)}</Typography>
-                            <Typography>{t('fixed_costs')}: {totalCostResult.fixedCosts.toFixed(2)}</Typography>
-                            <Typography>{t('admin_fee')}: {totalCostResult.adminFee.toFixed(2)}</Typography>
-                        </>
-                    )}
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={() => setOpenTotalCostDialog(false)}>{t('close')}</Button>
-                </DialogActions>
-            </Dialog>
+            <MinimalistDialog
+                open={openLoanDialog}
+                onClose={() => setOpenLoanDialog(false)}
+                title={t('loan_calculation_results')}
+                content={
+                    calculationResult && (
+                        <Box>
+                            <Typography variant="h6">{t('loan_max_amount')}: ${calculationResult.loanAmount.toFixed(2)}</Typography>
+                            <Typography variant="h6">{t('monthly_fee')}: ${calculationResult.monthlyFee.toFixed(2)}</Typography>
+                            <Typography variant="h6">{t('annual_interest')}: {calculationResult.annualInterest.toFixed(2)}%</Typography>
+                            <Typography variant="h6">{t('monthly_interest')}: {calculationResult.monthlyInterest.toFixed(4)}%</Typography>
+                            <Typography variant="h6">{t('months')}: {calculationResult.months}</Typography>
+                        </Box>
+                    )
+                }
+                actions={
+                    <Button onClick={() => setOpenLoanDialog(false)} sx={{ color: '#4caf50' }}>
+                        {t('close')}
+                    </Button>
+                }
+            />
+
+            <MinimalistDialog
+                open={openTotalCostDialog}
+                onClose={() => setOpenTotalCostDialog(false)}
+                title={t('total_cost_calculation_results')}
+                content={
+                    totalCostResult && (
+                        <Box>
+                            <Typography variant="h6">{t('monthly_cost')}: ${totalCostResult.monthlyCost.toFixed(2)}</Typography>
+                            <Typography variant="h6">{t('admin_fee')}: ${totalCostResult.adminFee.toFixed(2)}</Typography>
+                            <Typography variant="h6">{t('relief_insurance')}: ${totalCostResult.reliefInsurance.toFixed(2)}</Typography>
+                            <Typography variant="h6">{t('fire_insurance')}: ${totalCostResult.fireInsurance.toFixed(2)}</Typography>
+                            <Typography variant="h6">{t('total_cost')}: ${totalCostResult.totalCost.toFixed(2)}</Typography>
+                        </Box>
+                    )
+                }
+                actions={
+                    <Button onClick={() => setOpenTotalCostDialog(false)} sx={{ color: '#4caf50' }}>
+                        {t('close')}
+                    </Button>
+                }
+            />
         </Box>
     );
 };

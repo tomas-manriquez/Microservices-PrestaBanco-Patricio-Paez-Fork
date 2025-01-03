@@ -1,7 +1,6 @@
 package com.prestabanco.simulation.controller;
 
 import com.prestabanco.simulation.models.LoanSimulationRequest;
-import com.prestabanco.simulation.models.TotalCostRequest;
 import com.prestabanco.simulation.service.SimulationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +23,7 @@ public class SimulationController {
     }
 
     @PostMapping("/total-cost")
-    public ResponseEntity<Map<String, Object>> calculateTotalCost(@RequestBody TotalCostRequest request) {
+    public ResponseEntity<Map<String, Object>> calculateTotalCost(@RequestBody LoanSimulationRequest request) {
         return ResponseEntity.ok(simulationService.calculateTotalCost(request));
     }
 }
