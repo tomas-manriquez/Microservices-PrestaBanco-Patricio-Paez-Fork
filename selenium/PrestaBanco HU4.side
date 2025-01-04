@@ -1,0 +1,120 @@
+{
+  "id": "882d0783-1f4a-417c-bf30-9cbdf63b3f14",
+  "version": "2.0",
+  "name": "PrestaBanco",
+  "url": "http://localhost:3000/executive/management",
+  "tests": [{
+    "id": "a33401cb-44fd-4c7c-83a8-0cd1bad7e543",
+    "name": "test-showUserInfo",
+    "commands": [{
+      "id": "f174e9ba-d37b-4dee-bcd1-0777756b7b4e",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:3000/executive/management",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "526eeddc-1d83-4fcd-a617-016e2237f3b6",
+      "comment": "",
+      "command": "mouseOver",
+      "target": "css=.MuiPaper-root:nth-child(1) > .MuiBox-root .MuiButtonBase-root",
+      "targets": [
+        ["css=.MuiPaper-root:nth-child(1) > .MuiBox-root .MuiButtonBase-root", "css:finder"],
+        ["xpath=//button[@type='button']", "xpath:attributes"],
+        ["xpath=//div[@id='root']/div/div/div[2]/div/div/div/button", "xpath:idRelative"],
+        ["xpath=//button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "9325c43b-382d-444a-962f-cae89bbfe45e",
+      "comment": "",
+      "command": "click",
+      "target": "css=.MuiPaper-root:nth-child(1) > .MuiBox-root .MuiButtonBase-root",
+      "targets": [
+        ["css=.MuiPaper-root:nth-child(1) > .MuiBox-root .MuiButtonBase-root", "css:finder"],
+        ["xpath=//button[@type='button']", "xpath:attributes"],
+        ["xpath=//div[@id='root']/div/div/div[2]/div/div/div/button", "xpath:idRelative"],
+        ["xpath=//button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "28d35f48-f8d1-407c-bccd-b070aef17abe",
+      "comment": "",
+      "command": "mouseOut",
+      "target": "css=.MuiPaper-root:nth-child(1) > .MuiBox-root .MuiButtonBase-root",
+      "targets": [
+        ["css=.MuiPaper-root:nth-child(1) > .MuiBox-root .MuiButtonBase-root", "css:finder"],
+        ["xpath=//button[@type='button']", "xpath:attributes"],
+        ["xpath=//div[@id='root']/div/div/div[2]/div/div/div/button", "xpath:idRelative"],
+        ["xpath=//button", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "71d1512c-dbfd-4977-9b41-8ec92e66b666",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.MuiDialogContent-root",
+      "targets": [
+        ["css=.MuiDialogContent-root", "css:finder"],
+        ["xpath=//div[4]/div[3]/div/div", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }, {
+    "id": "aad4d472-cf73-4676-98e6-bfae4e962d7f",
+    "name": "test-rejectLoan",
+    "commands": [{
+      "id": "64ee7bba-7007-4166-b0e7-b25dcb740baa",
+      "comment": "",
+      "command": "open",
+      "target": "http://localhost:3000/executive/management",
+      "targets": [],
+      "value": ""
+    }, {
+      "id": "cb00381d-07b8-40e7-886e-1c7c03d07a00",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.MuiButton-containedSecondary",
+      "targets": [
+        ["css=.MuiButton-containedSecondary", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='root']/div/div/div[2]/div/div/div[2]/button[2]", "xpath:idRelative"],
+        ["xpath=//button[2]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "c2946be5-7f40-4765-8bb2-d2bb1e1bbd8b",
+      "comment": "",
+      "command": "click",
+      "target": "css=.MuiButton-containedSecondary",
+      "targets": [
+        ["css=.MuiButton-containedSecondary", "css:finder"],
+        ["xpath=(//button[@type='button'])[3]", "xpath:attributes"],
+        ["xpath=//div[@id='root']/div/div/div[2]/div/div/div[2]/button[2]", "xpath:idRelative"],
+        ["xpath=//button[2]", "xpath:position"]
+      ],
+      "value": ""
+    }, {
+      "id": "2e242e1c-3a91-465e-b370-1964d7565259",
+      "comment": "",
+      "command": "assertElementPresent",
+      "target": "css=.MuiPaper-elevation0",
+      "targets": [
+        ["css=.MuiPaper-elevation0", "css:finder"],
+        ["xpath=//div[@id='root']/div/div/div[3]/div", "xpath:idRelative"],
+        ["xpath=//div/div[3]/div", "xpath:position"]
+      ],
+      "value": ""
+    }]
+  }],
+  "suites": [{
+    "id": "abe66eb8-4528-4ab2-85a8-eac92ab9c58e",
+    "name": "Default Suite",
+    "persistSession": false,
+    "parallel": false,
+    "timeout": 300,
+    "tests": []
+  }],
+  "urls": ["http://localhost:3000/", "http://localhost:3000/customer/loans", "http://localhost:3000/executive/management"],
+  "plugins": []
+}

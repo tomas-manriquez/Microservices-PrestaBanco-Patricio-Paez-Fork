@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import { Typography, Stack, Button, Link, Paper, Snackbar, Alert } from "@mui/material";
+import { Typography, Stack, Button, Link, Paper, Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import RequestService from "../services/request.service.js";
 import LoanService from "../services/loan.service.js";
+import CustomerService from "../services/customer.service.js";
 import { useTranslation } from 'react-i18next';
 
 const ManagementExecutive = () => {
@@ -12,6 +13,8 @@ const ManagementExecutive = () => {
     const [alertMessage, setAlertMessage] = useState('');
     const [alertSeverity, setAlertSeverity] = useState('success');
     const [alertOpen, setAlertOpen] = useState(false);
+    const [userInfo, setUserInfo] = useState(null);
+    const [userDialogOpen, setUserDialogOpen] = useState(false);
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -86,6 +89,19 @@ const ManagementExecutive = () => {
             });
     };
 
+    const handleViewUserInfo = async (userId) => {
+        try {
+            const response = await CustomerService.get(userId);
+            setUserInfo(response.data);
+            setUserDialogOpen(true);
+        } catch (error) {
+            console.error(`Error fetching user info for user ${userId}:`, error);
+            setAlertMessage(t("failed_to_load_user_info"));
+            setAlertSeverity('error');
+            setAlertOpen(true);
+        }
+    };
+
     const renderFiles = (loan) => {
         const requiredDocuments = {
             1: ['incomeDocument', 'appraisalCertificate', 'historicalCredit'],
@@ -148,15 +164,21 @@ const ManagementExecutive = () => {
                                                 {t('loan_type')}: {getLoanType(request.loan.selectedLoan)}
                                             </Typography>
                                             <Typography variant="body2">
-                                                {t('years')}: {request.loan.selectedYears}
+                                                {t('property_value')}: ${request.loan.propertyValue}
+                                            </Typography>
+                                            <Typography variant="body2">
+                                                {t('selected_amount')}: ${request.loan.selectedAmount}
                                             </Typography>
                                             <Typography variant="body2">
                                                 {t('interest')}: {request.loan.selectedInterest}%
                                             </Typography>
                                             <Typography variant="body2">
-                                                {t('property_value')}: ${request.loan.propertyValue}
+                                                {t('years')}: {request.loan.selectedYears}
                                             </Typography>
                                             {renderFiles(request.loan)}
+                                            <Button variant="outlined" onClick={() => handleViewUserInfo(request.loan.userId)}>
+                                                {t('detailed_info')}
+                                            </Button>
                                         </>
                                     )}
                                     <Typography variant="body2">
@@ -186,11 +208,43 @@ const ManagementExecutive = () => {
                 </Stack>
             )}
 
-            <Snackbar open={alertOpen} autoHideDuration={6000} onClose={() => setAlertOpen(false)}>
+            <Snackbar open={alertOpen}
+                      autoHideDuration={6000}
+                      onClose={() => setAlertOpen(false)}
+                      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                      sx={{ marginTop: '64px' }}
+            >
                 <Alert onClose={() => setAlertOpen(false)} severity={alertSeverity}>
                     {alertMessage}
                 </Alert>
             </Snackbar>
+
+            <Dialog open={userDialogOpen} onClose={() => setUserDialogOpen(false)} maxWidth="sm" fullWidth>
+                <DialogTitle>{t('personal_information')}</DialogTitle>
+                <DialogContent>
+                    {userInfo && (
+                        <Box>
+                            <Typography variant="body2">{t('name')}: {userInfo.name}</Typography>
+                            <Typography variant="body2">{t('firstName')}: {userInfo.firstName}</Typography>
+                            <Typography variant="body2">{t('lastName')}: {userInfo.lastName}</Typography>
+                            <Typography variant="body2">{t('age')}: {userInfo.age}</Typography>
+                            <Typography variant="body2">{t('working')}: {userInfo.working ? t('yes') : t('no')}</Typography>
+                            <Typography variant="body2">{t('working_years')}: {userInfo.workingYears}</Typography>
+                            <Typography variant="body2">{t('independent_worker')}: {userInfo.independentWorker ? t('yes') : t('no')}</Typography>
+                            <Typography variant="body2">{t('late_payments')}: {userInfo.latePayments ? t('yes') : t('no')}</Typography>
+                            <Typography variant="body2">{t('amount_of_late_payments')}: {userInfo.amountOfLatePayments}</Typography>
+                            <Typography variant="body2">{t('min_cash_on_account')}: {userInfo.minCashOnAccount ? t('yes') : t('no')}</Typography>
+                            <Typography variant="body2">{t('consistent_save_history')}: {userInfo.consistentSaveHistory ? t('yes') : t('no')}</Typography>
+                            <Typography variant="body2">{t('periodic_deposits')}: {userInfo.periodicDeposits ? t('yes') : t('no')}</Typography>
+                            <Typography variant="body2">{t('relation_years_and_balance')}: {userInfo.relationYearsAndBalance ? t('yes') : t('no')}</Typography>
+                            <Typography variant="body2">{t('recent_withdraws')}: {userInfo.recentWithdraws ? t('yes') : t('no')}</Typography>
+                        </Box>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setUserDialogOpen(false)}>{t('close')}</Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
 };

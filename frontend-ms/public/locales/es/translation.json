@@ -11,12 +11,12 @@
   "intro_message_executive": "Como ejecutivo en PrestaBanco, tienes las herramientas para gestionar y revisar eficientemente las solicitudes de préstamos de los clientes. Puedes ver, aprobar, rechazar y hacer seguimiento del progreso de las solicitudes de préstamos en tiempo real.",
   "support_message_executive": "Asegúrate de que los clientes reciban el apoyo que necesitan y ayúdalos a avanzar con sus metas financieras. Estás en el corazón del proceso de toma de decisiones de PrestaBanco.",
 
-  "profile": "Perfil",
+  "profile": "Mi Perfil",
   "logout": "Cerrar Sesión",
   "login": "Iniciar Sesión",
   "register": "Registrarse",
   "loans": "Préstamos",
-  "simulate": "Simular",
+  "simulate": "Simular Préstamo",
   "management": "Gestión",
 
   "email": "Correo Electrónico",
