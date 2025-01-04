@@ -148,6 +148,7 @@
   "delivered_loan": "Delivered loan",
   "unknown": "Unknown",
   "status_changed_to": "Status changed to {{status}}",
+  "user_information": "User Information",
 
   "hello": "Hello",
   "detailed_info": "Detailed info",

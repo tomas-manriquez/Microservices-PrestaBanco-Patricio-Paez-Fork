@@ -147,6 +147,7 @@
   "delivered_loan": "Préstamo entregado",
   "unknown": "Desconocido",
   "status_changed_to": "Estado cambiado a {{status}}",
+  "user_information": "Información del Usuario",
 
   "hello": "Hola",
   "detailed_info": "Información Detallada",

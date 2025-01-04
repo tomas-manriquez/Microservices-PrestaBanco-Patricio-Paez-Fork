@@ -177,7 +177,7 @@ const ManagementExecutive = () => {
                                             </Typography>
                                             {renderFiles(request.loan)}
                                             <Button variant="outlined" onClick={() => handleViewUserInfo(request.loan.userId)}>
-                                                {t('detailed_info')}
+                                                {t('user_information')}
                                             </Button>
                                         </>
                                     )}
@@ -220,13 +220,13 @@ const ManagementExecutive = () => {
             </Snackbar>
 
             <Dialog open={userDialogOpen} onClose={() => setUserDialogOpen(false)} maxWidth="sm" fullWidth>
-                <DialogTitle>{t('personal_information')}</DialogTitle>
+                <DialogTitle>{t('user_information')}</DialogTitle>
                 <DialogContent>
                     {userInfo && (
                         <Box>
                             <Typography variant="body2">{t('name')}: {userInfo.name}</Typography>
-                            <Typography variant="body2">{t('firstName')}: {userInfo.firstName}</Typography>
-                            <Typography variant="body2">{t('lastName')}: {userInfo.lastName}</Typography>
+                            <Typography variant="body2">{t('first_name')}: {userInfo.firstName}</Typography>
+                            <Typography variant="body2">{t('last_name')}: {userInfo.lastName}</Typography>
                             <Typography variant="body2">{t('age')}: {userInfo.age}</Typography>
                             <Typography variant="body2">{t('working')}: {userInfo.working ? t('yes') : t('no')}</Typography>
                             <Typography variant="body2">{t('working_years')}: {userInfo.workingYears}</Typography>
