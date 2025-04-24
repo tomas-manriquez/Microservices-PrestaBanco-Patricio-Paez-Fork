@@ -108,14 +108,14 @@ pipeline {
         stage('OWASP ZAP') {
             steps {
                 script {
-                    bat 'cd /d C:\\ZAP && java -Xmx8192m -jar zap-2.16.0.jar -cmd ^
-                         -quickurl http://localhost:8080 ^
-                         -quickout %WORKSPACE%\\zap-report.html ^
-                         -quickprogress ^
-                         -quickexclude ".*(logout|export|download|actuator|h2-console).*" ^
-                         -config ascan.threadPerHost=2 ^
-                         -config ascan.maxRuleDurationInMins=5 ^
-                         -config ascan.maxScanDurationInMins=15'
+                    bat 'cd /d C:\\ZAP && java -Xmx8192m -jar zap-2.16.0.jar -cmd
+                         -quickurl http://localhost:8080
+                         -quickout %WORKSPACE%\\zap-report.html
+                         -quickprogress
+                         -quickexclude ".*(logout|export|download|actuator|h2-console).*"
+                         -config ascan.threadPerHost=2
+                         -config ascan.maxRuleDurationInMins=5
+                         -config ascan.maxScanDurationInMins=1'
                 }
                 archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
             }
