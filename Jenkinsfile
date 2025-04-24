@@ -70,7 +70,7 @@ pipeline {
                         ]
                         services.each { service ->
                             dir(service) {
-                                bat "mvn sonar:sonar"
+                                bat "mvn sonar:sonar -Dsonar.externalIssuesReportPaths=target/sonar-pmd-report.json"
                             }
                         }
                     }
