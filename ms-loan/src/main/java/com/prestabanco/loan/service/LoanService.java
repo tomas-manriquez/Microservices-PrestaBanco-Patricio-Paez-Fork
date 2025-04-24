@@ -97,6 +97,7 @@ public class LoanService {
         double monthlyFee = selectedAmount *
                 (monthlyInterest * Math.pow(1 + monthlyInterest, months) /
                         (Math.pow(1 + monthlyInterest, months) - 1));
+        // TEST PMD
         double x = (1 + 2);
 
         Map<String, Object> response = new HashMap<>();
