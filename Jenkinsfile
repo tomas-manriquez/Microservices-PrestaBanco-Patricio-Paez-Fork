@@ -33,7 +33,7 @@ pipeline {
                 }
             }
         }
-        stage('SAST - SonarQube') {
+        stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv("${env.SONARQUBE_ENV}") {
                     script {
