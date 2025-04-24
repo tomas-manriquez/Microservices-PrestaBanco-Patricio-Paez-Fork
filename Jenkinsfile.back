@@ -20,6 +20,10 @@ pipeline {
                         'eureka-server',
                         'gateway-server',
                         'ms-customer',
+                        'ms-executive',
+                        'ms-loan',
+                        'ms-request',
+                        'ms-simulation'
                     ]
                     services.each { service ->
                         dir(service) {
@@ -37,6 +41,10 @@ pipeline {
                                 'eureka-server',
                                 'gateway-server',
                                 'ms-customer',
+                                'ms-executive',
+                                'ms-loan',
+                                'ms-request',
+                                'ms-simulation'
                             ]
                             services.each { service ->
                                 dir(service) {
@@ -56,6 +64,10 @@ pipeline {
                             'eureka-server',
                             'gateway-server',
                             'ms-customer',
+                            'ms-executive',
+                            'ms-loan',
+                            'ms-request',
+                            'ms-simulation'
                         ]
                         services.each { service ->
                             dir(service) {
