@@ -97,7 +97,7 @@ public class LoanService {
         double monthlyFee = selectedAmount *
                 (monthlyInterest * Math.pow(1 + monthlyInterest, months) /
                         (Math.pow(1 + monthlyInterest, months) - 1));
-
+        double x = (1 + 2);
 
         Map<String, Object> response = new HashMap<>();
         response.put("loanAmount", selectedAmount);
