@@ -5,7 +5,7 @@ pipeline {
     }
     environment {
         GITHUB_TOKEN = '33ff7af5-264a-4e8c-8b5e-f2000831c9cc'
-        SONARQUBE_ENV = 'MySonarQubeServer'
+        SONARQUBE_ENV = 'localhost:9000'
     }
     stages {
         stage('Check') {
@@ -15,7 +15,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                batzc 'mvn clean install'
+                bat 'mvn clean install'
             }
         }
         stage('Test') {
@@ -27,7 +27,7 @@ pipeline {
             steps {
                 withSonarQubeEnv("${env.SONARQUBE_ENV}") {
                     bat 'mvn sonar:sonar'
-                    // o sh 'sonar-scanner' si no usas Maven
+                    // o bat 'sonar-scanner' si no usas Maven
                 }
             }
         }
@@ -42,10 +42,10 @@ pipeline {
     }
     post {
         failure {
-            echo 'Error en pipeline.'
+            echo 'Error in pipeline.'
         }
         success {
-            echo 'Pipeline completado.'
+            echo 'Pipeline completed.'
         }
     }
 }
