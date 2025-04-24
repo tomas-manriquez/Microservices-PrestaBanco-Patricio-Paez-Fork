@@ -33,6 +33,27 @@ pipeline {
                 }
             }
         }
+        stage('PMD Analysis') {
+                    steps {
+                        script {
+                            def services = [
+                                'config-server',
+                                'eureka-server',
+                                'gateway-server',
+                                'ms-customer',
+                                'ms-executive',
+                                'ms-loan',
+                                'ms-request',
+                                'ms-simulation'
+                            ]
+                            services.each { service ->
+                                dir(service) {
+                                    bat "mvn pmd:pmd"
+                                }
+                            }
+                        }
+                    }
+                }
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv("${env.SONARQUBE_ENV}") {
@@ -51,27 +72,6 @@ pipeline {
                             dir(service) {
                                 bat "mvn sonar:sonar"
                             }
-                        }
-                    }
-                }
-            }
-        }
-        stage('PMD Analysis') {
-            steps {
-                script {
-                    def services = [
-                        'config-server',
-                        'eureka-server',
-                        'gateway-server',
-                        'ms-customer',
-                        'ms-executive',
-                        'ms-loan',
-                        'ms-request',
-                        'ms-simulation'
-                    ]
-                    services.each { service ->
-                        dir(service) {
-                            bat "mvn pmd:check"
                         }
                     }
                 }
