@@ -4,7 +4,6 @@ pipeline {
         maven "maven"
     }
     environment {
-        GITHUB_TOKEN = '33ff7af5-264a-4e8c-8b5e-f2000831c9cc'
         SONARQUBE_ENV = 'SonarLocal'
     }
     stages {
@@ -15,27 +14,66 @@ pipeline {
         }
         stage('Build') {
             steps {
-                bat 'mvn clean install'
-            }
-        }
-        stage('Test') {
-            steps {
-                bat 'mvn test'
+                script {
+                    def services = [
+                        'config-server',
+                        'eureka-server',
+                        'gateway-server',
+                        'ms-customer',
+                        'ms-executive',
+                        'ms-loan',
+                        'ms-request',
+                        'ms-simulation'
+                    ]
+                    services.each { service ->
+                        dir(service) {
+                            bat "mvn clean install -DskipTests"
+                        }
+                    }
+                }
             }
         }
         stage('SAST - SonarQube') {
             steps {
                 withSonarQubeEnv("${env.SONARQUBE_ENV}") {
-                    bat 'mvn sonar:sonar'
-                    // o bat 'sonar-scanner' si no usas Maven
+                    script {
+                        def services = [
+                            'config-server',
+                            'eureka-server',
+                            'gateway-server',
+                            'ms-customer',
+                            'ms-executive',
+                            'ms-loan',
+                            'ms-request',
+                            'ms-simulation'
+                        ]
+                        services.each { service ->
+                            dir(service) {
+                                bat "mvn sonar:sonar"
+                            }
+                        }
+                    }
                 }
             }
         }
         stage('PMD Analysis') {
             steps {
                 script {
-                    // Realiza el análisis con PMD
-                    bat 'mvn pmd:check'
+                    def services = [
+                        'config-server',
+                        'eureka-server',
+                        'gateway-server',
+                        'ms-customer',
+                        'ms-executive',
+                        'ms-loan',
+                        'ms-request',
+                        'ms-simulation'
+                    ]
+                    services.each { service ->
+                        dir(service) {
+                            bat "mvn pmd:check"
+                        }
+                    }
                 }
             }
         }
