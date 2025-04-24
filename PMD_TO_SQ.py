@@ -5,13 +5,16 @@ import os
 tree = ET.parse('target/pmd.xml')
 root = tree.getroot()
 
+# Namespace del PMD
+ns = {'pmd': 'http://pmd.sourceforge.net/report/2.0.0'}
+
 issues = []
 
-for file in root.findall('file'):
+for file in root.findall('pmd:file', ns):
     filepath = file.get('name')
     relative_path = os.path.relpath(filepath, start=os.getcwd())
 
-    for violation in file.findall('violation'):
+    for violation in file.findall('pmd:violation', ns):
         issue = {
             "engineId": "pmd",
             "ruleId": violation.get('rule'),
