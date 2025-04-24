@@ -78,6 +78,26 @@ pipeline {
                 }
             }
         }
+        stage('Start Gateway') {
+            steps {
+                dir('gateway-server') {
+                    // Ejecuta el gateway en segundo plano
+                    bat "start /B mvn spring-boot:run"
+                }
+
+                // Espera unos segundos para que el gateway arranque
+                echo "Esperando a que el gateway esté disponible..."
+                sleep time: 20, unit: 'SECONDS'
+            }
+        }
+        stage('OWASP ZAP') {
+            steps {
+                script {
+                    bat '"C:\\ZAP\\zap.bat" -cmd -quickurl http://localhost:8080 -quickout %WORKSPACE%\\zap-report.html -quickprogress'
+                }
+                archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
+            }
+        }
     }
     post {
         failure {
