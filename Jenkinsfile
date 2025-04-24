@@ -5,7 +5,7 @@ pipeline {
     }
     environment {
         GITHUB_TOKEN = '33ff7af5-264a-4e8c-8b5e-f2000831c9cc'
-        SONARQUBE_ENV = 'localhost:9000'
+        SONARQUBE_ENV = 'SonarLocal'
     }
     stages {
         stage('Check') {
