@@ -49,6 +49,7 @@ pipeline {
                             services.each { service ->
                                 dir(service) {
                                     bat "mvn pmd:pmd"
+                                    bat 'python %WORKSPACE%\\PMD_TO_SQ.py'
                                 }
                             }
                         }
