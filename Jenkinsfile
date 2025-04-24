@@ -108,11 +108,12 @@ pipeline {
         stage('OWASP ZAP') {
             steps {
                 script {
-                    bat '"C:\\ZAP\\zap.bat" -cmd -quickurl http://localhost:8080 -quickout %WORKSPACE%\\zap-report.html -quickprogress'
+                    bat 'cd /d C:\\ZAP && zap.bat -cmd -quickurl http://localhost:8080 -quickout %WORKSPACE%\\zap-report.html -quickprogress'
                 }
                 archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
             }
         }
+
     }
     post {
         failure {
