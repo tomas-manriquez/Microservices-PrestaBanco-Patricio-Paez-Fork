@@ -108,7 +108,7 @@ pipeline {
         stage('OWASP ZAP') {
             steps {
                 script {
-                    bat 'cd /d C:\\ZAP && java -Xmx2048m -jar zap-2.16.0.jar -cmd -quickurl http://localhost:8080 -quickout %WORKSPACE%\\zap-report.html -quickprogress'
+                    bat 'cd /d C:\\ZAP && java -Xmx4096m -jar zap-2.16.0.jar -cmd -quickurl http://localhost:8080 -quickout %WORKSPACE%\\zap-report.html -quickprogress'
                 }
                 archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
             }
