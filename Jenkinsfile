@@ -66,41 +66,73 @@ pipeline {
                 }
             }
         }
-        stage('Start Services') {
+        stage('Start Infra Services') {
             steps {
-                dir ('config-server') {
-                    // Ejecuta el config-server en segundo plano
-                    bat "start /B mvn spring-boot:run"
+                script {
+                    def infraServices = ['config-server', 'eureka-server', 'gateway-server']
+                    infraServices.each { service ->
+                        dir(service) {
+                            bat "start /B mvn spring-boot:run > ${service}.log 2>&1"
+                        }
+                        echo "Esperando que ${service} esté disponible..."
+                        sleep time: 10, unit: 'SECONDS'
+                    }
                 }
-                // Espera unos segundos para que el config-server arranque
-                echo "Esperando a que el config-server esté disponible..."
-                sleep time: 20, unit: 'SECONDS'
-
-                dir ('eureka-server') {
-                    // Ejecuta el eureka-server en segundo plano
-                    bat "start /B mvn spring-boot:run"
+            }
+        }
+        stage('Start Target Services') {
+            steps {
+                script {
+                    def targetServices = ['ms-customer'] // acá agregás más después
+                    targetServices.each { service ->
+                        dir(service) {
+                            bat "start /B mvn spring-boot:run > ${service}.log 2>&1"
+                        }
+                        echo "Esperando que ${service} esté disponible..."
+                        sleep time: 20, unit: 'SECONDS'
+                    }
                 }
-                // Espera unos segundos para que el eureka-server arranque
-                echo "Esperando a que el eureka-server esté disponible..."
-                sleep time: 20, unit: 'SECONDS'
-
-                dir('gateway-server') {
-                    // Ejecuta el gateway en segundo plano
-                    bat "start /B mvn spring-boot:run"
-                }
-                // Espera unos segundos para que el gateway arranque
-                echo "Esperando a que el gateway esté disponible..."
-                sleep time: 20, unit: 'SECONDS'
             }
         }
         stage('OWASP ZAP') {
             steps {
                 script {
-                    bat 'cd /d C:\\ZAP && java -Xmx8192m -jar zap-2.16.0.jar -cmd -quickurl http://localhost:8080 -quickout %WORKSPACE%\\zap-report.html -quickprogress -config ascan.threadPerHost=2 -config ascan.maxRuleDurationInMins=5 -config ascan.maxScanDurationInMins=1'
+                    def getPortFromLog(String logPath) {
+                        def logText = readFile(file: logPath)
+                        def matcher = logText =~ /Tomcat started on port\(s\): (\d+)/
+                        if (matcher.find()) {
+                            return matcher[0][1]
+                        } else {
+                            error "No se pudo detectar el puerto en el log: ${logPath}"
+                        }
+                    }
+                    def puertos = []
+                    targetServices.each { service ->
+                        dir(service) {
+                            def logPath = "${service}.log"
+                            def port = getPortFromLog(logPath)
+                            echo "Puerto de ${service}: ${port}"
+                            puertos.add(port)
+                        }
+                    }
+
+                    puertos.each { port ->
+                        bat """
+                            cd /d C:\\ZAP && java -Xmx8192m -jar zap-2.16.0.jar -cmd ^
+                            -quickurl http://localhost:${port} ^
+                            -quickout %WORKSPACE%\\zap-report-${port}.html ^
+                            -quickprogress ^
+                            -config ascan.threadPerHost=2 ^
+                            -config ascan.maxRuleDurationInMins=5 ^
+                            -config ascan.maxScanDurationInMins=2
+                        """
+                    }
                 }
-                archiveArtifacts artifacts: 'zap-report.html', allowEmptyArchive: true
+
+                archiveArtifacts artifacts: 'zap-report-*.html', allowEmptyArchive: true
             }
         }
+
 
     }
     post {
