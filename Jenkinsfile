@@ -9,8 +9,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo "Construyendo el proyecto..."
-
+                bat 'cd config-server && mvn clean install'
                 bat 'cd ms-customer && mvn clean install'
+            }
+        }
+
+        stage('Run config-server') {
+            steps {
+                bat 'cd config-server && mvn spring-boot:run > config-server.log 2>&1 &'
             }
         }
 
@@ -51,7 +57,6 @@ pipeline {
                 }
             }
         }
-
         stage('Tests') {
             steps {
                 echo "Ejecutando tests contra ms-customer en puerto ${env.CUSTOMER_PORT}..."
