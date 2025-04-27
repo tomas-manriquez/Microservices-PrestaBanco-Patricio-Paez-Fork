@@ -9,7 +9,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo "Construyendo el proyecto..."
-                sh 'mvn clean install'
+                bat 'mvn clean install'
             }
         }
 
@@ -18,11 +18,11 @@ pipeline {
                 echo "Levantando el microservicio ms-customer..."
 
                 // Levantamos el microservicio y redireccionamos el log
-                sh '''
+                bat """
                     cd ms-customer
                     CONFIG_SERVER_LOCATION=${CONFIG_SERVER_LOCATION} mvn spring-boot:run > ms-customer.log 2>&1 &
                     echo $! > ms-customer.pid
-                '''
+                """
 
                 // Esperamos a que levante leyendo el log
                 script {
@@ -55,7 +55,7 @@ pipeline {
         stage('Tests') {
             steps {
                 echo "Ejecutando tests contra ms-customer en puerto ${env.CUSTOMER_PORT}..."
-                sh 'curl -f http://localhost:${CUSTOMER_PORT}/actuator/health'
+                bat 'curl -f http://localhost:${CUSTOMER_PORT}/actuator/health'
             }
         }
     }
@@ -66,7 +66,7 @@ pipeline {
             script {
                 if (fileExists('ms-customer/ms-customer.pid')) {
                     def pid = readFile('ms-customer/ms-customer.pid').trim()
-                    sh "kill ${pid} || true"
+                    bat "kill ${pid} || true"
                 }
             }
         }
