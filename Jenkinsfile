@@ -1,3 +1,17 @@
+// Función para leer el puerto del log
+def getPortFromLog = { String logPath ->
+    def logText = readFile(file: logPath)
+    def matcher = logText =~ /Tomcat started on port\(s\): (\d+)/
+    if (matcher.find()) {
+        return matcher[0][1]
+    } else {
+        error "No se pudo detectar el puerto en el log: ${logPath}"
+    }
+}
+
+// Definir target services globalmente
+def targetServices = ['ms-customer']
+
 pipeline {
     agent any
     tools {
@@ -30,23 +44,23 @@ pipeline {
             }
         }
         stage('PMD Analysis') {
-                    steps {
-                        script {
-                            def services = [
-                                'config-server',
-                                'eureka-server',
-                                'gateway-server',
-                                'ms-customer',
-                            ]
-                            services.each { service ->
-                                dir(service) {
-                                    bat "mvn pmd:pmd"
-                                    bat 'python %WORKSPACE%\\PMD_TO_SQ.py'
-                                }
-                            }
+            steps {
+                script {
+                    def services = [
+                        'config-server',
+                        'eureka-server',
+                        'gateway-server',
+                        'ms-customer',
+                    ]
+                    services.each { service ->
+                        dir(service) {
+                            bat "mvn pmd:pmd"
+                            bat 'python %WORKSPACE%\\PMD_TO_SQ.py'
                         }
                     }
                 }
+            }
+        }
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv("${env.SONARQUBE_ENV}") {
@@ -83,7 +97,6 @@ pipeline {
         stage('Start Target Services') {
             steps {
                 script {
-                    def targetServices = ['ms-customer'] // acá agregás más después
                     targetServices.each { service ->
                         dir(service) {
                             bat "start /B mvn spring-boot:run > ${service}.log 2>&1"
@@ -97,15 +110,6 @@ pipeline {
         stage('OWASP ZAP') {
             steps {
                 script {
-                    def getPortFromLog(String logPath) {
-                        def logText = readFile(file: logPath)
-                        def matcher = logText =~ /Tomcat started on port\(s\): (\d+)/
-                        if (matcher.find()) {
-                            return matcher[0][1]
-                        } else {
-                            error "No se pudo detectar el puerto en el log: ${logPath}"
-                        }
-                    }
                     def puertos = []
                     targetServices.each { service ->
                         dir(service) {
@@ -132,8 +136,6 @@ pipeline {
                 archiveArtifacts artifacts: 'zap-report-*.html', allowEmptyArchive: true
             }
         }
-
-
     }
     post {
         failure {
