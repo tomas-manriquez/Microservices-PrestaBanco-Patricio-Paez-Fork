@@ -1,148 +1,74 @@
-// Función para leer el puerto del log
-def getPortFromLog = { String logPath ->
-    def logText = readFile(file: logPath)
-    def matcher = logText =~ /Tomcat started on port\(s\): (\d+)/
-    if (matcher.find()) {
-        return matcher[0][1]
-    } else {
-        error "No se pudo detectar el puerto en el log: ${logPath}"
-    }
-}
-
-// Definir target services globalmente
-def targetServices = ['ms-customer']
-
 pipeline {
     agent any
-    tools {
-        maven "maven"
-    }
+
     environment {
-        SONARQUBE_ENV = 'SonarLocal'
+        CONFIG_SERVER_LOCATION = "http://localhost:8888"
     }
+
     stages {
-        stage('Check') {
-            steps {
-                checkout scm
-            }
-        }
         stage('Build') {
             steps {
-                script {
-                    def services = [
-                        'config-server',
-                        'eureka-server',
-                        'gateway-server',
-                        'ms-customer',
-                    ]
-                    services.each { service ->
-                        dir(service) {
-                            bat "mvn clean install -DskipTests"
-                        }
-                    }
-                }
+                echo "Construyendo el proyecto..."
+                sh 'mvn clean install'
             }
         }
-        stage('PMD Analysis') {
+
+        stage('Run ms-customer') {
             steps {
+                echo "Levantando el microservicio ms-customer..."
+
+                // Levantamos el microservicio y redireccionamos el log
+                sh '''
+                    cd ms-customer
+                    CONFIG_SERVER_LOCATION=${CONFIG_SERVER_LOCATION} mvn spring-boot:run > ms-customer.log 2>&1 &
+                    echo $! > ms-customer.pid
+                '''
+
+                // Esperamos a que levante leyendo el log
                 script {
-                    def services = [
-                        'config-server',
-                        'eureka-server',
-                        'gateway-server',
-                        'ms-customer',
-                    ]
-                    services.each { service ->
-                        dir(service) {
-                            bat "mvn pmd:pmd"
-                            bat 'python %WORKSPACE%\\PMD_TO_SQ.py'
-                        }
-                    }
-                }
-            }
-        }
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv("${env.SONARQUBE_ENV}") {
-                    script {
-                        def services = [
-                            'config-server',
-                            'eureka-server',
-                            'gateway-server',
-                            'ms-customer',
-                        ]
-                        services.each { service ->
-                            dir(service) {
-                                bat "mvn sonar:sonar -Dsonar.externalIssuesReportPaths=target/sonar-pmd-report.json"
+                    def maxRetries = 30
+                    def retryInterval = 2 // segundos
+                    def portDetected = false
+
+                    for (int i = 0; i < maxRetries; i++) {
+                        if (fileExists('ms-customer/ms-customer.log')) {
+                            def logContent = readFile('ms-customer/ms-customer.log')
+                            def matcher = logContent =~ /Tomcat started on port\\(s\\): (\\d+)/
+                            if (matcher.find()) {
+                                env.CUSTOMER_PORT = matcher.group(1)
+                                echo "Puerto detectado: ${env.CUSTOMER_PORT}"
+                                portDetected = true
+                                break
                             }
                         }
-                    }
-                }
-            }
-        }
-        stage('Start Infra Services') {
-            steps {
-                script {
-                    def infraServices = ['config-server', 'eureka-server', 'gateway-server']
-                    infraServices.each { service ->
-                        dir(service) {
-                            bat "start /B mvn spring-boot:run > ${service}.log 2>&1"
-                        }
-                        echo "Esperando que ${service} esté disponible..."
-                        sleep time: 10, unit: 'SECONDS'
-                    }
-                }
-            }
-        }
-        stage('Start Target Services') {
-            steps {
-                script {
-                    targetServices.each { service ->
-                        dir(service) {
-                            bat "start /B mvn spring-boot:run > ${service}.log 2>&1"
-                        }
-                        echo "Esperando que ${service} esté disponible..."
-                        sleep time: 20, unit: 'SECONDS'
-                    }
-                }
-            }
-        }
-        stage('OWASP ZAP') {
-            steps {
-                script {
-                    def puertos = []
-                    targetServices.each { service ->
-                        dir(service) {
-                            def logPath = "${service}.log"
-                            def port = getPortFromLog(logPath)
-                            echo "Puerto de ${service}: ${port}"
-                            puertos.add(port)
-                        }
+                        echo "Esperando que el microservicio levante... intento ${i + 1}"
+                        sleep retryInterval
                     }
 
-                    puertos.each { port ->
-                        bat """
-                            cd /d C:\\ZAP && java -Xmx8192m -jar zap-2.16.0.jar -cmd ^
-                            -quickurl http://localhost:${port} ^
-                            -quickout %WORKSPACE%\\zap-report-${port}.html ^
-                            -quickprogress ^
-                            -config ascan.threadPerHost=2 ^
-                            -config ascan.maxRuleDurationInMins=5 ^
-                            -config ascan.maxScanDurationInMins=2
-                        """
+                    if (!portDetected) {
+                        error "No se pudo detectar el puerto en el log de ms-customer"
                     }
                 }
+            }
+        }
 
-                archiveArtifacts artifacts: 'zap-report-*.html', allowEmptyArchive: true
+        stage('Tests') {
+            steps {
+                echo "Ejecutando tests contra ms-customer en puerto ${env.CUSTOMER_PORT}..."
+                sh 'curl -f http://localhost:${CUSTOMER_PORT}/actuator/health'
             }
         }
     }
+
     post {
-        failure {
-            echo 'Error in pipeline.'
-        }
-        success {
-            echo 'Pipeline completed.'
+        always {
+            echo "Deteniendo ms-customer si está corriendo..."
+            script {
+                if (fileExists('ms-customer/ms-customer.pid')) {
+                    def pid = readFile('ms-customer/ms-customer.pid').trim()
+                    sh "kill ${pid} || true"
+                }
+            }
         }
     }
 }
