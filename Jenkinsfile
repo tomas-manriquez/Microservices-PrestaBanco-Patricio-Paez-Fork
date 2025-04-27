@@ -9,7 +9,8 @@ pipeline {
         stage('Build') {
             steps {
                 echo "Construyendo el proyecto..."
-                bat 'mvn clean install'
+
+                bat 'cd ms-customer && mvn clean install'
             }
         }
 
