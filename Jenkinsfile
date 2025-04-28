@@ -93,7 +93,6 @@ pipeline {
                 }
             }
         }
-        }
         stage('Start Target Services') {
             steps {
                 script {
