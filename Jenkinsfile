@@ -18,6 +18,8 @@ pipeline {
     environment {
         SONARQUBE_ENV = 'SonarLocal'
         CONFIG_SERVER_LOCATION = 'http://localhost:8888'
+        SERVER_PORT = '0'
+        EUREKA_SERVER_URL = 'http://localhost:8761/eureka/'
     }
     stages {
         stage('Check') {
@@ -86,7 +88,7 @@ pipeline {
                     def infraServices = ['config-server', 'eureka-server', 'gateway-server']
                     infraServices.each { service ->
                         dir(service) {
-                            bat "start /B mvn spring-boot:run -Dspring.cloud.config.uri=${configServerUrl} > ${service}.log 2>&1"
+                            bat "start /B mvn spring-boot:run > ${service}.log 2>&1"
                         }
                         echo "Waiting ${service}..."
                         sleep time: 10, unit: 'SECONDS'
@@ -100,7 +102,7 @@ pipeline {
                     def configServerUrl = "http://localhost:8888"
                     targetServices.each { service ->
                         dir(service) {
-                            bat "start /B mvn spring-boot:run -Dspring.cloud.config.uri=${configServerUrl} > ${service}.log 2>&1"
+                            bat "start /B mvn spring-boot:run > ${service}.log 2>&1"
                         }
                         echo "Waiting ${service}..."
                         sleep time: 20, unit: 'SECONDS'
