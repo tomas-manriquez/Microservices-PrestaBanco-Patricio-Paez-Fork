@@ -99,10 +99,14 @@ pipeline {
         stage('Start Target Services') {
             steps {
                 script {
-                    def configServerUrl = "http://localhost:8888"
                     targetServices.each { service ->
                         dir(service) {
-                            bat "start /B mvn spring-boot:run > ${service}.log 2>&1"
+                            bat """
+                                start /B mvn spring-boot:run ^
+                                -Dspring.cloud.config.uri=${env.CONFIG_SERVER_LOCATION} ^
+                                -Deureka.client.service-url.defaultZone=${env.EUREKA_SERVER_URL} ^
+                                -Dserver.port=${env.SERVER_PORT} > ${service}.log 2>&1
+                            """
                         }
                         echo "Waiting ${service}..."
                         sleep time: 20, unit: 'SECONDS'
