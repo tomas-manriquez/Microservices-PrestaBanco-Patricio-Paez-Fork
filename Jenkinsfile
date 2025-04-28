@@ -17,6 +17,7 @@ pipeline {
     }
     environment {
         SONARQUBE_ENV = 'SonarLocal'
+        CONFIG_SERVER_LOCATION = 'http://localhost:8888'
     }
     stages {
         stage('Check') {
