@@ -1,81 +1,149 @@
+def getPortFromLog = { String logPath ->
+    def logText = readFile(file: logPath)
+    def matcher = logText =~ /Tomcat started on port\(s\): (\d+)/
+    if (matcher.find()) {
+        return matcher[0][1]
+    } else {
+        error "No se pudo detectar el puerto en el log: ${logPath}"
+    }
+}
+
+def targetServices = ['ms-customer']
+
 pipeline {
     agent any
-
-    environment {
-        CONFIG_SERVER_LOCATION = "http://localhost:8888"
+    tools {
+        maven "maven"
     }
-
+    environment {
+        SONARQUBE_ENV = 'SonarLocal'
+    }
     stages {
+        stage('Check') {
+            steps {
+                checkout scm
+            }
+        }
         stage('Build') {
             steps {
-                echo "Construyendo el proyecto..."
-                bat 'cd config-server && mvn clean install'
-                bat 'cd ms-customer && mvn clean install'
-            }
-        }
-
-        stage('Run config-server') {
-            steps {
-                bat 'cd config-server && mvn spring-boot:run > config-server.log 2>&1 &'
-            }
-        }
-
-        stage('Run ms-customer') {
-            steps {
-                echo "Levantando el microservicio ms-customer..."
-
-                bat '''
-                    cd ms-customer
-                    set CONFIG_SERVER_LOCATION=${CONFIG_SERVER_LOCATION}
-                    mvn spring-boot:run > ms-customer.log 2>&1 &
-                    echo !ERRORLEVEL! > ms-customer.pid
-                '''
-
                 script {
-                    def maxRetries = 30
-                    def retryInterval = 2
-                    def portDetected = false
-
-                    for (int i = 0; i < maxRetries; i++) {
-                        if (fileExists('ms-customer/ms-customer.log')) {
-                            def logContent = readFile('ms-customer/ms-customer.log')
-                            def matcher = logContent =~ /Tomcat started on port\\(s\\): (\\d+)/
-                            if (matcher.find()) {
-                                env.CUSTOMER_PORT = matcher.group(1)
-                                echo "Puerto detectado: ${env.CUSTOMER_PORT}"
-                                portDetected = true
-                                break
-                            }
+                    def services = [
+                        'config-server',
+                        'eureka-server',
+                        'gateway-server',
+                        'ms-customer',
+                    ]
+                    services.each { service ->
+                        dir(service) {
+                            bat "mvn clean install -DskipTests"
                         }
-                        echo "Esperando que el microservicio levante... intento ${i + 1}"
-                        sleep retryInterval
-                    }
-
-                    if (!portDetected) {
-                        error "No se pudo detectar el puerto en el log de ms-customer"
                     }
                 }
             }
         }
-        stage('Tests') {
+        stage('PMD Analysis') {
             steps {
-                echo "Ejecutando tests contra ms-customer en puerto ${env.CUSTOMER_PORT}..."
-                bat """
-                    curl -f http://localhost:%CUSTOMER_PORT%/actuator/health
-                """
+                script {
+                    def services = [
+                        'config-server',
+                        'eureka-server',
+                        'gateway-server',
+                        'ms-customer',
+                    ]
+                    services.each { service ->
+                        dir(service) {
+                            bat "mvn pmd:pmd"
+                            bat 'python %WORKSPACE%\\PMD_TO_SQ.py'
+                        }
+                    }
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv("${env.SONARQUBE_ENV}") {
+                    script {
+                        def services = [
+                            'config-server',
+                            'eureka-server',
+                            'gateway-server',
+                            'ms-customer',
+                        ]
+                        services.each { service ->
+                            dir(service) {
+                                bat "mvn sonar:sonar -Dsonar.externalIssuesReportPaths=target/sonar-pmd-report.json"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Start Infra Services') {
+            steps {
+                script {
+                    def configServerUrl = "http://localhost:8888" // Replace with your config-server URL
+                    def infraServices = ['config-server', 'eureka-server', 'gateway-server']
+                    infraServices.each { service ->
+                        dir(service) {
+                            bat "start /B mvn spring-boot:run -Dspring.cloud.config.uri=${configServerUrl} > ${service}.log 2>&1"
+                        }
+                        echo "Waiting ${service}..."
+                        sleep time: 10, unit: 'SECONDS'
+                    }
+                }
+            }
+        }
+        }
+        stage('Start Target Services') {
+            steps {
+                script {
+                    def configServerUrl = "http://localhost:8888"
+                    targetServices.each { service ->
+                        dir(service) {
+                            bat "start /B mvn spring-boot:run -Dspring.cloud.config.uri=${configServerUrl} > ${service}.log 2>&1"
+                        }
+                        echo "Waiting ${service}..."
+                        sleep time: 20, unit: 'SECONDS'
+                    }
+                }
+            }
+        }
+        stage('OWASP ZAP') {
+            steps {
+                script {
+                    def puertos = []
+                    targetServices.each { service ->
+                        dir(service) {
+                            def logPath = "${service}.log"
+                            def port = getPortFromLog(logPath)
+                            echo "Port of ${service}: ${port}"
+                            puertos.add(port)
+                        }
+                    }
+
+                    puertos.each { port ->
+                        bat """
+                            cd /d C:\\ZAP && java -Xmx8192m -jar zap-2.16.0.jar -cmd ^
+                            -quickurl http://localhost:${port} ^
+                            -quickout %WORKSPACE%\\zap-report-${port}.html ^
+                            -quickprogress ^
+                            -config ascan.threadPerHost=2 ^
+                            -config ascan.maxRuleDurationInMins=5 ^
+                            -config ascan.maxScanDurationInMins=2
+                        """
+                    }
+                }
+
+                archiveArtifacts artifacts: 'zap-report-*.html', allowEmptyArchive: true
             }
         }
     }
-
     post {
-        always {
-            echo "Deteniendo ms-customer si está corriendo..."
-            script {
-                if (fileExists('ms-customer/ms-customer.pid')) {
-                    def pid = readFile('ms-customer/ms-customer.pid').trim()
-                    bat "taskkill /PID ${pid} /F || exit 0"
-                }
-            }
+        failure {
+            echo 'Error in pipeline.'
+        }
+        success {
+            echo 'Pipeline completed.'
         }
     }
 }
