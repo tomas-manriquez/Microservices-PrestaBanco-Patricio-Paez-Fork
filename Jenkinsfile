@@ -64,17 +64,17 @@ pipeline {
             steps {
                 script {
                     def services = [
-                        'config-server',
-                        'eureka-server',
-                        'gateway-server',
-                        'ms-customer',
-                        'ms-executive',
-                        'ms-loan',
-                        'ms-request',
-                        'ms-simulation'
+                        [name: 'config-server', port: '8888'],
+                        [name: 'eureka-server', port: '8761'],
+                        [name: 'gateway-server', port: '8080'],
+                        [name: 'ms-customer', port: '8081'],
+                        [name: 'ms-executive', port: '8082'],
+                        [name: 'ms-loan', port: '8083'],
+                        [name: 'ms-request', port: '8084'],
+                        [name: 'ms-simulation', port: '8085']
                     ]
                     services.each { service ->
-                        bat "docker run -d --name ${service} -p 8080:8080 ${env.DOCKER_REGISTRY}/${service}:latest"
+                        bat "docker run -d --name ${service.name} -p ${service.port}:${service.port} ${env.DOCKER_REGISTRY}/${service.name}:latest"
                     }
                 }
             }
@@ -83,7 +83,6 @@ pipeline {
             steps {
                 script {
                     def targetUrls = [
-                        'http://localhost:8080',
                         'http://localhost:8081',
                         'http://localhost:8082',
                         'http://localhost:8083',
