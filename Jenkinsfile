@@ -5,6 +5,8 @@ pipeline {
     }
     environment {
         SONARQUBE_ENV = 'SonarLocal'
+        DOCKER_REGISTRY = 'https://index.docker.io/v1/'
+        DOCKER_CREDENTIALS_ID = 'docker-credentials '
     }
     stages {
         stage('Check') {
@@ -33,79 +35,67 @@ pipeline {
                 }
             }
         }
-        stage('PMD Analysis') {
-                    steps {
-                        script {
-                            def services = [
-                                'config-server',
-                                'eureka-server',
-                                'gateway-server',
-                                'ms-customer',
-                                'ms-executive',
-                                'ms-loan',
-                                'ms-request',
-                                'ms-simulation'
-                            ]
-                            services.each { service ->
-                                dir(service) {
-                                    bat "mvn pmd:pmd"
-                                    bat 'python %WORKSPACE%\\PMD_TO_SQ.py'
-                                }
-                            }
-                        }
-                    }
-                }
-        stage('SonarQube Analysis') {
+        stage('Docker Build and Push') {
             steps {
-                withSonarQubeEnv("${env.SONARQUBE_ENV}") {
-                    script {
-                        def services = [
-                            'config-server',
-                            'eureka-server',
-                            'gateway-server',
-                            'ms-customer',
-                            'ms-executive',
-                            'ms-loan',
-                            'ms-request',
-                            'ms-simulation'
-                        ]
-                        services.each { service ->
-                            dir(service) {
-                                bat "mvn sonar:sonar -Dsonar.externalIssuesReportPaths=target/sonar-pmd-report.json"
+                script {
+                    def services = [
+                        'config-server',
+                        'eureka-server',
+                        'gateway-server',
+                        'ms-customer',
+                        'ms-executive',
+                        'ms-loan',
+                        'ms-request',
+                        'ms-simulation'
+                    ]
+                    services.each { service ->
+                        dir(service) {
+                            bat "docker build -t ${env.DOCKER_REGISTRY}/${service}:latest ."
+                            withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS% ${env.DOCKER_REGISTRY}"
+                                bat "docker push ${env.DOCKER_REGISTRY}/${service}:latest"
                             }
                         }
                     }
                 }
             }
         }
-        stage('Start Services') {
+        stage('Run Docker Containers') {
             steps {
-                dir ('config-server') {
-                    // Ejecuta el config-server en segundo plano
-                    bat "start /B mvn spring-boot:run"
+                script {
+                    def services = [
+                        'config-server',
+                        'eureka-server',
+                        'gateway-server',
+                        'ms-customer',
+                        'ms-executive',
+                        'ms-loan',
+                        'ms-request',
+                        'ms-simulation'
+                    ]
+                    services.each { service ->
+                        bat "docker run -d --name ${service} -p 8080:8080 ${env.DOCKER_REGISTRY}/${service}:latest"
+                    }
                 }
-                // Espera unos segundos para que el config-server arranque
-                echo "Esperando a que el config-server esté disponible..."
-                sleep time: 20, unit: 'SECONDS'
-
-                dir ('eureka-server') {
-                    // Ejecuta el eureka-server en segundo plano
-                    bat "start /B mvn spring-boot:run"
-                }
-                // Espera unos segundos para que el eureka-server arranque
-                echo "Esperando a que el eureka-server esté disponible..."
-                sleep time: 20, unit: 'SECONDS'
-
-                dir('gateway-server') {
-                    // Ejecuta el gateway en segundo plano
-                    bat "start /B mvn spring-boot:run"
-                }
-                // Espera unos segundos para que el gateway arranque
-                echo "Esperando a que el gateway esté disponible..."
-                sleep time: 20, unit: 'SECONDS'
             }
         }
-
+        stage('OWASP ZAP DAST') {
+            steps {
+                script {
+                    def targetUrls = [
+                        'http://localhost:8080',
+                        'http://localhost:8081',
+                        'http://localhost:8082',
+                        'http://localhost:8083',
+                        'http://localhost:8084',
+                        'http://localhost:8085'
+                    ]
+                    targetUrls.each { url ->
+                        bat "zap-cli quick-scan --self-contained --start-options '-config api.disablekey=true' ${url}"
+                    }
+                }
+            }
+        }
     }
     post {
         failure {

@@ -1,0 +1,161 @@
+version: '3.8'
+
+services:
+  config-server:
+    image: config-server:latest
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+
+  eureka-server:
+    image: eureka-server:latest
+    ports:
+      - "8761:8761"
+    depends_on:
+      - config-server
+    environment:
+      - EUREKA_SERVER_URL=http://eureka-server-service:8761/eureka/
+      - CONFIG_SERVER_LOCATION=http://config-server:8888
+
+  gateway-server:
+    image: gateway-server:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+      - config-server
+    environment:
+      - EUREKA_SERVER_URL_DEPLOYMENT=http://eureka-server:8761/eureka
+      - GATEWAY_SERVER_SERVICE=gateway-server-service
+      - CONFIG_SERVER_LOCATION=http://config-server:8888
+
+  ms-customer:
+    image: ms-customer:latest
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-server
+      - config-server
+    environment:
+      - HOSTNAME=ms-customer
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka
+      - SERVER_PORT=8081
+      - DB_HOST=customer-db
+      - DB_PORT=5432
+      - DB_DBNAME=customer-db
+      - DB_USER=postgres
+      - DB_PASSWORD=admin
+
+  ms-executive:
+    image: ms-executive:latest
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+      - config-server
+    environment:
+      - HOSTNAME=ms-executive
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka
+      - SERVER_PORT=8082
+      - DB_HOST=executive-db
+      - DB_PORT=5433
+      - DB_DBNAME=executive-db
+      - DB_USER=postgres
+      - DB_PASSWORD=admin
+
+  ms-loan:
+    image: ms-loan:latest
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+      - config-server
+    environment:
+      - HOSTNAME=ms-loan
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka
+      - SERVER_PORT=8083
+      - DB_HOST=loan-db
+      - DB_PORT=5434
+      - DB_DBNAME=loan-db
+      - DB_USER=postgres
+      - DB_PASSWORD=admin
+
+  ms-request:
+    image: ms-request:latest
+    ports:
+      - "8084:8084"
+    depends_on:
+      - eureka-server
+      - config-server
+    environment:
+      - HOSTNAME=ms-request
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka
+      - SERVER_PORT=8084
+      - DB_HOST=request-db
+      - DB_PORT=5435
+      - DB_DBNAME=request-db
+      - DB_USER=postgres
+      - DB_PASSWORD=admin
+
+  ms-simulation:
+    image: ms-simulation:latest
+    ports:
+      - "8085:8085"
+    depends_on:
+      - eureka-server
+      - config-server
+    environment:
+      - HOSTNAME=ms-simulation
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka
+      - SERVER_PORT=8085
+      - DB_HOST=simulation-db
+      - DB_PORT=5436
+      - DB_DBNAME=simulation-db
+      - DB_USER=postgres
+      - DB_PASSWORD=admin
+
+  customer-db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=customer-db
+
+  executive-db:
+    image: postgres:latest
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=executive-db
+
+  loan-db:
+    image: postgres:latest
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=loan-db
+
+  request-db:
+    image: postgres:latest
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=request-db
+
+  simulation-db:
+    image: postgres:latest
+    ports:
+      - "5436:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=simulation-db
