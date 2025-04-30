@@ -63,6 +63,7 @@ pipeline {
         stage('Run Docker Containers') {
             steps {
                 script {
+                    bat "docker network create prestabanco-network || true"
                     def services = [
                         [name: 'config-server', port: '8888'],
                         [name: 'eureka-server', port: '8761'],
@@ -90,7 +91,7 @@ pipeline {
                         'http://localhost:8085'
                     ]
                     targetUrls.each { url ->
-                        bat "zap-cli quick-scan --self-contained --start-options '-config api.disablekey=true' ${url}"
+                        bat "zap.sh -cmd -quickurl ${url} -quickout zap_report_${url.replace('http://localhost:', '')}.html"
                     }
                 }
             }
