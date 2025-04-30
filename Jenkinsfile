@@ -5,7 +5,7 @@ pipeline {
     }
     environment {
         SONARQUBE_ENV = 'SonarLocal'
-        DOCKER_REGISTRY = 'index.docker.io'
+        DOCKER_REGISTRY = 'niptuss'
         DOCKER_CREDENTIALS_ID = 'docker-credentials '
     }
     stages {
