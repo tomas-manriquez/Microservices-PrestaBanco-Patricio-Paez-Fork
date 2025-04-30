@@ -1,13 +1,13 @@
 services:
   config-server:
-    image: config-server:latest
+    image: config-server
     ports:
       - "8888:8888"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
 
   eureka-server:
-    image: eureka-server:latest
+    image: eureka-server
     ports:
       - "8761:8761"
     depends_on:
@@ -17,7 +17,7 @@ services:
       - EUREKA_SERVER_URL=http://eureka-server:8761/eureka
 
   gateway-server:
-    image: gateway-server:latest
+    image: gateway-server
     ports:
       - "8080:8080"
     depends_on:
@@ -29,7 +29,7 @@ services:
       - CONFIG_SERVER_LOCATION=http://config-server:8888
 
   ms-customer:
-    image: ms-customer:latest
+    image: ms-customer
     ports:
       - "8081:8081"
     depends_on:
@@ -46,7 +46,7 @@ services:
       - DB_PASSWORD=admin
 
   ms-executive:
-    image: ms-executive:latest
+    image: ms-executive
     ports:
       - "8082:8082"
     depends_on:
@@ -63,7 +63,7 @@ services:
       - DB_PASSWORD=admin
 
   ms-loan:
-    image: ms-loan:latest
+    image: ms-loan
     ports:
       - "8083:8083"
     depends_on:
@@ -80,7 +80,7 @@ services:
       - DB_PASSWORD=admin
 
   ms-request:
-    image: ms-request:latest
+    image: ms-request
     ports:
       - "8084:8084"
     depends_on:
@@ -97,7 +97,7 @@ services:
       - DB_PASSWORD=admin
 
   ms-simulation:
-    image: ms-simulation:latest
+    image: ms-simulation
     ports:
       - "8085:8085"
     depends_on:
@@ -114,7 +114,7 @@ services:
       - DB_PASSWORD=admin
 
   customer-db:
-    image: postgres:latest
+    image: postgres
     ports:
       - "5432:5432"
     environment:
@@ -123,7 +123,7 @@ services:
       - POSTGRES_DB=customer-db
 
   executive-db:
-    image: postgres:latest
+    image: postgres
     ports:
       - "5433:5432"
     environment:
@@ -132,7 +132,7 @@ services:
       - POSTGRES_DB=executive-db
 
   loan-db:
-    image: postgres:latest
+    image: postgres
     ports:
       - "5434:5432"
     environment:
@@ -141,7 +141,7 @@ services:
       - POSTGRES_DB=loan-db
 
   request-db:
-    image: postgres:latest
+    image: postgres
     ports:
       - "5435:5432"
     environment:
@@ -150,7 +150,7 @@ services:
       - POSTGRES_DB=request-db
 
   simulation-db:
-    image: postgres:latest
+    image: postgres
     ports:
       - "5436:5432"
     environment:

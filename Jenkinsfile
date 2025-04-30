@@ -21,11 +21,7 @@ pipeline {
                         'config-server',
                         'eureka-server',
                         'gateway-server',
-                        'ms-customer',
-                        'ms-executive',
-                        'ms-loan',
-                        'ms-request',
-                        'ms-simulation'
+                        'ms-customer'
                     ]
                     services.each { service ->
                         dir(service) {
@@ -42,11 +38,7 @@ pipeline {
                         'config-server',
                         'eureka-server',
                         'gateway-server',
-                        'ms-customer',
-                        'ms-executive',
-                        'ms-loan',
-                        'ms-request',
-                        'ms-simulation'
+                        'ms-customer'
                     ]
                     services.each { service ->
                         dir(service) {
@@ -67,11 +59,7 @@ pipeline {
                         [name: 'config-server', port: '8888'],
                         [name: 'eureka-server', port: '8761'],
                         [name: 'gateway-server', port: '8080'],
-                        [name: 'ms-customer', port: '8081'],
-                        [name: 'ms-executive', port: '8082'],
-                        [name: 'ms-loan', port: '8083'],
-                        [name: 'ms-request', port: '8084'],
-                        [name: 'ms-simulation', port: '8085']
+                        [name: 'ms-customer', port: '8081']
                     ]
                     services.each { service ->
                         bat "docker run -d --name ${service.name} -p ${service.port}:${service.port} ${env.DOCKER_REGISTRY}/${service.name}:latest"
@@ -83,14 +71,18 @@ pipeline {
             steps {
                 script {
                     def targetUrls = [
-                        'http://localhost:8081',
-                        'http://localhost:8082',
-                        'http://localhost:8083',
-                        'http://localhost:8084',
-                        'http://localhost:8085'
+                        'http://localhost:8081'
                     ]
                     targetUrls.each { url ->
-                        bat "zap.sh -cmd -quickurl ${url} -quickout zap_report_${url.replace('http://localhost:', '')}.html"
+                        bat """
+                            cd /d C:\\ZAP && java -Xmx2048m -jar zap-2.16.0.jar -cmd ^
+                            -quickurl ${url} ^
+                            -quickout %WORKSPACE%\\zap-report-${url}.html ^
+                            -quickprogress ^
+                            -config ascan.threadPerHost=2 ^
+                            -config ascan.maxRuleDurationInMins=5 ^
+                            -config ascan.maxScanDurationInMins=2
+                        """
                     }
                 }
             }
