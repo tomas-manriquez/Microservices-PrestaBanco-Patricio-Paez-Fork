@@ -63,7 +63,6 @@ pipeline {
         stage('Run Docker Containers') {
             steps {
                 script {
-                    bat "docker network create prestabanco-network || true"
                     def services = [
                         [name: 'config-server', port: '8888'],
                         [name: 'eureka-server', port: '8761'],
