@@ -42,10 +42,10 @@ pipeline {
                     ]
                     services.each { service ->
                         dir(service) {
-                            bat "docker build -t ${env.DOCKER_REGISTRY}/${service}:latest ."
+                            bat "docker build -t ${env.DOCKER_REGISTRY}/${service} ."
                             withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                                 bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
-                                bat "docker push ${env.DOCKER_REGISTRY}/${service}:latest"
+                                bat "docker push ${env.DOCKER_REGISTRY}/${service}"
                             }
                         }
                     }
@@ -55,16 +55,9 @@ pipeline {
         stage('Run Docker Containers') {
             steps {
                 script {
-                    def services = [
-                        [name: 'config-server', port: '8888'],
-                        [name: 'eureka-server', port: '8761'],
-                        [name: 'gateway-server', port: '8080'],
-                        [name: 'customer-db', port: '5432'],
-                        [name: 'ms-customer', port: '8081']
-                    ]
-                    services.each { service ->
-                        bat "docker run -d --name ${service.name} -p ${service.port}:${service.port} ${env.DOCKER_REGISTRY}/${service.name}:latest"
-                    }
+                    bat "docker-compose down || exit 0"
+                    bat "docker-compose pull"
+                    bat "docker-compose up -d"
                 }
             }
         }
