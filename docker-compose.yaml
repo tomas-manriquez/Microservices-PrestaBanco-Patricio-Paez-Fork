@@ -121,7 +121,7 @@ services:
       - ./env/customer.env
 
   ms-executive:
-    image: ms-executive
+    image: niptuss/ms-executive:latest
     ports:
       - "8082:8082"
     depends_on:
@@ -135,7 +135,7 @@ services:
       - ./env/executive.env
 
   ms-loan:
-    image: ms-loan
+    image: niptuss/ms-loan:latest
     ports:
       - "8083:8083"
     depends_on:
@@ -149,7 +149,7 @@ services:
       - ./env/loan.env
 
   ms-request:
-    image: ms-request
+    image: niptuss/ms-request:latest
     ports:
       - "8084:8084"
     depends_on:
@@ -163,7 +163,7 @@ services:
       - ./env/request.env
 
   ms-simulation:
-    image: ms-simulation
+    image: niptuss/ms-simulation:latest
     ports:
       - "8085:8085"
     depends_on:
