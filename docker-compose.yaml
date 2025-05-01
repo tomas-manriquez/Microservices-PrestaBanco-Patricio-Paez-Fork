@@ -24,7 +24,6 @@ services:
       timeout: 3s
       retries: 10
 
-
   gateway-server:
     image: niptuss/gateway-server:latest
     ports:
@@ -51,6 +50,62 @@ services:
       timeout: 5s
       retries: 10
 
+  executive-db:
+    image: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=executive-db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d executive-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  loan-db:
+    image: postgres
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=loan-db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d loan-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  request-db:
+    image: postgres
+    ports:
+      - "5435:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=request-db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d request-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  simulation-db:
+    image: postgres
+    ports:
+      - "5436:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=simulation-db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d simulation-db"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
   ms-customer:
     image: niptuss/ms-customer:latest
     ports:
@@ -62,13 +117,73 @@ services:
         condition: service_healthy
       customer-db:
         condition: service_healthy
-    environment:
-      - CONFIG_SERVER_LOCATION=http://config-server:8888
-      - HOSTNAME=ms-customer
-      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka
-      - SERVER_PORT=8081
-      - DB_HOST=customer-db
-      - DB_PORT=5432
-      - DB_DBNAME=customer-db
-      - DB_USER=postgres
-      - DB_PASSWORD=admin
+    env_file:
+      - ./env/customer.env
+
+  ms-executive:
+    image: ms-executive
+    ports:
+      - "8082:8082"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      executive-db:
+        condition: service_healthy
+    env_file:
+      - ./env/executive.env
+
+  ms-loan:
+    image: ms-loan
+    ports:
+      - "8083:8083"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      loan-db:
+        condition: service_healthy
+    env_file:
+      - ./env/loan.env
+
+  ms-request:
+    image: ms-request
+    ports:
+      - "8084:8084"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      request-db:
+        condition: service_healthy
+    env_file:
+      - ./env/request.env
+
+  ms-simulation:
+    image: ms-simulation
+    ports:
+      - "8085:8085"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      simulation-db:
+        condition: service_healthy
+    env_file:
+      - ./env/simulation.env
+
+  frontend-ms:
+    image: niptuss/frontend-ms:latest
+    ports:
+      - "80:80"
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+    env_file:
+      - ./env/frontend.env

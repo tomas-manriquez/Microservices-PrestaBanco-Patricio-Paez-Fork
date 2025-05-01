@@ -21,11 +21,65 @@ pipeline {
                         'config-server',
                         'eureka-server',
                         'gateway-server',
-                        'ms-customer'
+                        'ms-customer',
+                        'ms-executive',
+                        'ms-loan',
+                        'ms-request',
+                        'ms-simulation',
+                        'frontend-ms'
                     ]
                     services.each { service ->
                         dir(service) {
-                            bat "mvn clean install -DskipTests"
+                            if (service == 'frontend-ms') {
+                                bat "npm install"
+                                bat "npm run build"
+                            } else {
+                                bat "mvn clean install -DskipTests"
+                            }
+                    }
+                }
+            }
+        }
+        stage('PMD Analysis') {
+            steps {
+                script {
+                    def services = [
+                        'config-server',
+                        'eureka-server',
+                        'gateway-server',
+                        'ms-customer',
+                        'ms-executive',
+                        'ms-loan',
+                        'ms-request',
+                        'ms-simulation'
+                    ]
+                    services.each { service ->
+                        dir(service) {
+                            bat "mvn pmd:pmd"
+                            bat 'python %WORKSPACE%\\PMD_TO_SQ.py'
+                        }
+                    }
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv("${env.SONARQUBE_ENV}") {
+                    script {
+                        def services = [
+                            'config-server',
+                            'eureka-server',
+                            'gateway-server',
+                            'ms-customer',
+                            'ms-executive',
+                            'ms-loan',
+                            'ms-request',
+                            'ms-simulation'
+                        ]
+                        services.each { service ->
+                            dir(service) {
+                                bat "mvn sonar:sonar -Dsonar.externalIssuesReportPaths=target/sonar-pmd-report.json"
+                            }
                         }
                     }
                 }
@@ -38,7 +92,12 @@ pipeline {
                         'config-server',
                         'eureka-server',
                         'gateway-server',
-                        'ms-customer'
+                        'ms-customer',
+                        'ms-executive',
+                        'ms-loan',
+                        'ms-request',
+                        'ms-simulation',
+                        'frontend-ms'
                     ]
                     services.each { service ->
                         dir(service) {
@@ -60,26 +119,7 @@ pipeline {
                 }
             }
         }
-        stage('OWASP ZAP DAST') {
-            steps {
-                script {
-                    def targetUrls = [
-                        'http://localhost:8081'
-                    ]
-                    targetUrls.each { url ->
-                        bat """
-                            cd /d C:\\ZAP && java -Xmx2048m -jar zap-2.16.0.jar -cmd ^
-                            -quickurl ${url} ^
-                            -quickout %WORKSPACE%\\zap-report-${url}.html ^
-                            -quickprogress ^
-                            -config ascan.threadPerHost=2 ^
-                            -config ascan.maxRuleDurationInMins=5 ^
-                            -config ascan.maxScanDurationInMins=2
-                        """
-                    }
-                }
-            }
-        }
+        // DAST or other stages...
     }
     post {
         failure {
