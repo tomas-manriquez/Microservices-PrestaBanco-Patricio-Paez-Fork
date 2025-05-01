@@ -42,10 +42,10 @@ pipeline {
                     ]
                     services.each { service ->
                         dir(service) {
-                            bat "docker build -t ${env.DOCKER_REGISTRY}/${service} ."
+                            bat "docker build -t ${env.DOCKER_REGISTRY}/${service}:latest ."
                             withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                                 bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
-                                bat "docker push ${env.DOCKER_REGISTRY}/${service}"
+                                bat "docker push ${env.DOCKER_REGISTRY}/${service}:latest"
                             }
                         }
                     }
