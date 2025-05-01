@@ -36,6 +36,7 @@ pipeline {
                             } else {
                                 bat "mvn clean install -DskipTests"
                             }
+                        }
                     }
                 }
             }
