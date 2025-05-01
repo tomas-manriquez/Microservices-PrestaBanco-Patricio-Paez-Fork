@@ -56,7 +56,6 @@ pipeline {
             steps {
                 script {
                     bat "docker-compose down || exit 0"
-                    bat "docker-compose pull"
                     bat "docker-compose up -d"
                 }
             }

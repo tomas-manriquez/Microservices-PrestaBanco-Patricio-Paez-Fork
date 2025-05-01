@@ -1,6 +1,6 @@
 services:
   config-server:
-    image: config-server:latest
+    image: niptuss/config-server:latest
     ports:
       - "8888:8888"
     healthcheck:
@@ -10,7 +10,7 @@ services:
       retries: 10
 
   eureka-server:
-    image: eureka-server:latest
+    image: niptuss/eureka-server:latest
     ports:
       - "8761:8761"
     depends_on:
@@ -20,7 +20,7 @@ services:
       - ./env/eureka.env
 
   gateway-server:
-    image: gateway-server:latest
+    image: niptuss/gateway-server:latest
     ports:
       - "8080:8080"
     depends_on:
@@ -32,7 +32,7 @@ services:
       - ./env/gateway.env
 
   customer-db:
-    image: postgres:latest
+    image: postgres
     ports:
       - "5432:5432"
     environment:
@@ -46,7 +46,7 @@ services:
       retries: 10
 
   ms-customer:
-    image: ms-customer:latest
+    image: niptuss/ms-customer:latest
     ports:
       - "8081:8081"
     depends_on:
