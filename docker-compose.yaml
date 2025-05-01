@@ -1,11 +1,8 @@
 services:
   config-server:
-    environment:
-      - SPRING_PROFILES_ACTIVE=dev
     image: config-server
     ports:
       - "8888:8888"
-
 
   eureka-server:
     image: eureka-server
@@ -13,11 +10,9 @@ services:
       - "8761:8761"
     depends_on:
       - config-server
-    env_file:
-      - ./envs/eureka.env
     environment:
-      - CONFIG_SERVER_LOCATION
-      - EUREKA_SERVER_URL
+      - CONFIG_SERVER_LOCATION=http://config-server:8888
+      - EUREKA_SERVER_URL=http://eureka-server:8761/eureka
 
   gateway-server:
     image: gateway-server
@@ -29,9 +24,9 @@ services:
     env_file:
       - ./envs/gateway.env
     environment:
-      - EUREKA_SERVER_URL_DEPLOYMENT
-      - GATEWAY_SERVER_SERVICE
-      - CONFIG_SERVER_LOCATION
+      - EUREKA_SERVER_URL_DEPLOYMENT=http://eureka-server:8761/eureka
+      - GATEWAY_SERVER_SERVICE=gateway-server
+      - CONFIG_SERVER_LOCATION=http://config-server:8888
 
   ms-customer:
     image: ms-customer
