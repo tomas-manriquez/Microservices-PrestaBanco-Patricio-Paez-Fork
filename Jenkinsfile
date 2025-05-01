@@ -59,6 +59,7 @@ pipeline {
                         [name: 'config-server', port: '8888'],
                         [name: 'eureka-server', port: '8761'],
                         [name: 'gateway-server', port: '8080'],
+                        [name: 'customer-db', port: '5432'],
                         [name: 'ms-customer', port: '8081']
                     ]
                     services.each { service ->
