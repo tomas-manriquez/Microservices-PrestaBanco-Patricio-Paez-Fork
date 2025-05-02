@@ -4,8 +4,8 @@ pipeline {
         maven "maven"
     }
     environment {
-        SONARQUBE_ENV = 'SonarLocal'
-        DOCKER_REGISTRY = 'niptuss'
+        SONARQUBE_ENV = 'SonarQube-Local'
+        DOCKER_REGISTRY = 'mahirolyuvob'
         DOCKER_CREDENTIALS_ID = 'docker-credentials '
     }
     stages {
