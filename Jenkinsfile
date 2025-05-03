@@ -21,6 +21,9 @@ pipeline {
         stage('DAST - OWASP ZAP') {
             steps {
                 script {
+                    // Pull una sola vez
+                    bat "docker pull ghcr.io/zaproxy/zap-baseline"
+
                     def targets = [
                         'http://localhost:8081', // ms-customer
                         'http://localhost:8082', // ms-executive
@@ -28,17 +31,18 @@ pipeline {
                         'http://localhost:8084', // ms-request
                         'http://localhost:8085'  // ms-simulation
                     ]
+
                     targets.each { targetUrl ->
                         def port = targetUrl.split(':')[2]
                         bat """
                             docker run --rm -v %CD%:/zap/wrk ghcr.io/zaproxy/zap-baseline -t ${targetUrl} -r zap-report-${port}.html
                         """
                     }
+
                     archiveArtifacts artifacts: 'zap-report-*.html', onlyIfSuccessful: true
                 }
             }
         }
-
     }
     post {
         failure {
