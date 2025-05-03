@@ -4,11 +4,16 @@ pipeline {
         maven "maven"
     }
     environment {
-        SONARQUBE_ENV = 'SonarQube-Local'
-        DOCKER_REGISTRY = 'mahirolyuvob'
-        DOCKER_CREDENTIALS_ID = 'docker-credentials '
+        SONARQUBE_ENV = ''
+        DOCKER_REGISTRY = ''
+        DOCKER_CREDENTIALS_ID = ''
     }
     stages {
+        stage('Load Env') {
+            steps {
+                dotenv '.env'
+            }
+        }
         stage('Check') {
             steps {
                 checkout scm
@@ -83,6 +88,40 @@ pipeline {
                             }
                         }
                     }
+                }
+            }
+        }
+        stage('Docker Build and Push') {
+            steps {
+                script {
+                    def services = [
+                        'config-server',
+                        'eureka-server',
+                        'gateway-server',
+                        'ms-customer',
+                        'ms-executive',
+                        'ms-loan',
+                        'ms-request',
+                        'ms-simulation',
+                        'frontend-ms'
+                    ]
+                    services.each { service ->
+                        dir(service) {
+                            bat "docker build -t ${env.DOCKER_REGISTRY}/${service}:latest ."
+                            withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
+                                bat "docker push ${env.DOCKER_REGISTRY}/${service}:latest"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Run Docker Containers') {
+            steps {
+                script {
+                    bat "docker-compose down || exit 0"
+                    bat "docker-compose up -d"
                 }
             }
         }

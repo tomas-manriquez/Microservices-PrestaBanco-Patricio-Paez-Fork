@@ -1,0 +1,10 @@
+Importante!
+
+Llena el archivo .env con las variables de entorno necesarias para el Jenkinsfile
+y el archivo .env.example contiene las variables de entorno necesarias.
+
+También, llenar los .env para cada uno de los microservicios en la carpeta env.
+
+Para ejecutar el pipeline, asegúrate de tener python.exe en el PATH, SonarQube y Docker desktop instalado y corriendo.
+
+En Jenkins tener los plugin de SonarQube y EnvFile junto con su configuración.
