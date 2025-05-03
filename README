@@ -1,7 +1,7 @@
 Importante!
 
-Llena el archivo .env con las variables de entorno necesarias para el Jenkinsfile
-y el archivo .env.example contiene las variables de entorno necesarias.
+Utiliza el archivo .env.example como referencia para llenar los valores de entorno directamente en el Jenkins,
+se puede realizar yendo a Manage Jenkins > Configure System y en Global properties colocar las Environment variables.
 
 También, llenar los .env para cada uno de los microservicios en la carpeta env.
 

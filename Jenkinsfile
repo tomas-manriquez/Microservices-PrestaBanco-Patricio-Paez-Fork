@@ -3,17 +3,7 @@ pipeline {
     tools {
         maven "maven"
     }
-    environment {
-        SONARQUBE_ENV = ''
-        DOCKER_REGISTRY = ''
-        DOCKER_CREDENTIALS_ID = ''
-    }
     stages {
-        stage('Load Env') {
-            steps {
-                dotenv '.env'
-            }
-        }
         stage('Check') {
             steps {
                 checkout scm

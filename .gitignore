@@ -21,12 +21,5 @@ buildNumber.properties
 /cuestionario SUS/
 /Gherkin/
 /SUS CALC/
-/env/customer.env
-/env/executive.env
-/env/loan.env
-/env/request.env
-/env/simulation.env
-/env/frontend.env
-/env/config.env
-/env/eureka.env
-/env/gateway.env
+/env/*.env
+!/env/*.env.example
