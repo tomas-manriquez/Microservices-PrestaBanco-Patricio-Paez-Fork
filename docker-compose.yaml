@@ -8,6 +8,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    networks:
+      - microservicios-prestabanco
 
   eureka-server:
     image: niptuss/eureka-server:latest
@@ -23,6 +25,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    networks:
+      - microservicios-prestabanco
 
   gateway-server:
     image: niptuss/gateway-server:latest
@@ -35,6 +39,8 @@ services:
         condition: service_healthy
     env_file:
       - ./env/gateway.env
+    networks:
+      - microservicios-prestabanco
 
   customer-db:
     image: postgres
@@ -49,6 +55,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - microservicios-prestabanco
 
   executive-db:
     image: postgres
@@ -63,6 +71,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - microservicios-prestabanco
 
   loan-db:
     image: postgres
@@ -77,6 +87,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - microservicios-prestabanco
 
   request-db:
     image: postgres
@@ -91,6 +103,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - microservicios-prestabanco
 
   simulation-db:
     image: postgres
@@ -105,6 +119,8 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    networks:
+      - microservicios-prestabanco
 
   ms-customer:
     image: niptuss/ms-customer:latest
@@ -119,6 +135,8 @@ services:
         condition: service_healthy
     env_file:
       - ./env/customer.env
+    networks:
+      - microservicios-prestabanco
 
   ms-executive:
     image: niptuss/ms-executive:latest
@@ -133,6 +151,8 @@ services:
         condition: service_healthy
     env_file:
       - ./env/executive.env
+    networks:
+      - microservicios-prestabanco
 
   ms-loan:
     image: niptuss/ms-loan:latest
@@ -147,6 +167,8 @@ services:
         condition: service_healthy
     env_file:
       - ./env/loan.env
+    networks:
+      - microservicios-prestabanco
 
   ms-request:
     image: niptuss/ms-request:latest
@@ -161,6 +183,8 @@ services:
         condition: service_healthy
     env_file:
       - ./env/request.env
+    networks:
+      - microservicios-prestabanco
 
   ms-simulation:
     image: niptuss/ms-simulation:latest
@@ -175,6 +199,8 @@ services:
         condition: service_healthy
     env_file:
       - ./env/simulation.env
+    networks:
+      - microservicios-prestabanco
 
   frontend-ms:
     image: niptuss/frontend-ms:latest
@@ -187,3 +213,9 @@ services:
         condition: service_healthy
     env_file:
       - ./env/frontend.env
+    networks:
+      - microservicios-prestabanco
+
+networks:
+  microservicios-prestabanco:
+    driver: bridge
