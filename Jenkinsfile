@@ -128,7 +128,7 @@ pipeline {
                     ]
                     targets.each { targetUrl ->
                         bat """
-                            docker run --rm -v %CD%:/zap/wrk -t owasp/zap2docker-stable zap-baseline.py -t ${targetUrl} -r zap-report-${targetUrl.split(':')[2]}.html
+                            docker run --rm -v %CD%:/zap/wrk -t owasp/zap2docker-weekly zap-baseline.py -t ${targetUrl} -r zap-report-${targetUrl.split(':')[2]}.html
                         """
                     }
                     archiveArtifacts artifacts: 'zap-report-*.html', onlyIfSuccessful: true
