@@ -51,11 +51,11 @@ pipeline {
                     bat "docker pull ghcr.io/zaproxy/zaproxy:stable"
 
                     def targets = [
-                        'http://ms-customer:8081', // ms-customer
-                        'http://ms-executive:8082', // ms-executive
-                        'http://ms-loan:8083', // ms-loan
-                        'http://ms-request:8084', // ms-request
-                        'http://ms-simulation:8085'  // ms-simulation
+                        'http://host.docker.internal:8081', // ms-customer
+                        'http://host.docker.internal:8082', // ms-executive
+                        'http://host.docker.internal:8083', // ms-loan
+                        'http://host.docker.internal:8084', // ms-request
+                        'http://host.docker.internal:8085'  // ms-simulation
                     ]
 
                     targets.each { targetUrl ->
