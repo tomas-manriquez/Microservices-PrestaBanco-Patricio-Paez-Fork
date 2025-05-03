@@ -116,6 +116,25 @@ pipeline {
             }
         }
         // DAST or other stages...
+        stage('DAST - OWASP ZAP') {
+            steps {
+                script {
+                    def targets = [
+                        'http://localhost:8081', // ms-customer
+                        'http://localhost:8082', // ms-executive
+                        'http://localhost:8083', // ms-loan
+                        'http://localhost:8084', // ms-request
+                        'http://localhost:8085' // ms-simulation
+                    ]
+                    targets.each { targetUrl ->
+                        bat """
+                            docker run --rm -v %CD%:/zap/wrk -t owasp/zap2docker-stable zap-baseline.py -t ${targetUrl} -r zap-report-${targetUrl.split(':')[2]}.html
+                        """
+                    }
+                    archiveArtifacts artifacts: 'zap-report-*.html', onlyIfSuccessful: true
+                }
+            }
+        }
     }
     post {
         failure {
