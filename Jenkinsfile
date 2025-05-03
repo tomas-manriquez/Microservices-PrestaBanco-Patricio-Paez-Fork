@@ -28,12 +28,6 @@ pipeline {
                         'http://localhost:8084', // ms-request
                         'http://localhost:8085'  // ms-simulation
                     ]
-                    bat """
-                        IF "%ERRORLEVEL%"=="0" (
-                            FOR /F %%i IN ('docker images -q ghcr.io/zaproxy/zap-baseline') DO SET IMAGE_ID=%%i
-                            IF NOT DEFINED IMAGE_ID docker pull ghcr.io/zaproxy/zap-baseline
-                        )
-                    """
                     targets.each { targetUrl ->
                         def port = targetUrl.split(':')[2]
                         bat """
