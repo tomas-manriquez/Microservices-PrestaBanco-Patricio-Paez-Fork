@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // Pull una sola vez
-                    bat "docker pull ghcr.io/zaproxy/zap-baseline"
+                    bat "docker pull owasp/zap2docker-stable"
 
                     def targets = [
                         'http://localhost:8081', // ms-customer
@@ -35,7 +35,7 @@ pipeline {
                     targets.each { targetUrl ->
                         def port = targetUrl.split(':')[2]
                         bat """
-                            docker run --rm -v %CD%:/zap/wrk ghcr.io/zaproxy/zap-baseline -t ${targetUrl} -r zap-report-${port}.html
+                            docker run --rm -v %CD%:/zap/wrk owasp/zap2docker-stable zap-baseline.py -t ${targetUrl} -r zap-report-${port}.html
                         """
                     }
 
