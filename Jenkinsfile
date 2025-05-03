@@ -61,8 +61,7 @@ pipeline {
                     targets.each { targetUrl ->
                         def port = targetUrl.split(':')[2]
                         bat """
-                            docker run --rm --network=microservicios-prestabanco \
-                              -v %CD%:/zap/wrk \
+                            docker run --rm  -v %CD%:/zap/wrk \
                               ghcr.io/zaproxy/zaproxy:stable \
                               zap-baseline.py -t ${targetUrl} -r zap-report-${port}.html
                             """
