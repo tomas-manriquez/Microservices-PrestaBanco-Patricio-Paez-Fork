@@ -6,11 +6,13 @@ import com.prestabanco.customer.models.UserRequest;
 import com.prestabanco.customer.models.UserResponse;
 import com.prestabanco.customer.service.UserService;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.prestabanco.customer.entity.User;
 import com.prestabanco.customer.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.*;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Collections;
@@ -25,18 +27,32 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 class CustomerApplicationTests {
 
-	@Mock
+	@MockBean
 	private UserRepository userRepository;
 
-	@Mock
+	@MockBean
 	private BCryptPasswordEncoder passwordEncoder;
 
-	@InjectMocks
+	@Autowired
 	private UserService userService;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
+	}
+
+	@Test
+	void registerUser_Success() {
+		UserRequest request = new UserRequest();
+		request.setEmail("test@example.com");
+		request.setPassword("pass");
+		when(userRepository.findFirstByEmail("test@example.com")).thenReturn(null);
+		when(passwordEncoder.encode("pass")).thenReturn("hashed");
+		when(userRepository.save(any(User.class))).thenReturn(new User());
+		UserResponse response = userService.registerUser(request);
+
+		assertEquals(1, response.getId());
+		assertEquals("User registered successfully", response.getMessage());
 	}
 
 	@Test
@@ -49,23 +65,6 @@ class CustomerApplicationTests {
 
 		assertEquals(2, response.getId());
 		assertEquals("Email already registered", response.getMessage());
-	}
-
-	@Test
-	void registerUser_Success() {
-		UserRequest request = new UserRequest();
-		request.setEmail("test@example.com");
-		request.setPassword("pass");
-		when(userRepository.findFirstByEmail("test@example.com")).thenReturn(null);
-		when(passwordEncoder.encode("pass")).thenReturn("hashed");
-		User savedUser = new User();
-		savedUser.setId(1L);
-		when(userRepository.save(any(User.class))).thenReturn(savedUser);
-
-		UserResponse response = userService.registerUser(request);
-
-		assertEquals(1, response.getId());
-		assertEquals("User registered successfully", response.getMessage());
 	}
 
 	@Test

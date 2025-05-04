@@ -40,8 +40,8 @@ public class UserService {
         user.setWorking(false);
         user.setWorkingYears(0);
         user.setIndependentWorker(false);
-        userRepository.save(user);
-        if (user.getId() == null) {
+        User savedUser = userRepository.save(user);
+        if (savedUser.getId() == null) {
             return new UserResponse(3, "Error registering user");
         }
         return new UserResponse(1, "User registered successfully");
