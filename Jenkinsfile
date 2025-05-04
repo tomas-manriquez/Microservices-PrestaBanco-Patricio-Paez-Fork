@@ -48,7 +48,7 @@ pipeline {
                     ]
                     services.each { service ->
                         dir(service) {
-                            bat "mvn test"
+                            bat "mvn test jacoco:report"
                         }
                     }
                 }
@@ -92,7 +92,11 @@ pipeline {
                         ]
                         services.each { service ->
                             dir(service) {
-                                bat "mvn sonar:sonar -Dsonar.externalIssuesReportPaths=target/sonar-pmd-report.json"
+                                bat """
+                                    mvn sonar:sonar ^
+                                    -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml ^
+                                    -Dsonar.externalIssuesReportPaths=target/sonar-pmd-report.json
+                                """
                             }
                         }
                     }

@@ -18,7 +18,7 @@ public class SimulationService {
         double monthlyInterest = request.getInterestRate() / 12 / 100;
 
         double monthlyFee = maxLoanAmount *
-                ((monthlyInterest * Math.pow(1 + monthlyInterest, months)) /
+                (monthlyInterest * Math.pow(1 + monthlyInterest, months) /
                         (Math.pow(1 + monthlyInterest, months) - 1));
 
         Map<String, Object> response = new HashMap<>();
