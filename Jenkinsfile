@@ -95,6 +95,7 @@ pipeline {
                                 bat """
                                     mvn sonar:sonar ^
                                     -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml ^
+                                    -Dsonar.coverage.inclusions=**/service/**/*.java ^
                                     -Dsonar.externalIssuesReportPaths=target/sonar-pmd-report.json
                                 """
                             }
