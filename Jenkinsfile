@@ -36,6 +36,24 @@ pipeline {
                 }
             }
         }
+        stage('Unit Testing') {
+            steps {
+                script {
+                    def services = [
+                        'ms-customer',
+                        'ms-executive',
+                        'ms-loan',
+                        'ms-request',
+                        'ms-simulation'
+                    ]
+                    services.each { service ->
+                        dir(service) {
+                            bat "mvn test"
+                        }
+                    }
+                }
+            }
+        }
         stage('PMD Analysis') {
             steps {
                 script {
