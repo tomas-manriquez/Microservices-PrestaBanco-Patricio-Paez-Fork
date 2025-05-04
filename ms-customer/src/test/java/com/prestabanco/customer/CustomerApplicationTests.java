@@ -48,7 +48,10 @@ class CustomerApplicationTests {
 		request.setPassword("pass");
 		when(userRepository.findFirstByEmail("test@example.com")).thenReturn(null);
 		when(passwordEncoder.encode("pass")).thenReturn("hashed");
-		when(userRepository.save(any(User.class))).thenReturn(new User());
+		User savedUser = new User();
+		savedUser.setId(1L); // Set a non-null id
+		when(userRepository.save(any(User.class))).thenReturn(savedUser);
+
 		UserResponse response = userService.registerUser(request);
 
 		assertEquals(1, response.getId());

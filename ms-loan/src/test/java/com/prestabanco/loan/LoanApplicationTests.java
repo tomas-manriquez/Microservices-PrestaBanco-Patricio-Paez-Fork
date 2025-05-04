@@ -6,10 +6,10 @@ import com.prestabanco.loan.repository.LoanRepository;
 import com.prestabanco.loan.service.LoanService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,10 +24,10 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 class LoanApplicationTests {
 
-	@Mock
+	@MockBean
 	private LoanRepository loanRepository;
 
-	@InjectMocks
+	@Autowired
 	private LoanService loanService;
 
 	@BeforeEach

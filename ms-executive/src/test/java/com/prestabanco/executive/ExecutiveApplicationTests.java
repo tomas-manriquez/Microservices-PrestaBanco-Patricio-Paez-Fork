@@ -7,10 +7,10 @@ import com.prestabanco.executive.repository.ExecutiveRepository;
 import com.prestabanco.executive.service.ExecutiveService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.Optional;
 
@@ -21,10 +21,10 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 class ExecutiveApplicationTests {
 
-	@Mock
+	@MockBean
 	private ExecutiveRepository executiveRepository;
 
-	@InjectMocks
+	@Autowired
 	private ExecutiveService executiveService;
 
 	@BeforeEach
@@ -94,5 +94,4 @@ class ExecutiveApplicationTests {
 
 		assertNull(response.getId());
 	}
-
 }

@@ -8,10 +8,11 @@ import com.prestabanco.request.repository.RequestRepository;
 import com.prestabanco.request.service.RequestService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.ResponseEntity;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,13 +27,13 @@ import static org.mockito.Mockito.when;
 @SpringBootTest
 class RequestApplicationTests {
 
-	@Mock
+	@MockBean
 	private RequestRepository requestRepository;
 
-	@Mock
+	@MockBean
 	private LoanFeignClient loanFeignClient;
 
-	@InjectMocks
+	@Autowired
 	private RequestService requestService;
 
 	@BeforeEach
@@ -68,9 +69,9 @@ class RequestApplicationTests {
 	void deleteById_DeletesRequestAndLoan() throws Exception {
 		Request req = new Request();
 		req.setIdLoan(10L);
+
 		when(requestRepository.findById(1)).thenReturn(Optional.of(req));
-		doNothing().when(loanFeignClient).deleteLoan(10L);
-		doNothing().when(requestRepository).deleteById(1);
+		when(loanFeignClient.deleteLoan(10L)).thenReturn(ResponseEntity.ok().build());
 
 		boolean result = requestService.deleteById(1);
 
@@ -78,6 +79,7 @@ class RequestApplicationTests {
 		verify(loanFeignClient).deleteLoan(10L);
 		verify(requestRepository).deleteById(1);
 	}
+
 
 	@Test
 	void deleteById_ThrowsExceptionOnError() {
