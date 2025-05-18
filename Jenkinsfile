@@ -1,3 +1,6 @@
+environment {
+    SONARQUBE_ENV = 'SonarQubeServer'
+}
 pipeline {
             agent any
             tools {
