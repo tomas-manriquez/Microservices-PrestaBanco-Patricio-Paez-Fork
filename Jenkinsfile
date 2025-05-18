@@ -26,9 +26,10 @@ pipeline {
                             services.each { service ->
                                 dir(service) {
                                     if (service == 'frontend-ms') {
-                                        sh 'export PATH=/opt/homebrew/bin:$PATH && /opt/homebrew/bin/npm install'
-                                        sh "/opt/homebrew/bin/npm install"
-                                        sh "/opt/homebrew/bin/npm run build"
+                                        //sh "/opt/homebrew/bin/npm install"
+                                        //sh "/opt/homebrew/bin/npm run build"
+                                        sh 'export PATH=/opt/homebrew/bin:$PATH && npm install'
+                                        sh 'export PATH=/opt/homebrew/bin:$PATH && npm run build'
                                     } else {
                                         sh "mvn clean install -DskipTests"
                                     }
