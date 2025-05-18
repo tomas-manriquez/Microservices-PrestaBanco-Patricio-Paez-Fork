@@ -2,6 +2,7 @@ pipeline {
             agent any
             tools {
                 maven "maven"
+                nodejs "node22"
             }
             stages {
                 stage('Check') {
@@ -26,15 +27,8 @@ pipeline {
                             services.each { service ->
                                 dir(service) {
                                     if (service == 'frontend-ms') {
-                                        //sh "/opt/homebrew/bin/npm install"
-                                        //sh "/opt/homebrew/bin/npm run build"
-                                        sh '''
-                                          export PATH=/Users/tomasmanriquez/.nvm/versions/node/v22.15.0/bin/node:$PATH
-                                          node -v
-                                          npm install
-                                          npm run build
-                                        '''
-
+                                        sh "npm install"
+                                        sh "npm run build"
                                     } else {
                                         sh "mvn clean install -DskipTests"
                                     }
