@@ -28,8 +28,13 @@ pipeline {
                                     if (service == 'frontend-ms') {
                                         //sh "/opt/homebrew/bin/npm install"
                                         //sh "/opt/homebrew/bin/npm run build"
-                                        sh 'export PATH=/opt/homebrew/bin:$PATH && npm install'
-                                        sh 'export PATH=/opt/homebrew/bin:$PATH && npm run build'
+                                        sh '''
+                                          export PATH=/Users/tomasmanriquez/.nvm/versions/node/v22.15.0/bin/node:$PATH
+                                          node -v
+                                          npm install
+                                          npm run build
+                                        '''
+
                                     } else {
                                         sh "mvn clean install -DskipTests"
                                     }
