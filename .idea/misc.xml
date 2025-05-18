@@ -10,7 +10,6 @@
         <option value="$PROJECT_DIR$/request/pom.xml" />
         <option value="$PROJECT_DIR$/customer/pom.xml" />
         <option value="$PROJECT_DIR$/executive/pom.xml" />
-        <option value="$PROJECT_DIR$/config-server/pom.xml" />
         <option value="$PROJECT_DIR$/ms-customer/pom.xml" />
         <option value="$PROJECT_DIR$/ms-request/pom.xml" />
         <option value="$PROJECT_DIR$/eureka-server/pom.xml" />
@@ -26,6 +25,7 @@
         <option value="$PROJECT_DIR$/ms-creditevaluation/pom.xml" />
         <option value="$PROJECT_DIR$/ms-totalcost/pom.xml" />
         <option value="$PROJECT_DIR$/ms-simulation/pom.xml" />
+        <option value="$PROJECT_DIR$/config-server/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
