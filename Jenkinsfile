@@ -71,7 +71,7 @@ pipeline {
                             services.each { service ->
                                 dir(service) {
                                     sh "mvn pmd:pmd"
-                                    sh "python3 \$WORKSPACE/PMD_TO_SQ.py"
+                                    sh "python3 \"\$WORKSPACE/PMD_TO_SQ.py\""
                                 }
                             }
                         }
