@@ -133,7 +133,7 @@ pipeline {
                                     //sh 'docker buildx inspect --bootstrap'
 
 
-                                    sh "docker build --platform linux/amd64 -t tomasmanriquez480/${service}:latest --push ."
+                                    sh "docker build --platform linux/arm64 -t tomasmanriquez480/${service}:latest --push ."
                                     withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                                         sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
                                         sh "docker push tomasmanriquez480/${service}:latest"
