@@ -1,8 +1,8 @@
-environment {
-    SONARQUBE_ENV = 'tallerDSO'
-}
 pipeline {
             agent any
+            environment {
+                DOCKER_CREDENTIALS_ID = 'docker-credentials'
+            }
             tools {
                 maven "maven"
                 nodejs "node22"
