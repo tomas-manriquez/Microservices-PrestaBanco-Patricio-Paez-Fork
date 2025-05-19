@@ -1,5 +1,5 @@
 environment {
-    SONARQUBE_ENV = 'SonarQubeServer'
+    SONARQUBE_ENV = 'tallerDSO'
 }
 pipeline {
             agent any
