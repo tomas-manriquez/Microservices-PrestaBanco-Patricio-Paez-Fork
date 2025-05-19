@@ -147,25 +147,9 @@ pipeline {
                 stage('Run Docker Containers') {
                     steps {
                         script {
-                            def services = [
-                                'config-server',
-                                'eureka-server',
-                                'gateway-server',
-                                'ms-customer',
-                                'ms-executive',
-                                'ms-loan',
-                                'ms-request',
-                                'ms-simulation',
-                                'frontend-ms'
-                            ]
-
-                            services.each { service ->
-                                dir(service) {
-                                    sh "docker pull tomasmanriquez480/${service}:latest"
-                                }
-                            }
                             sh "docker-compose down || true"
-                            sh "docker-compose up -d"
+                            sh "docker-compose pull"
+                            sh "docker-compose --verbose up -d"
                         }
                     }
                 }

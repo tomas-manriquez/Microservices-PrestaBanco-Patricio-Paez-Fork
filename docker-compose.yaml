@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   config-server:
     image: tomasmanriquez480/config-server:latest
@@ -9,6 +11,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    networks:
+      - microservices
 
   eureka-server:
     image: tomasmanriquez480/eureka-server:latest
@@ -25,6 +29,8 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    networks:
+      - microservices
 
   gateway-server:
     image: tomasmanriquez480/gateway-server:latest
@@ -38,6 +44,13 @@ services:
         condition: service_healthy
     env_file:
       - ./env/gateway.env
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - microservices
 
   customer-db:
     image: postgres
@@ -52,6 +65,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    volumes:
+      - customer-db-data:/var/lib/postgresql/data
+    networks:
+      - microservices
 
   executive-db:
     image: postgres
@@ -66,6 +83,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    volumes:
+      - executive-db-data:/var/lib/postgresql/data
+    networks:
+      - microservices
 
   loan-db:
     image: postgres
@@ -80,6 +101,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    volumes:
+      - loan-db-data:/var/lib/postgresql/data
+    networks:
+      - microservices
 
   request-db:
     image: postgres
@@ -94,6 +119,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    volumes:
+      - request-db-data:/var/lib/postgresql/data
+    networks:
+      - microservices
 
   simulation-db:
     image: postgres
@@ -108,6 +137,10 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    volumes:
+      - simulation-db-data:/var/lib/postgresql/data
+    networks:
+      - microservices
 
   ms-customer:
     image: tomasmanriquez480/ms-customer:latest
@@ -123,6 +156,13 @@ services:
         condition: service_healthy
     env_file:
       - ./env/customer.env
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - microservices
 
   ms-executive:
     image: tomasmanriquez480/ms-executive:latest
@@ -138,6 +178,13 @@ services:
         condition: service_healthy
     env_file:
       - ./env/executive.env
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - microservices
 
   ms-loan:
     image: tomasmanriquez480/ms-loan:latest
@@ -153,6 +200,13 @@ services:
         condition: service_healthy
     env_file:
       - ./env/loan.env
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8083/actuator/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - microservices
 
   ms-request:
     image: tomasmanriquez480/ms-request:latest
@@ -168,6 +222,13 @@ services:
         condition: service_healthy
     env_file:
       - ./env/request.env
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8084/actuator/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - microservices
 
   ms-simulation:
     image: tomasmanriquez480/ms-simulation:latest
@@ -183,6 +244,13 @@ services:
         condition: service_healthy
     env_file:
       - ./env/simulation.env
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8085/actuator/health" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - microservices
 
   frontend-ms:
     image: tomasmanriquez480/frontend-ms:latest
@@ -190,9 +258,26 @@ services:
     ports:
       - "80:80"
     depends_on:
-      config-server:
+      # gateway-server is likely what it truly depends on for APIs
+      gateway-server:
         condition: service_healthy
-      eureka-server:
-        condition: service_healthy
+      # Uncomment below if needed
+      # config-server:
+      #   condition: service_healthy
+      # eureka-server:
+      #   condition: service_healthy
     env_file:
       - ./env/frontend.env
+    networks:
+      - microservices
+
+volumes:
+  customer-db-data:
+  executive-db-data:
+  loan-db-data:
+  request-db-data:
+  simulation-db-data:
+
+networks:
+  microservices:
+    driver: bridge
