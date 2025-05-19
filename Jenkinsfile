@@ -82,7 +82,7 @@ pipeline {
                 }
                 stage('SonarQube Analysis') {
                     steps {
-                        withSonarQubeEnv("${env.SONARQUBE_ENV}") {
+                        withSonarQubeEnv(${env.SONARQUBE_ENV}) {
                             script {
                                 def services = [
                                     'config-server',
