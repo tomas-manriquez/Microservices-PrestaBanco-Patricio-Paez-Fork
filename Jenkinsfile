@@ -129,6 +129,7 @@ pipeline {
                                     withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                                         sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
                                         sh "docker push ${env.DOCKER_REGISTRY}/${service}:latest"
+
                                     }
                                 }
                             }
