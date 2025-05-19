@@ -125,10 +125,10 @@ pipeline {
                             ]
                             services.each { service ->
                                 dir(service) {
-                                    sh "docker build -t ${env.example.DOCKER_REGISTRY}/${service}:latest ."
-                                    withCredentials([usernamePassword(credentialsId: "${env.example.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                    sh "docker build -t ${env.DOCKER_REGISTRY}/${service}:latest ."
+                                    withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                                         sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
-                                        sh "docker push ${env.example.DOCKER_REGISTRY}/${service}:latest"
+                                        sh "docker push ${env.DOCKER_REGISTRY}/${service}:latest"
                                     }
                                 }
                             }
