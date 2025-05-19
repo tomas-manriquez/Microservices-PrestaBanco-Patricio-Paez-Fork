@@ -1,6 +1,7 @@
 services:
   config-server:
-    image: niptuss/config-server:latest
+    image: tomasmanriquez480/config-server:latest
+    platform: "linux/amd64"
     ports:
       - "8888:8888"
     healthcheck:
@@ -10,7 +11,8 @@ services:
       retries: 10
 
   eureka-server:
-    image: niptuss/eureka-server:latest
+    image: tomasmanriquez480/eureka-server:latest
+    platform: "linux/amd64"
     ports:
       - "8761:8761"
     depends_on:
@@ -25,7 +27,8 @@ services:
       retries: 10
 
   gateway-server:
-    image: niptuss/gateway-server:latest
+    image: tomasmanriquez480/gateway-server:latest
+    platform: "linux/amd64"
     ports:
       - "8080:8080"
     depends_on:
@@ -107,7 +110,8 @@ services:
       retries: 10
 
   ms-customer:
-    image: niptuss/ms-customer:latest
+    image: tomasmanriquez480/ms-customer:latest
+    platform: "linux/amd64"
     ports:
       - "8081:8081"
     depends_on:
@@ -121,7 +125,8 @@ services:
       - ./env/customer.env
 
   ms-executive:
-    image: niptuss/ms-executive:latest
+    image: tomasmanriquez480/ms-executive:latest
+    platform: "linux/amd64"
     ports:
       - "8082:8082"
     depends_on:
@@ -135,7 +140,8 @@ services:
       - ./env/executive.env
 
   ms-loan:
-    image: niptuss/ms-loan:latest
+    image: tomasmanriquez480/ms-loan:latest
+    platform: "linux/amd64"
     ports:
       - "8083:8083"
     depends_on:
@@ -149,7 +155,8 @@ services:
       - ./env/loan.env
 
   ms-request:
-    image: niptuss/ms-request:latest
+    image: tomasmanriquez480/ms-request:latest
+    platform: "linux/amd64"
     ports:
       - "8084:8084"
     depends_on:
@@ -163,7 +170,8 @@ services:
       - ./env/request.env
 
   ms-simulation:
-    image: niptuss/ms-simulation:latest
+    image: tomasmanriquez480/ms-simulation:latest
+    platform: "linux/amd64"
     ports:
       - "8085:8085"
     depends_on:
@@ -177,7 +185,8 @@ services:
       - ./env/simulation.env
 
   frontend-ms:
-    image: niptuss/frontend-ms:latest
+    image: tomasmanriquez480/frontend-ms:latest
+    platform: "linux/amd64"
     ports:
       - "80:80"
     depends_on:

@@ -123,12 +123,7 @@ pipeline {
                                 'ms-simulation',
                                 'frontend-ms'
                             ]
-                            // Register QEMU for cross-platform builds on ARM host
-                                        sh 'docker run --rm --privileged --platform linux/arm64/v8 tonistiigi/binfmt --install all'
 
-                                        // Create buildx builder
-                                        sh 'docker buildx create --use --name multiarch-builder || true'
-                                        sh 'docker buildx inspect multiarch-builder --bootstrap'
                             services.each { service ->
                                 dir(service) {
                                     //sh 'docker run --rm --privileged multiarch/qemu-user-static --reset -p yes'
@@ -138,7 +133,7 @@ pipeline {
                                     //sh 'docker buildx inspect --bootstrap'
 
 
-                                    sh "docker buildx build --platform linux/amd64 -t tomasmanriquez480/${service}:latest --push ."
+                                    sh "docker build --platform linux/amd64 -t tomasmanriquez480/${service}:latest --push ."
                                     withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                                         sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
                                         sh "docker push tomasmanriquez480/${service}:latest"
