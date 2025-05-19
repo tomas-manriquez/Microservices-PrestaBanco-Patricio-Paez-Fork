@@ -123,6 +123,9 @@ pipeline {
                                 'ms-simulation',
                                 'frontend-ms'
                             ]
+                            sh 'docker run --rm --privileged multiarch/qemu-user-static --reset -p yes'
+                            sh 'docker buildx create --use --name multiarch-builder || true'
+
 
                             services.each { service ->
                                 dir(service) {
