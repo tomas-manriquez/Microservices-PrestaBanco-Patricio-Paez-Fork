@@ -123,12 +123,12 @@ pipeline {
                                 'ms-simulation',
                                 'frontend-ms'
                             ]
-                            // Register QEMU for cross-platform builds
-                                        sh 'docker run --rm --privileged multiarch/qemu-user-static --reset -p yes'
+                            // Register QEMU for cross-platform builds on ARM host
+                                        sh 'docker run --rm --privileged --platform linux/arm64/v8 tonistiigi/binfmt --install all'
 
-                                        // Set up buildx builder
+                                        // Create buildx builder
                                         sh 'docker buildx create --use --name multiarch-builder || true'
-                                        sh 'docker buildx inspect --bootstrap'
+                                        sh 'docker buildx inspect multiarch-builder --bootstrap'
                             services.each { service ->
                                 dir(service) {
                                     //sh 'docker run --rm --privileged multiarch/qemu-user-static --reset -p yes'
@@ -153,7 +153,7 @@ pipeline {
                     steps {
                         script {
                             sh "docker-compose down || true"
-                            sh "docker-compose up --platform linux/amd64 -d"
+                            sh "docker-compose up -d"
                         }
                     }
                 }
