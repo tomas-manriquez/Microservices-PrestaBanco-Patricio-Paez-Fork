@@ -3,7 +3,7 @@ version: "3.9"
 services:
   config-server:
     image: tomasmanriquez480/config-server:latest
-    platform: "linux/arm64"
+    platform: "linux/amd64"
     ports:
       - "8888:8888"
     healthcheck:
@@ -16,7 +16,7 @@ services:
 
   eureka-server:
     image: tomasmanriquez480/eureka-server:latest
-    platform: "linux/arm64"
+    platform: "linux/amd64"
     ports:
       - "8761:8761"
     depends_on:
@@ -34,7 +34,7 @@ services:
 
   gateway-server:
     image: tomasmanriquez480/gateway-server:latest
-    platform: "linux/arm64"
+    platform: "linux/amd64"
     ports:
       - "8080:8080"
     depends_on:
@@ -144,7 +144,7 @@ services:
 
   ms-customer:
     image: tomasmanriquez480/ms-customer:latest
-    platform: "linux/arm64"
+    platform: "linux/amd64"
     ports:
       - "8081:8081"
     depends_on:
@@ -166,7 +166,7 @@ services:
 
   ms-executive:
     image: tomasmanriquez480/ms-executive:latest
-    platform: "linux/arm64"
+    platform: "linux/amd64"
     ports:
       - "8082:8082"
     depends_on:
@@ -188,7 +188,7 @@ services:
 
   ms-loan:
     image: tomasmanriquez480/ms-loan:latest
-    platform: "linux/arm64"
+    platform: "linux/amd64"
     ports:
       - "8083:8083"
     depends_on:
@@ -210,7 +210,7 @@ services:
 
   ms-request:
     image: tomasmanriquez480/ms-request:latest
-    platform: "linux/arm64"
+    platform: "linux/amd64"
     ports:
       - "8084:8084"
     depends_on:
@@ -232,7 +232,7 @@ services:
 
   ms-simulation:
     image: tomasmanriquez480/ms-simulation:latest
-    platform: "linux/arm64"
+    platform: "linux/amd64"
     ports:
       - "8085:8085"
     depends_on:
@@ -254,7 +254,7 @@ services:
 
   frontend-ms:
     image: tomasmanriquez480/frontend-ms:latest
-    platform: "linux/arm64"
+    platform: "linux/amd64"
     ports:
       - "80:80"
     depends_on:
