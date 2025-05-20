@@ -104,7 +104,7 @@ pipeline {
                                             -Dsonar.coverage.inclusions=**/service/*.java \
                                             -Dsonar.exclusions=**/controller/** \
                                             -Dsonar.externalIssuesReportPaths=target/sonar-pmd-report.json \
-                                            -Dsonar.maven.plugin.version=4.0.0.4121  // Make sure the version matches your SonarQube server version
+                                            -Dsonar.maven.plugin.version=4.0.0.4121
                                         '''
                                     }
                                 }
