@@ -2,6 +2,7 @@ pipeline {
             agent any
             environment {
                 DOCKER_CREDENTIALS_ID = 'docker-credentials'
+                SONAR_TOKEN = credentials('trigger-build-containerd')  // Assuming the token is stored as a Jenkins credential
             }
             tools {
                 maven "maven"
@@ -98,10 +99,12 @@ pipeline {
                                     dir(service) {
                                         sh '''
                                             mvn sonar:sonar \
+                                            -Dsonar.token=$SONAR_TOKEN \
                                             -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
                                             -Dsonar.coverage.inclusions=**/service/*.java \
                                             -Dsonar.exclusions=**/controller/** \
-                                            -Dsonar.externalIssuesReportPaths=target/sonar-pmd-report.json
+                                            -Dsonar.externalIssuesReportPaths=target/sonar-pmd-report.json \
+                                            -Dsonar.maven.plugin.version=4.0.0.4121  // Make sure the version matches your SonarQube server version
                                         '''
                                     }
                                 }
