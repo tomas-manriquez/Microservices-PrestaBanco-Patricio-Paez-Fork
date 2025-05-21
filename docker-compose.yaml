@@ -175,15 +175,6 @@ services:
     platform: "linux/arm64"
     ports:
       - "80:80"
-    depends_on:
-      # gateway-server is likely what it truly depends on for APIs
-      gateway-server:
-        condition: service_healthy
-      # Uncomment below if needed
-      # config-server:
-      #   condition: service_healthy
-      # eureka-server:
-      #   condition: service_healthy
     env_file:
       - ./env/frontend.env
     networks:
