@@ -56,7 +56,7 @@ services:
   customer-db:
     image: postgres
     ports:
-      - "5432:5432"
+      - "15432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
@@ -74,7 +74,7 @@ services:
   executive-db:
     image: postgres
     ports:
-      - "5433:5432"
+      - "15433:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
@@ -92,7 +92,7 @@ services:
   loan-db:
     image: postgres
     ports:
-      - "5434:5432"
+      - "15434:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
@@ -110,7 +110,7 @@ services:
   request-db:
     image: postgres
     ports:
-      - "5435:5432"
+      - "15435:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
@@ -128,7 +128,7 @@ services:
   simulation-db:
     image: postgres
     ports:
-      - "5436:5432"
+      - "15436:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=admin
