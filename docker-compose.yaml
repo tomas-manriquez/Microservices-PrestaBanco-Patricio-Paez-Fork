@@ -6,11 +6,6 @@ services:
     platform: "linux/arm64"
     ports:
       - "8888:8888"
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8888/actuator/health" ]
-      interval: 5s
-      timeout: 3s
-      retries: 10
     networks:
       - microservices
 
@@ -20,16 +15,8 @@ services:
     platform: "linux/arm64"
     ports:
       - "8761:8761"
-    depends_on:
-      config-server:
-        condition: service_healthy
     env_file:
       - ./env/eureka.env
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
-      interval: 5s
-      timeout: 3s
-      retries: 10
     networks:
       - microservices
 
@@ -38,18 +25,8 @@ services:
     platform: "linux/arm64"
     ports:
       - "8080:8080"
-    depends_on:
-      config-server:
-        condition: service_healthy
-      eureka-server:
-        condition: service_healthy
     env_file:
       - ./env/gateway.env
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
-      interval: 5s
-      timeout: 3s
-      retries: 10
     networks:
       - microservices
 
@@ -148,20 +125,8 @@ services:
     platform: "linux/arm64"
     ports:
       - "8081:8081"
-    depends_on:
-      config-server:
-        condition: service_healthy
-      eureka-server:
-        condition: service_healthy
-      customer-db:
-        condition: service_healthy
     env_file:
       - ./env/customer.env
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
-      interval: 5s
-      timeout: 3s
-      retries: 10
     networks:
       - microservices
 
@@ -170,20 +135,8 @@ services:
     platform: "linux/arm64"
     ports:
       - "8082:8082"
-    depends_on:
-      config-server:
-        condition: service_healthy
-      eureka-server:
-        condition: service_healthy
-      executive-db:
-        condition: service_healthy
     env_file:
       - ./env/executive.env
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
-      interval: 5s
-      timeout: 3s
-      retries: 10
     networks:
       - microservices
 
@@ -192,20 +145,8 @@ services:
     platform: "linux/arm64"
     ports:
       - "8083:8083"
-    depends_on:
-      config-server:
-        condition: service_healthy
-      eureka-server:
-        condition: service_healthy
-      loan-db:
-        condition: service_healthy
     env_file:
       - ./env/loan.env
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8083/actuator/health" ]
-      interval: 5s
-      timeout: 3s
-      retries: 10
     networks:
       - microservices
 
@@ -214,20 +155,8 @@ services:
     platform: "linux/arm64"
     ports:
       - "8084:8084"
-    depends_on:
-      config-server:
-        condition: service_healthy
-      eureka-server:
-        condition: service_healthy
-      request-db:
-        condition: service_healthy
     env_file:
       - ./env/request.env
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8084/actuator/health" ]
-      interval: 5s
-      timeout: 3s
-      retries: 10
     networks:
       - microservices
 
@@ -236,20 +165,8 @@ services:
     platform: "linux/arm64"
     ports:
       - "8085:8085"
-    depends_on:
-      config-server:
-        condition: service_healthy
-      eureka-server:
-        condition: service_healthy
-      simulation-db:
-        condition: service_healthy
     env_file:
       - ./env/simulation.env
-    healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8085/actuator/health" ]
-      interval: 5s
-      timeout: 3s
-      retries: 10
     networks:
       - microservices
 
