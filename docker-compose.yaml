@@ -23,7 +23,7 @@ services:
       config-server:
         condition: service_healthy
     env_file:
-      - ./env/eureka.env
+      - eureka-server/eureka.env
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
       interval: 5s
