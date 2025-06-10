@@ -19,6 +19,8 @@ services:
       - ./env/eureka.env
     networks:
       - microservices
+    depends_on:
+      - config-server
 
   gateway-server:
     image: tomasmanriquez480/gateway-server:latest

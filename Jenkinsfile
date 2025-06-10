@@ -128,17 +128,8 @@ pipeline {
                             ]
                             sh 'docker buildx create --use --name multiarch-builder || true'
                             sh 'docker buildx inspect --bootstrap'
-
-
                             services.each { service ->
                                 dir(service) {
-                                    //sh 'docker run --rm --privileged multiarch/qemu-user-static --reset -p yes'
-                                    //sh 'docker buildx create --use --name multiarch-builder || true'
-                                    //sh 'docker buildx use multiarch-builder'
-                                    //sh 'docker buildx create --use --name multiarch-builder || true'
-                                    //sh 'docker buildx inspect --bootstrap'
-
-
                                     sh "docker buildx build --platform linux/arm64,linux/amd64 -t tomasmanriquez480/${service}:latest --push ."
                                     withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                                         sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
@@ -160,6 +151,38 @@ pipeline {
                     }
                 }
                 // DAST or other stages...
+                stage('OWASP ZAP'){
+
+                }
+                stage('OWASP Dependency Check'){
+                      steps {
+                        script {
+                          def runCommand = { cmd -> isUnix() ? sh(cmd) : bat(cmd)}
+                          def services = [
+                            'config-server', 'eureka-server', 'gateway-server',
+                            'ms-customer', 'ms-executive', 'ms-loan',
+                            'ms-request', 'ms-simulation', 'frontend-ms'
+                          ]
+                          services.each { service ->
+                            dir(service) {
+                              dependencyCheck(
+                                additionalArguments: '''
+                                --scan .
+                                --format JSON
+                                --disableYarnAudit
+                                --prettyPrint
+                                ''',
+                                nvdCredentialsId: 'token-nvd-api-key',
+                                odcInstallation: 'owasp-dc-devsecops-pep3'
+                              )
+                              dependencyCheckPublisher(
+                                pattern: '**/dependency-check-report.xml'
+                              )
+                            }
+                          }
+                        }
+                      }
+                    }
             }
             post {
                 failure {
