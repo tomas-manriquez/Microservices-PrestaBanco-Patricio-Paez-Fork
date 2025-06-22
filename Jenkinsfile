@@ -151,9 +151,6 @@ pipeline {
                     }
                 }
                 // DAST or other stages...
-                stage('OWASP ZAP'){
-
-                }
                 stage('OWASP Dependency Check'){
                       steps {
                         script {
