@@ -146,7 +146,8 @@ pipeline {
                         script {
                             sh "docker-compose down || true"
                             sh "docker-compose pull"
-                            sh "docker-compose --verbose up -d"
+                            sh "docker-compose up config-server -d"
+                            sh "docker-compose up -d"
                         }
                     }
                 }
