@@ -4,6 +4,12 @@ pipeline {
                 DOCKER_CREDENTIALS_ID = 'docker-credentials'
                 SONAR_TOKEN = credentials('trigger-build-containerd')  // Assuming the token is stored as a Jenkins credential
                 DOCKER_REGISTRY = 'tomasmanriquez480'
+                // ZAP Configuration
+                ZAP_VERSION = '2.16.1'
+                ZAP_API_KEY = "${UUID.randomUUID().toString()}"
+                ZAP_HOME = "${env.WORKSPACE}/.security-cache/zap"
+                // Dependency Check Configuration
+                DEPENDENCY_CHECK_HOME = '/opt/homebrew/bin'
             }
             tools {
                 maven "maven"
@@ -16,34 +22,35 @@ pipeline {
                     }
                 }
                 stage('OWASP Dependency Check'){
-                                      steps {
-                                        script {
-                                          def runCommand = { cmd -> isUnix() ? sh(cmd) : bat(cmd)}
-                                          def services = [
-                                            'config-server', 'eureka-server', 'gateway-server',
-                                            'ms-customer', 'ms-executive', 'ms-loan',
-                                            'ms-request', 'ms-simulation', 'frontend-ms'
-                                          ]
-                                          services.each { service ->
-                                            dir(service) {
-                                              dependencyCheck(
+                            steps {
+                                script {
+                                    def services = [
+                                        'config-server', 'eureka-server', 'gateway-server',
+                                        'ms-customer', 'ms-executive', 'ms-loan',
+                                        'ms-request', 'ms-simulation', 'frontend-ms'
+                                    ]
+                                    services.each { service ->
+                                        dir(service) {
+                                            dependencyCheck(
                                                 additionalArguments: '''
-                                                --scan .
-                                                --format JSON
-                                                --disableYarnAudit
-                                                --prettyPrint
+                                                    --scan .
+                                                    --format JSON
+                                                    --format HTML
+                                                    --disableYarnAudit
+                                                    --prettyPrint
+                                                    --enableRetired
+                                                    --disableAssembly
                                                 ''',
-                                                nvdCredentialsId: 'token-nvd-api-key',
                                                 odcInstallation: 'owasp-dc-devsecops-pep3'
-                                              )
-                                              dependencyCheckPublisher(
+                                            )
+                                            dependencyCheckPublisher(
                                                 pattern: '**/dependency-check-report.xml'
-                                              )
-                                            }
-                                          }
+                                            )
                                         }
-                                      }
                                     }
+                                }
+                            }
+                        }
                 stage('Build') {
                     steps {
                         script {
