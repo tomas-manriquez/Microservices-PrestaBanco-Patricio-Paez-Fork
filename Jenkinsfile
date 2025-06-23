@@ -41,6 +41,7 @@ pipeline {
                                                     --enableRetired
                                                     --disableAssembly
                                                 ''',
+                                                nvdCredentialsId: 'token-nvd-api-key',
                                                 odcInstallation: 'owasp-dc-devsecops-pep3'
                                             )
                                             dependencyCheckPublisher(
