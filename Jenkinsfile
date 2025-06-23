@@ -14,6 +14,7 @@ pipeline {
             tools {
                 maven "maven"
                 nodejs "node22"
+                dependencyCheck "owasp-dc-devsecops-pep3"
             }
             stages {
                 stage('Check') {
