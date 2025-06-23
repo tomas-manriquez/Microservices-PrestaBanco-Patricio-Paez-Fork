@@ -24,7 +24,6 @@ pipeline {
                 stage('OWASP Dependency Check'){
                             steps {
                                 script {
-                                sh 'brew install dependency-check'
                                     def services = [
                                         'config-server', 'eureka-server', 'gateway-server',
                                         'ms-customer', 'ms-executive', 'ms-loan',
