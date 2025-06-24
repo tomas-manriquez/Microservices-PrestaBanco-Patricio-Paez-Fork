@@ -67,7 +67,7 @@ pipeline {
                                                                 /usr/local/bin/docker run --rm \
                                                                   -v '/Users/tomasmanriquez/.jenkins/workspace/devsecops lab3@2:/zap/wrk/:rw' \
                                                                   -t ghcr.io/zaproxy/zaproxy:latest \
-                                                                  zap-baseline.py -t http://127.0.0.1:80/ -r zap-report.html
+                                                                  zap-baseline.py -t ${env.TARGET_URL} -r zap-report.html
 
                                                             """
                                                         }
