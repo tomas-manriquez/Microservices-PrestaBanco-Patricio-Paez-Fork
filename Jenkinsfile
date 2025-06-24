@@ -21,64 +21,36 @@ pipeline {
 
 
 
-                stage('OWASP Dependency Check'){
-                            steps {
-                                script {
-                                    def services = [
-                                        'config-server', 'eureka-server', 'gateway-server',
-                                        'ms-customer', 'ms-executive', 'ms-loan',
-                                        'ms-request', 'ms-simulation', 'frontend-ms'
-                                    ]
-                                    services.each { service ->
-                                        dir(service) {
-                                            dependencyCheck(
-                                                additionalArguments: '''
-                                                    --scan .
-                                                    --format JSON
-                                                    --format HTML
-                                                    --disableYarnAudit
-                                                    --prettyPrint
-                                                    --enableRetired
-                                                    --disableAssembly
-                                                ''',
-                                                nvdCredentialsId: 'token-nvd-api-key',
-                                                odcInstallation: 'owasp-dc-devsecops-pep3'
-                                            )
-                                            dependencyCheckPublisher(
-                                                pattern: '**/dependency-check-report.xml'
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                stage('Build') {
-                    steps {
+                stage('Build + OWASP Dependency Check'){
+                      steps {
                         script {
-                            def services = [
-                                'config-server',
-                                'eureka-server',
-                                'gateway-server',
-                                'ms-customer',
-                                'ms-executive',
-                                'ms-loan',
-                                'ms-request',
-                                'ms-simulation',
-                                'frontend-ms'
-                            ]
-                            services.each { service ->
-                                dir(service) {
-                                    if (service == 'frontend-ms') {
-                                        sh "npm install"
-                                        sh "npm run build"
-                                    } else {
-                                        sh "mvn clean install -DskipTests"
-                                    }
+                          def runCommand = { cmd -> isUnix() ? sh(cmd) : bat(cmd)}
+                          def services = [
+                            'config-server', 'eureka-server', 'gateway-server',
+                            'ms-customer', 'ms-executive', 'ms-loan',
+                            'ms-request', 'ms-simulation', 'frontend-ms'
+                          ]
+                          def buildTasks = services.collectEntries { service ->
+                            ["${service}": {
+                              dir(service) {
+                                if (service == 'frontend-ms') {
+                                  runCommand("npm install")
+                                  runCommand("npm run build")
+                                } else {
+                                  runCommand("mvn clean install -DskipTests")
                                 }
-                            }
+                              }
+                            }]
+                          }
+                          parallel buildTasks
                         }
+                        script {
+                          def runCommand = { cmd -> isUnix() ? sh(cmd) : bat(cmd) }
+                          def pythonCmd = isUnix() ? "python3" : "python"
+                          runCommand("cd config-server && ${pythonCmd} script.py")
+                        }
+                      }
                     }
-                }
                 stage('Unit Testing') {
                     steps {
                         script {
