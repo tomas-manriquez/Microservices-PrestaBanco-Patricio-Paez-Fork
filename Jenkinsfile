@@ -5,7 +5,7 @@ pipeline {
                 SONAR_TOKEN = credentials('trigger-build-containerd')  // Assuming the token is stored as a Jenkins credential
                 DOCKER_REGISTRY = 'tomasmanriquez480'
                 // ZAP Configuration
-                TARGET_URL = 'http://your-target.local' // Replace with your actual target
+                TARGET_URL = 'http://127.0.0.1:80/' // Replace with your actual target
                 REPORT_NAME = 'zap-report.html'
             }
             tools {
