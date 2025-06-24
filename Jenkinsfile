@@ -51,6 +51,7 @@ pipeline {
                                                                       .\trivy image --exit-code 1 --severity HIGH,CRITICAL ${env.DOCKER_REGISTRY}/${service}:latest || exit 0
                                                                     """.stripIndent())
                                                                   }
+                                                                publishHTML([reportDir: '.', reportFiles: "trivy-${service}.html", reportName: "Trivy SCAN"])
                                                                 }
                                                               }
                                                             }
@@ -59,7 +60,6 @@ pipeline {
                                                           post {
                                                                                                                             always {
                                                                                                                               publishHTML([reportDir: '.', reportFiles: "trivy-${service}.html", reportName: "Trivy SCAN"])
-                                                                                                                              junit allowEmptyResults: true, testResults: "trivy-${service}.xml"
                                                                                                                             }
                                                                                                                           }
                                                         }
