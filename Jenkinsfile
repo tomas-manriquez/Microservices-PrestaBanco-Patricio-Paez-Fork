@@ -18,6 +18,35 @@ pipeline {
                         checkout scm
                     }
                 }
+                stage('Docker Build and Push') {
+                                                                    steps {
+                                                                        script {
+                                                                            def services = [
+                                                                                'config-server',
+                                                                                'eureka-server',
+                                                                                'gateway-server',
+                                                                                'ms-customer',
+                                                                                'ms-executive',
+                                                                                'ms-loan',
+                                                                                'ms-request',
+                                                                                'ms-simulation',
+                                                                                'frontend-ms'
+                                                                            ]
+                                                                            sh '/usr/local/bin/docker buildx create --use --name multiarch-builder || true'
+                                                                            sh '/usr/local/bin/docker buildx inspect --bootstrap'
+                                                                            services.each { service ->
+                                                                                dir(service) {
+                                                                                    sh "/usr/local/bin/docker buildx build --platform linux/arm64,linux/amd64 -t tomasmanriquez480/${service}:latest --push ."
+                                                                                    withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                                                                        sh "echo \$DOCKER_PASS | /usr/local/bin/docker login -u \$DOCKER_USER --password-stdin"
+                                                                                        sh "/usr/local/bin/docker push tomasmanriquez480/${service}:latest"
+
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
                 stage('Trivy Scan'){
                                                           steps {
                                                             script {
@@ -208,35 +237,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Docker Build and Push') {
-                                                    steps {
-                                                        script {
-                                                            def services = [
-                                                                'config-server',
-                                                                'eureka-server',
-                                                                'gateway-server',
-                                                                'ms-customer',
-                                                                'ms-executive',
-                                                                'ms-loan',
-                                                                'ms-request',
-                                                                'ms-simulation',
-                                                                'frontend-ms'
-                                                            ]
-                                                            sh '/usr/local/bin/docker buildx create --use --name multiarch-builder || true'
-                                                            sh '/usr/local/bin/docker buildx inspect --bootstrap'
-                                                            services.each { service ->
-                                                                dir(service) {
-                                                                    sh "/usr/local/bin/docker buildx build --platform linux/arm64,linux/amd64 -t tomasmanriquez480/${service}:latest --push ."
-                                                                    withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                                                                        sh "echo \$DOCKER_PASS | /usr/local/bin/docker login -u \$DOCKER_USER --password-stdin"
-                                                                        sh "/usr/local/bin/docker push tomasmanriquez480/${service}:latest"
 
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
 
                                                 stage('Run Docker Containers') {
                                                     steps {
