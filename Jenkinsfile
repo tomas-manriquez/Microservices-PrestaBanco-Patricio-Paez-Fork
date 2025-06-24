@@ -51,13 +51,29 @@ pipeline {
                                                                       .\trivy image --exit-code 1 --severity HIGH,CRITICAL ${env.DOCKER_REGISTRY}/${service}:latest || exit 0
                                                                     """.stripIndent())
                                                                   }
-                                                                publishHTML([reportDir: '.', reportFiles: "trivy-${service}.html", reportName: "Trivy SCAN"])
                                                                 }
                                                               }
                                                             }
 
                                                           }
                                                         }
+
+                stage('Publish Trivy Reports') {
+                  steps {
+                    publishHTML(
+                      target: [
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true,
+                        reportDir: '.',
+                        reportFiles: '*/trivy-*.html',
+                        reportName: 'Trivy Reports',
+                        reportTitles: 'Trivy Scan Results'
+                      ]
+                    )
+                  }
+                }
+
 
                 stage('OWASP Dependency Check'){
                             steps {
