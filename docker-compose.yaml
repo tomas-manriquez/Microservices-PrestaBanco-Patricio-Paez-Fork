@@ -26,7 +26,7 @@ services:
     image: tomasmanriquez480/gateway-server:latest
     platform: "linux/arm64"
     ports:
-      - "8081:8081"
+      - "8079:8079"
     env_file:
       - ./env/gateway.env
     networks:
