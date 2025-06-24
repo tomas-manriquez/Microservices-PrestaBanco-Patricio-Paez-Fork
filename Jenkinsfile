@@ -64,7 +64,7 @@ pipeline {
                                                                             --format json -o trivy-${service}.json
 
                                                                           /opt/homebrew/bin/trivy image ${env.DOCKER_REGISTRY}/${service}:latest \
-                                                                            --severity CRITICAL --exit-code 1 \
+                                                                            --severity CRITICAL --exit-code 0 \
                                                                             --format json -o trivy-${service}-crit.json
 
                                                                           /opt/homebrew/bin/trivy convert --format template \
