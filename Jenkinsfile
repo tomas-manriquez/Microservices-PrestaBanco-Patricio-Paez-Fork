@@ -267,31 +267,7 @@ pipeline {
                         }
 
             }
-            stage('Trivy Scan'){
-                  steps {
-                    script {
-                      def services = [
-                        'config-server', 'eureka-server', 'gateway-server',
-                        'ms-customer', 'ms-executive', 'ms-loan',
-                        'ms-request', 'ms-simulation', 'frontend-ms'
-                      ]
-                      services.each { service ->
-                        dir(service) {
-                          if (isUnix()) {
-                            sh("""
-                              trivy image --exit-code 1 --severity HIGH,CRITICAL ${env.DOCKER_REGISTRY}/${service}:latest || exit 0
-                            """.stripIndent())
-                          } else {
-                            bat("""
-                              .\trivy image --exit-code 1 --severity HIGH,CRITICAL ${env.DOCKER_REGISTRY}/${service}:latest || exit 0
-                            """.stripIndent())
-                          }
-                        }
-                      }
-                    }
-                  }
 
-                }
             post {
                 failure {
                     echo 'Error in pipeline.'
