@@ -18,7 +18,51 @@ pipeline {
                         checkout scm
                     }
                 }
+                stage('Trivy Scan'){
+                                                          steps {
+                                                            script {
+                                                              def services = [
+                                                                'config-server', 'eureka-server', 'gateway-server',
+                                                                'ms-customer', 'ms-executive', 'ms-loan',
+                                                                'ms-request', 'ms-simulation', 'frontend-ms'
+                                                              ]
+                                                              services.each { service ->
+                                                                dir(service) {
+                                                                  if (isUnix()) {
+                                                                    sh("""
+                                                                         trivy image ${env.DOCKER_REGISTRY}/${service}:latest \
+                                                                           --severity LOW,MEDIUM,HIGH --exit-code 0 \
+                                                                           --format json -o trivy-${service}.json || true
 
+                                                                         trivy image ${env.DOCKER_REGISTRY}/${service}:latest \
+                                                                           --severity CRITICAL --exit-code 1 \
+                                                                           --format json -o trivy-${service}-crit.json || true
+
+                                                                         trivy convert --format template \
+                                                                           --template "/usr/local/share/trivy/templates/html.tpl" \
+                                                                           --output trivy-${service}.html trivy-${service}.json
+
+                                                                         trivy convert --format template \
+                                                                           --template "/usr/local/share/trivy/templates/junit.tpl" \
+                                                                           --output trivy-${service}.xml trivy-${service}.json
+                                                                       """.stripIndent())
+                                                                  } else {
+                                                                    bat("""
+                                                                      .\trivy image --exit-code 1 --severity HIGH,CRITICAL ${env.DOCKER_REGISTRY}/${service}:latest || exit 0
+                                                                    """.stripIndent())
+                                                                  }
+                                                                }
+                                                              }
+                                                            }
+                                                            post {
+                                                                  always {
+                                                                    publishHTML([reportDir: '.', reportFiles: "trivy-${service}.html", reportName: "Trivy SCAN"])
+                                                                    junit allowEmptyResults: true, testResults: "trivy-${service}.xml"
+                                                                  }
+                                                                }
+                                                          }
+
+                                                        }
 
                 stage('OWASP Dependency Check'){
                             steps {
@@ -216,31 +260,7 @@ pipeline {
                                                                            }
                                                                        }
                                                         }
-                        stage('Trivy Scan'){
-                                          steps {
-                                            script {
-                                              def services = [
-                                                'config-server', 'eureka-server', 'gateway-server',
-                                                'ms-customer', 'ms-executive', 'ms-loan',
-                                                'ms-request', 'ms-simulation', 'frontend-ms'
-                                              ]
-                                              services.each { service ->
-                                                dir(service) {
-                                                  if (isUnix()) {
-                                                    sh("""
-                                                      trivy image --exit-code 1 --severity HIGH,CRITICAL ${env.DOCKER_REGISTRY}/${service}:latest || exit 0
-                                                    """.stripIndent())
-                                                  } else {
-                                                    bat("""
-                                                      .\trivy image --exit-code 1 --severity HIGH,CRITICAL ${env.DOCKER_REGISTRY}/${service}:latest || exit 0
-                                                    """.stripIndent())
-                                                  }
-                                                }
-                                              }
-                                            }
-                                          }
 
-                                        }
             }
 
             post {
