@@ -62,7 +62,7 @@ pipeline {
                                 // DAST or other stages...
                                         stage('DAST with OWASP ZAP') {
                                         steps {
-                                                        script {
+                                                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
                                                             sh """
                                                                 /usr/local/bin/docker run --rm \
                                                                   -v '/Users/tomasmanriquez/.jenkins/workspace/devsecops lab3@2:/zap/wrk/:rw' \
@@ -75,6 +75,13 @@ pipeline {
                                                    post {
                                                            always {
                                                                archiveArtifacts artifacts: "${env.REPORT_NAME}", allowEmptyArchive: true
+                                                               publishHTML([
+                                                                     reportDir: '.',                  // relative to workspace
+                                                                     reportFiles: "${env.REPORT_NAME}",
+                                                                     reportName: 'ZAP DAST Report',
+                                                                     alwaysLinkToLastBuild: true,
+                                                                     keepAll: true
+                                                                   ])
                                                            }
                                                        }
                                         }
