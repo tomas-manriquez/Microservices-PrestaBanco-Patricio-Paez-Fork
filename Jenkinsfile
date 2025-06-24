@@ -40,14 +40,14 @@ pipeline {
                                                                            --severity CRITICAL --exit-code 1 \
                                                                            --format template \
                                                                            --template "@contrib/html.tpl" \
-                                                                           -o trivy-${service}-crit.json || true
+                                                                           -o trivy-${service}-crit.html || true
 
                                                                          /opt/homebrew/bin/trivy convert --format template \
-                                                                           --template "/usr/local/share/trivy/templates/html.tpl" \
+                                                                           --template "@contrib/html.tpl" \
                                                                            --output trivy-${service}.html trivy-${service}.json
 
                                                                          /opt/homebrew/bin/trivy convert --format template \
-                                                                           --template "/usr/local/share/trivy/templates/html.tpl" \
+                                                                           --template "@contrib/html.tpl" \
                                                                            --output trivy-${service}.html trivy-${service}.json
                                                                        """.stripIndent())
                                                                   } else {
