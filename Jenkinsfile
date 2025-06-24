@@ -18,90 +18,7 @@ pipeline {
                         checkout scm
                     }
                 }
-                stage('Docker Build and Push') {
-                                                                    steps {
-                                                                        script {
-                                                                            def services = [
-                                                                                'config-server',
-                                                                                'eureka-server',
-                                                                                'gateway-server',
-                                                                                'ms-customer',
-                                                                                'ms-executive',
-                                                                                'ms-loan',
-                                                                                'ms-request',
-                                                                                'ms-simulation',
-                                                                                'frontend-ms'
-                                                                            ]
-                                                                            sh '/usr/local/bin/docker buildx create --use --name multiarch-builder || true'
-                                                                            sh '/usr/local/bin/docker buildx inspect --bootstrap'
-                                                                            services.each { service ->
-                                                                                dir(service) {
-                                                                                    sh "/usr/local/bin/docker buildx build --platform linux/arm64,linux/amd64 -t tomasmanriquez480/${service}:latest --push ."
-                                                                                    withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                                                                                        sh "echo \$DOCKER_PASS | /usr/local/bin/docker login -u \$DOCKER_USER --password-stdin"
-                                                                                        sh "/usr/local/bin/docker push tomasmanriquez480/${service}:latest"
 
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                stage('Trivy Scan'){
-                                                          steps {
-                                                            script {
-                                                              def services = [
-                                                                'config-server', 'eureka-server', 'gateway-server',
-                                                                'ms-customer', 'ms-executive', 'ms-loan',
-                                                                'ms-request', 'ms-simulation', 'frontend-ms'
-                                                              ]
-                                                              services.each { service ->
-                                                                dir(service) {
-                                                                  if (isUnix()) {
-                                                                    sh("""
-                                                                         /opt/homebrew/bin/trivy image ${env.DOCKER_REGISTRY}/${service}:latest \
-                                                                            --severity LOW,MEDIUM,HIGH --exit-code 0 \
-                                                                            --format json -o trivy-${service}.json
-
-                                                                          /opt/homebrew/bin/trivy image ${env.DOCKER_REGISTRY}/${service}:latest \
-                                                                            --severity CRITICAL --exit-code 0 \
-                                                                            --format json -o trivy-${service}-crit.json
-
-                                                                          /opt/homebrew/bin/trivy convert --format template \
-                                                                            --template "/opt/homebrew/share/trivy/templates/html.tpl" \
-                                                                            --output trivy-${service}.html trivy-${service}.json
-
-                                                                          /opt/homebrew/bin/trivy convert --format template \
-                                                                            --template "/opt/homebrew/share/trivy/templates/junit.tpl" \
-                                                                            --output trivy-${service}.xml trivy-${service}.json
-                                                                       """.stripIndent())
-                                                                  } else {
-                                                                    bat("""
-                                                                      .\trivy image --exit-code 1 --severity HIGH,CRITICAL ${env.DOCKER_REGISTRY}/${service}:latest || exit 0
-                                                                    """.stripIndent())
-                                                                  }
-                                                                }
-                                                              }
-                                                            }
-
-                                                          }
-                                                        }
-
-                stage('Publish Trivy Reports') {
-                  steps {
-                    publishHTML(
-                      target: [
-                        allowMissing: true,
-                        alwaysLinkToLastBuild: true,
-                        keepAll: true,
-                        reportDir: '.',
-                        reportFiles: '*/trivy-*.html',
-                        reportName: 'Trivy Reports',
-                        reportTitles: 'Trivy Scan Results'
-                      ]
-                    )
-                  }
-                }
 
 
                 stage('OWASP Dependency Check'){
@@ -233,7 +150,90 @@ pipeline {
                         }
                     }
                 }
+                stage('Docker Build and Push') {
+                                                                                    steps {
+                                                                                        script {
+                                                                                            def services = [
+                                                                                                'config-server',
+                                                                                                'eureka-server',
+                                                                                                'gateway-server',
+                                                                                                'ms-customer',
+                                                                                                'ms-executive',
+                                                                                                'ms-loan',
+                                                                                                'ms-request',
+                                                                                                'ms-simulation',
+                                                                                                'frontend-ms'
+                                                                                            ]
+                                                                                            sh '/usr/local/bin/docker buildx create --use --name multiarch-builder || true'
+                                                                                            sh '/usr/local/bin/docker buildx inspect --bootstrap'
+                                                                                            services.each { service ->
+                                                                                                dir(service) {
+                                                                                                    sh "/usr/local/bin/docker buildx build --platform linux/arm64,linux/amd64 -t tomasmanriquez480/${service}:latest --push ."
+                                                                                                    withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                                                                                        sh "echo \$DOCKER_PASS | /usr/local/bin/docker login -u \$DOCKER_USER --password-stdin"
+                                                                                                        sh "/usr/local/bin/docker push tomasmanriquez480/${service}:latest"
 
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                stage('Trivy Scan'){
+                                                                          steps {
+                                                                            script {
+                                                                              def services = [
+                                                                                'config-server', 'eureka-server', 'gateway-server',
+                                                                                'ms-customer', 'ms-executive', 'ms-loan',
+                                                                                'ms-request', 'ms-simulation', 'frontend-ms'
+                                                                              ]
+                                                                              services.each { service ->
+                                                                                dir(service) {
+                                                                                  if (isUnix()) {
+                                                                                    sh("""
+                                                                                         /opt/homebrew/bin/trivy image ${env.DOCKER_REGISTRY}/${service}:latest \
+                                                                                            --severity LOW,MEDIUM,HIGH --exit-code 0 \
+                                                                                            --format json -o trivy-${service}.json
+
+                                                                                          /opt/homebrew/bin/trivy image ${env.DOCKER_REGISTRY}/${service}:latest \
+                                                                                            --severity CRITICAL --exit-code 0 \
+                                                                                            --format json -o trivy-${service}-crit.json
+
+                                                                                          /opt/homebrew/bin/trivy convert --format template \
+                                                                                            --template "/opt/homebrew/share/trivy/templates/html.tpl" \
+                                                                                            --output trivy-${service}.html trivy-${service}.json
+
+                                                                                          /opt/homebrew/bin/trivy convert --format template \
+                                                                                            --template "/opt/homebrew/share/trivy/templates/junit.tpl" \
+                                                                                            --output trivy-${service}.xml trivy-${service}.json
+                                                                                       """.stripIndent())
+                                                                                  } else {
+                                                                                    bat("""
+                                                                                      .\trivy image --exit-code 1 --severity HIGH,CRITICAL ${env.DOCKER_REGISTRY}/${service}:latest || exit 0
+                                                                                    """.stripIndent())
+                                                                                  }
+                                                                                }
+                                                                              }
+                                                                            }
+
+                                                                          }
+                                                                        }
+
+                                stage('Publish Trivy Reports') {
+                                  steps {
+                                    publishHTML(
+                                      target: [
+                                        allowMissing: true,
+                                        alwaysLinkToLastBuild: true,
+                                        keepAll: true,
+                                        reportDir: '.',
+                                        reportFiles: '*/trivy-*.html',
+                                        reportName: 'Trivy Reports',
+                                        reportTitles: 'Trivy Scan Results'
+                                      ]
+                                    )
+                                  }
+                                }
 
                                                 stage('Run Docker Containers') {
                                                     steps {
