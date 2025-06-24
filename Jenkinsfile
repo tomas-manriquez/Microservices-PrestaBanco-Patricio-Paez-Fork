@@ -54,14 +54,14 @@ pipeline {
                                                                 }
                                                               }
                                                             }
-                                                            post {
-                                                                  always {
-                                                                    publishHTML([reportDir: '.', reportFiles: "trivy-${service}.html", reportName: "Trivy SCAN"])
-                                                                    junit allowEmptyResults: true, testResults: "trivy-${service}.xml"
-                                                                  }
-                                                                }
-                                                          }
 
+                                                          }
+                                                          post {
+                                                                                                                            always {
+                                                                                                                              publishHTML([reportDir: '.', reportFiles: "trivy-${service}.html", reportName: "Trivy SCAN"])
+                                                                                                                              junit allowEmptyResults: true, testResults: "trivy-${service}.xml"
+                                                                                                                            }
+                                                                                                                          }
                                                         }
 
                 stage('OWASP Dependency Check'){
