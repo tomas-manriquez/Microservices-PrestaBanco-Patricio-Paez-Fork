@@ -5,11 +5,8 @@ pipeline {
                 SONAR_TOKEN = credentials('trigger-build-containerd')  // Assuming the token is stored as a Jenkins credential
                 DOCKER_REGISTRY = 'tomasmanriquez480'
                 // ZAP Configuration
-                ZAP_VERSION = '2.16.1'
-                ZAP_API_KEY = "${UUID.randomUUID().toString()}"
-                ZAP_HOME = "${env.WORKSPACE}/.security-cache/zap"
-                // Dependency Check Configuration
-                DEPENDENCY_CHECK_HOME = '/opt/homebrew/bin'
+                TARGET_URL = 'http://your-target.local' // Replace with your actual target
+                REPORT_NAME = 'zap-report.html'
             }
             tools {
                 maven "maven"
@@ -63,78 +60,18 @@ pipeline {
                                 }
                                 // DAST or other stages...
                                         stage('DAST with OWASP ZAP') {
-                                            steps {
-                                                script {
-                                                    // Install/Start ZAP
-                                                    sh '''
-                                                        if [ ! -d "$WORKSPACE/.security-cache/zap/ZAP_${ZAP_VERSION}" ]; then
-                                                            echo "Installing OWASP ZAP..."
-                                                            cd $WORKSPACE/.security-cache/zap
-                                                            wget -q https://github.com/zaproxy/zaproxy/releases/download/v${ZAP_VERSION}/ZAP_${ZAP_VERSION}_Linux.tar.gz
-                                                            tar -xzf ZAP_${ZAP_VERSION}_Linux.tar.gz
-                                                            chmod +x ZAP_${ZAP_VERSION}/zap.sh
-                                                        fi
-                                                    '''
-
-                                                    // Start ZAP daemon
-                                                    sh '''
-                                                        echo "Starting ZAP daemon..."
-                                                        $WORKSPACE/.security-cache/zap/ZAP_${ZAP_VERSION}/zap.sh -daemon -host 0.0.0.0 -port 8090 -config api.key=${ZAP_API_KEY} &
-                                                        ZAP_PID=$!
-                                                        echo $ZAP_PID > zap.pid
-
-                                                        # Wait for ZAP to start
-                                                        timeout 60 bash -c 'until curl -s http://localhost:8090 >/dev/null; do sleep 2; done'
-                                                    '''
-
-                                                    // Run ZAP baseline scan
-                                                    sh '''
-                                                        echo "Running ZAP baseline scan..."
-                                                        python3 $WORKSPACE/.security-cache/zap/ZAP_${ZAP_VERSION}/zap-baseline.py \
-                                                            -t http://localhost:8080 \
-                                                            -g gen.conf \
-                                                            -r zap-baseline-report.html \
-                                                            -J zap-baseline-report.json \
-                                                            -w zap-baseline-report.md \
-                                                            -z "-config api.key=${ZAP_API_KEY}"
-                                                    '''
-
-                                                    // Run ZAP full scan on critical endpoints
-                                                    sh '''
-                                                        echo "Running ZAP full scan on critical endpoints..."
-                                                        python3 $WORKSPACE/.security-cache/zap/ZAP_${ZAP_VERSION}/zap-full-scan.py \
-                                                            -t http://localhost:8080/api \
-                                                            -g gen.conf \
-                                                            -r zap-full-report.html \
-                                                            -J zap-full-report.json \
-                                                            -w zap-full-report.md \
-                                                            -z "-config api.key=${ZAP_API_KEY}" \
-                                                            -I  # Fail on HIGH risk alerts
-                                                    '''
-                                                }
-                                            }
-                                            post {
-                                                always {
-                                                    // Stop ZAP daemon
-                                                    sh '''
-                                                        if [ -f zap.pid ]; then
-                                                            kill $(cat zap.pid) || true
-                                                            rm -f zap.pid
-                                                        fi
-                                                    '''
-
-                                                    // Archive ZAP reports
-                                                    archiveArtifacts artifacts: 'zap-*-report.*', allowEmptyArchive: true
-                                                    publishHTML([
-                                                        allowMissing: false,
-                                                        alwaysLinkToLastBuild: true,
-                                                        keepAll: true,
-                                                        reportDir: '.',
-                                                        reportFiles: 'zap-*-report.html',
-                                                        reportName: 'OWASP ZAP DAST Report'
-                                                    ])
-                                                }
-                                            }
+                                        steps {
+                                                        script {
+                                                            sh """
+                                                                docker run --rm -v \$(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t ${env.TARGET_URL} -r ${env.REPORT_NAME}
+                                                            """
+                                                        }
+                                                    }
+                                                   post {
+                                                           always {
+                                                               archiveArtifacts artifacts: "${env.REPORT_NAME}", allowEmptyArchive: true
+                                                           }
+                                                       }
                                         }
 
                 stage('OWASP Dependency Check'){
