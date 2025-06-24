@@ -33,21 +33,21 @@ pipeline {
                                                                          /opt/homebrew/bin/trivy image ${env.DOCKER_REGISTRY}/${service}:latest \
                                                                            --severity LOW,MEDIUM,HIGH --exit-code 0 \
                                                                            --format template \
-                                                                           --template "@contrib/html.tpl" \
+                                                                           --template "/opt/homebrew/share/trivy/templates/html.tpl" \
                                                                            -o trivy-${service}.html || true
 
                                                                          /opt/homebrew/bin/trivy image ${env.DOCKER_REGISTRY}/${service}:latest \
                                                                            --severity CRITICAL --exit-code 1 \
                                                                            --format template \
-                                                                           --template "@contrib/html.tpl" \
+                                                                           --template "/opt/homebrew/share/trivy/templates/html.tpl" \
                                                                            -o trivy-${service}-crit.html || true
 
                                                                          /opt/homebrew/bin/trivy convert --format template \
-                                                                           --template "@contrib/html.tpl" \
+                                                                           --template "/opt/homebrew/share/trivy/templates/html.tpl" \
                                                                            --output trivy-${service}.html trivy-${service}.json
 
                                                                          /opt/homebrew/bin/trivy convert --format template \
-                                                                           --template "@contrib/html.tpl" \
+                                                                           --template "/opt/homebrew/share/trivy/templates/html.tpl" \
                                                                            --output trivy-${service}.html trivy-${service}.json
                                                                        """.stripIndent())
                                                                   } else {
