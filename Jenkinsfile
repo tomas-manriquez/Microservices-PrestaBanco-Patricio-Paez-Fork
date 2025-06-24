@@ -35,14 +35,14 @@ pipeline {
                                                 'ms-simulation',
                                                 'frontend-ms'
                                             ]
-                                            sh 'docker buildx create --use --name multiarch-builder || true'
-                                            sh 'docker buildx inspect --bootstrap'
+                                            sh '/usr/local/bin/docker buildx create --use --name multiarch-builder || true'
+                                            sh '/usr/local/bin/docker buildx inspect --bootstrap'
                                             services.each { service ->
                                                 dir(service) {
-                                                    sh "docker buildx build --platform linux/arm64,linux/amd64 -t tomasmanriquez480/${service}:latest --push ."
+                                                    sh "/usr/local/bin/docker buildx build --platform linux/arm64,linux/amd64 -t tomasmanriquez480/${service}:latest --push ."
                                                     withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                                                         sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
-                                                        sh "docker push tomasmanriquez480/${service}:latest"
+                                                        sh "/usr/local/bin/docker push tomasmanriquez480/${service}:latest"
 
                                                     }
                                                 }
