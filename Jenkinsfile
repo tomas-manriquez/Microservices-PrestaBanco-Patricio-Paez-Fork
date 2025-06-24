@@ -60,24 +60,20 @@ pipeline {
                                                                   if (isUnix()) {
                                                                     sh("""
                                                                          /opt/homebrew/bin/trivy image ${env.DOCKER_REGISTRY}/${service}:latest \
-                                                                           --severity LOW,MEDIUM,HIGH --exit-code 0 \
-                                                                           --format template \
-                                                                           --template "/opt/homebrew/share/trivy/templates/html.tpl" \
-                                                                           -o trivy-${service}.html || true
+                                                                            --severity LOW,MEDIUM,HIGH --exit-code 0 \
+                                                                            --format json -o trivy-${service}.json || true
 
-                                                                         /opt/homebrew/bin/trivy image ${env.DOCKER_REGISTRY}/${service}:latest \
-                                                                           --severity CRITICAL --exit-code 1 \
-                                                                           --format template \
-                                                                           --template "/opt/homebrew/share/trivy/templates/html.tpl" \
-                                                                           -o trivy-${service}-crit.html || true
+                                                                          /opt/homebrew/bin/trivy image ${env.DOCKER_REGISTRY}/${service}:latest \
+                                                                            --severity CRITICAL --exit-code 1 \
+                                                                            --format json -o trivy-${service}-crit.json || true
 
-                                                                         /opt/homebrew/bin/trivy convert --format template \
-                                                                           --template "/opt/homebrew/share/trivy/templates/html.tpl" \
-                                                                           --output trivy-${service}.html trivy-${service}.json
+                                                                          /opt/homebrew/bin/trivy convert --format template \
+                                                                            --template "/usr/local/share/trivy/templates/html.tpl" \
+                                                                            --output trivy-${service}.html trivy-${service}.json
 
-                                                                         /opt/homebrew/bin/trivy convert --format template \
-                                                                           --template "/opt/homebrew/share/trivy/templates/html.tpl" \
-                                                                           --output trivy-${service}.html trivy-${service}.json
+                                                                          /opt/homebrew/bin/trivy convert --format template \
+                                                                            --template "/usr/local/share/trivy/templates/junit.tpl" \
+                                                                            --output trivy-${service}.xml trivy-${service}.json
                                                                        """.stripIndent())
                                                                   } else {
                                                                     bat("""
