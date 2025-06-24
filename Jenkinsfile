@@ -54,6 +54,7 @@ pipeline {
                                             sh "/usr/local/bin/docker compose down || true"
                                             sh "/usr/local/bin/docker compose pull"
                                             sh "/usr/local/bin/docker compose up config-server -d"
+                                            sleep 10
                                             sh "/usr/local/bin/docker compose up -d"
                                         }
                                     }
