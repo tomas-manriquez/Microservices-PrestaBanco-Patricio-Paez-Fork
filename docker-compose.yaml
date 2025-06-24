@@ -182,39 +182,6 @@ services:
     networks:
       - microservices
 
-  loki:
-    image: grafana/loki:latest
-    ports:
-      - "3100:3100"
-    volumes:
-      - ./monitoring/loki/loki-config.yaml:/etc/loki/
-      #local-config.yaml
-    command: -config.file=/etc/loki/local-config.yaml
-
-  promtail:
-    image: grafana/promtail:latest
-    volumes:
-      - ./monitoring/promtail/promtail-config.yaml:/etc/promtail/config.yaml
-      - /var/log:/var/log
-    command: -config.file=/etc/promtail/config.yaml
-
-  grafana:
-    image: grafana/grafana:latest
-    ports:
-      - "3001:3000"
-    volumes:
-      - ./monitoring/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
-      - ./monitoring/grafana/provisioning/alerting:/etc/grafana/provisioning/alerting
-    environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_FEATURE_TOGGLES_ENABLE=alerting
-  prometheus:
-    image: prom/prometheus:latest
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/
       #prometheus.yml
 
 volumes:
