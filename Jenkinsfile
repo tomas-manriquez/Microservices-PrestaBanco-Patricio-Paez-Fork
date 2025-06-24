@@ -57,11 +57,6 @@ pipeline {
                                                             }
 
                                                           }
-                                                          post {
-                                                                                                                            always {
-                                                                                                                              publishHTML([reportDir: '.', reportFiles: "trivy-${service}.html", reportName: "Trivy SCAN"])
-                                                                                                                            }
-                                                                                                                          }
                                                         }
 
                 stage('OWASP Dependency Check'){
