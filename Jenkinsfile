@@ -61,18 +61,18 @@ pipeline {
                                                                     sh("""
                                                                          /opt/homebrew/bin/trivy image ${env.DOCKER_REGISTRY}/${service}:latest \
                                                                             --severity LOW,MEDIUM,HIGH --exit-code 0 \
-                                                                            --format json -o trivy-${service}.json || true
+                                                                            --format json -o trivy-${service}.json
 
                                                                           /opt/homebrew/bin/trivy image ${env.DOCKER_REGISTRY}/${service}:latest \
                                                                             --severity CRITICAL --exit-code 1 \
-                                                                            --format json -o trivy-${service}-crit.json || true
+                                                                            --format json -o trivy-${service}-crit.json
 
                                                                           /opt/homebrew/bin/trivy convert --format template \
-                                                                            --template "/usr/local/share/trivy/templates/html.tpl" \
+                                                                            --template "/opt/homebrew/share/trivy/templates/html.tpl" \
                                                                             --output trivy-${service}.html trivy-${service}.json
 
                                                                           /opt/homebrew/bin/trivy convert --format template \
-                                                                            --template "/usr/local/share/trivy/templates/junit.tpl" \
+                                                                            --template "/opt/homebrew/share/trivy/templates/junit.tpl" \
                                                                             --output trivy-${service}.xml trivy-${service}.json
                                                                        """.stripIndent())
                                                                   } else {
