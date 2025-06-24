@@ -21,6 +21,46 @@ pipeline {
                         checkout scm
                     }
                 }
+                stage('Docker Build and Push') {
+                                    steps {
+                                        script {
+                                            def services = [
+                                                'config-server',
+                                                'eureka-server',
+                                                'gateway-server',
+                                                'ms-customer',
+                                                'ms-executive',
+                                                'ms-loan',
+                                                'ms-request',
+                                                'ms-simulation',
+                                                'frontend-ms'
+                                            ]
+                                            sh 'docker buildx create --use --name multiarch-builder || true'
+                                            sh 'docker buildx inspect --bootstrap'
+                                            services.each { service ->
+                                                dir(service) {
+                                                    sh "docker buildx build --platform linux/arm64,linux/amd64 -t tomasmanriquez480/${service}:latest --push ."
+                                                    withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                                        sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
+                                                        sh "docker push tomasmanriquez480/${service}:latest"
+
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                stage('Run Docker Containers') {
+                                    steps {
+                                        script {
+                                            sh "docker-compose down || true"
+                                            sh "docker-compose pull"
+                                            sh "docker-compose up config-server -d"
+                                            sh "docker-compose up -d"
+                                        }
+                                    }
+                                }
                 stage('OWASP Dependency Check'){
                             steps {
                                 script {
@@ -150,46 +190,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Docker Build and Push') {
-                    steps {
-                        script {
-                            def services = [
-                                'config-server',
-                                'eureka-server',
-                                'gateway-server',
-                                'ms-customer',
-                                'ms-executive',
-                                'ms-loan',
-                                'ms-request',
-                                'ms-simulation',
-                                'frontend-ms'
-                            ]
-                            sh 'docker buildx create --use --name multiarch-builder || true'
-                            sh 'docker buildx inspect --bootstrap'
-                            services.each { service ->
-                                dir(service) {
-                                    sh "docker buildx build --platform linux/arm64,linux/amd64 -t tomasmanriquez480/${service}:latest --push ."
-                                    withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                                        sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
-                                        sh "docker push tomasmanriquez480/${service}:latest"
 
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                stage('Run Docker Containers') {
-                    steps {
-                        script {
-                            sh "docker-compose down || true"
-                            sh "docker-compose pull"
-                            sh "docker-compose up config-server -d"
-                            sh "docker-compose up -d"
-                        }
-                    }
-                }
                 // DAST or other stages...
                         stage('DAST with OWASP ZAP') {
                             steps {
@@ -265,7 +266,31 @@ pipeline {
                                 }
                             }
                         }
+                        stage('Trivy Scan'){
+                                          steps {
+                                            script {
+                                              def services = [
+                                                'config-server', 'eureka-server', 'gateway-server',
+                                                'ms-customer', 'ms-executive', 'ms-loan',
+                                                'ms-request', 'ms-simulation', 'frontend-ms'
+                                              ]
+                                              services.each { service ->
+                                                dir(service) {
+                                                  if (isUnix()) {
+                                                    sh("""
+                                                      trivy image --exit-code 1 --severity HIGH,CRITICAL ${env.DOCKER_REGISTRY}/${service}:latest || exit 0
+                                                    """.stripIndent())
+                                                  } else {
+                                                    bat("""
+                                                      .\trivy image --exit-code 1 --severity HIGH,CRITICAL ${env.DOCKER_REGISTRY}/${service}:latest || exit 0
+                                                    """.stripIndent())
+                                                  }
+                                                }
+                                              }
+                                            }
+                                          }
 
+                                        }
             }
 
             post {
