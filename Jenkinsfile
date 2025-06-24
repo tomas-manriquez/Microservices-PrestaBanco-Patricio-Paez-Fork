@@ -18,73 +18,7 @@ pipeline {
                         checkout scm
                     }
                 }
-                stage('Docker Build and Push') {
-                                    steps {
-                                        script {
-                                            def services = [
-                                                'config-server',
-                                                'eureka-server',
-                                                'gateway-server',
-                                                'ms-customer',
-                                                'ms-executive',
-                                                'ms-loan',
-                                                'ms-request',
-                                                'ms-simulation',
-                                                'frontend-ms'
-                                            ]
-                                            sh '/usr/local/bin/docker buildx create --use --name multiarch-builder || true'
-                                            sh '/usr/local/bin/docker buildx inspect --bootstrap'
-                                            services.each { service ->
-                                                dir(service) {
-                                                    sh "/usr/local/bin/docker buildx build --platform linux/arm64,linux/amd64 -t tomasmanriquez480/${service}:latest --push ."
-                                                    withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                                                        sh "echo \$DOCKER_PASS | /usr/local/bin/docker login -u \$DOCKER_USER --password-stdin"
-                                                        sh "/usr/local/bin/docker push tomasmanriquez480/${service}:latest"
 
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-
-                                stage('Run Docker Containers') {
-                                    steps {
-                                        script {
-                                            sh "/usr/local/bin/docker compose down || true"
-                                            sh "/usr/local/bin/docker compose pull"
-                                            sh "/usr/local/bin/docker compose up config-server -d"
-                                            sleep 10
-                                            sh "/usr/local/bin/docker compose up -d"
-                                        }
-                                    }
-                                }
-                                // DAST or other stages...
-                                        stage('DAST with OWASP ZAP') {
-                                        steps {
-                                                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
-                                                            sh """
-                                                                /usr/local/bin/docker run --rm \
-                                                                  -v '/Users/tomasmanriquez/.jenkins/workspace/devsecops lab3@2:/zap/wrk/:rw' \
-                                                                  -t ghcr.io/zaproxy/zaproxy:latest \
-                                                                  zap-baseline.py -t ${env.TARGET_URL} -r zap-report.html
-
-                                                            """
-                                                        }
-                                                    }
-                                                   post {
-                                                           always {
-                                                               archiveArtifacts artifacts: "${env.REPORT_NAME}", allowEmptyArchive: true
-                                                               publishHTML([
-                                                                     reportDir: '.',                  // relative to workspace
-                                                                     reportFiles: "${env.REPORT_NAME}",
-                                                                     reportName: 'ZAP DAST Report',
-                                                                     alwaysLinkToLastBuild: true,
-                                                                     keepAll: true
-                                                                   ])
-                                                           }
-                                                       }
-                                        }
 
                 stage('OWASP Dependency Check'){
                             steps {
@@ -215,7 +149,73 @@ pipeline {
                         }
                     }
                 }
+                stage('Docker Build and Push') {
+                                                    steps {
+                                                        script {
+                                                            def services = [
+                                                                'config-server',
+                                                                'eureka-server',
+                                                                'gateway-server',
+                                                                'ms-customer',
+                                                                'ms-executive',
+                                                                'ms-loan',
+                                                                'ms-request',
+                                                                'ms-simulation',
+                                                                'frontend-ms'
+                                                            ]
+                                                            sh '/usr/local/bin/docker buildx create --use --name multiarch-builder || true'
+                                                            sh '/usr/local/bin/docker buildx inspect --bootstrap'
+                                                            services.each { service ->
+                                                                dir(service) {
+                                                                    sh "/usr/local/bin/docker buildx build --platform linux/arm64,linux/amd64 -t tomasmanriquez480/${service}:latest --push ."
+                                                                    withCredentials([usernamePassword(credentialsId: "${env.DOCKER_CREDENTIALS_ID}", usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                                                                        sh "echo \$DOCKER_PASS | /usr/local/bin/docker login -u \$DOCKER_USER --password-stdin"
+                                                                        sh "/usr/local/bin/docker push tomasmanriquez480/${service}:latest"
 
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+
+                                                stage('Run Docker Containers') {
+                                                    steps {
+                                                        script {
+                                                            sh "/usr/local/bin/docker compose down || true"
+                                                            sh "/usr/local/bin/docker compose pull"
+                                                            sh "/usr/local/bin/docker compose up config-server -d"
+                                                            sleep 10
+                                                            sh "/usr/local/bin/docker compose up -d"
+                                                        }
+                                                    }
+                                                }
+                                                // DAST or other stages...
+                                                        stage('DAST with OWASP ZAP') {
+                                                        steps {
+                                                                        catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                                                                            sh """
+                                                                                /usr/local/bin/docker run --rm \
+                                                                                  -v '/Users/tomasmanriquez/.jenkins/workspace/devsecops lab3@2:/zap/wrk/:rw' \
+                                                                                  -t ghcr.io/zaproxy/zaproxy:latest \
+                                                                                  zap-baseline.py -t ${env.TARGET_URL} -r zap-report.html
+
+                                                                            """
+                                                                        }
+                                                                    }
+                                                                   post {
+                                                                           always {
+                                                                               archiveArtifacts artifacts: "${env.REPORT_NAME}", allowEmptyArchive: true
+                                                                               publishHTML([
+                                                                                     reportDir: '.',                  // relative to workspace
+                                                                                     reportFiles: "${env.REPORT_NAME}",
+                                                                                     reportName: 'ZAP DAST Report',
+                                                                                     alwaysLinkToLastBuild: true,
+                                                                                     keepAll: true
+                                                                                   ])
+                                                                           }
+                                                                       }
+                                                        }
                         stage('Trivy Scan'){
                                           steps {
                                             script {
